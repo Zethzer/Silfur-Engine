@@ -1,0 +1,15 @@
+# Visual Studio files
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Binaries
+bin/
+
+# Intermediate
+bin-int/
+
+#Examples files
+examples/Sandbox/logs/
