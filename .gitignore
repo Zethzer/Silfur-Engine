@@ -7,7 +7,6 @@
 
 # Binaries
 **/bin/
-!vendor/bin/premake/
 
 # Intermediate
 bin-int/
