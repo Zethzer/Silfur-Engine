@@ -6,7 +6,8 @@
 *.vcxproj.user
 
 # Binaries
-bin/
+**/bin/
+!vendor/bin/premake/
 
 # Intermediate
 bin-int/
