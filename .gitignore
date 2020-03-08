@@ -7,6 +7,7 @@
 
 # Binaries
 **/bin/
+!/vendor/bin
 
 # Intermediate
 bin-int/
