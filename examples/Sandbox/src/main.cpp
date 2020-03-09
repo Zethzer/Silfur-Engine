@@ -59,6 +59,7 @@ ComPtr<ID3D12Resource> g_VertexBuffer;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView;
 D3D12_SHADER_BYTECODE g_VertexShaderBytecode;
 D3D12_SHADER_BYTECODE g_PixelShaderBytecode;
+D3D12_INPUT_ELEMENT_DESC g_InputLayout[1];
 D3D12_INPUT_LAYOUT_DESC g_InputLayoutDesc;
 
 struct Vertex
@@ -488,19 +489,17 @@ void CompileShaders()
 void CreateInputLayout()
 {
     // The input layout is used by the Input Assembler so that it knows
-// how to read the vertex data bound to it.
+    // how to read the vertex data bound to it.
 
-    D3D12_INPUT_ELEMENT_DESC inputLayout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-    };
+    g_InputLayout[0] =
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 
     // fill out an input layout description structure
     g_InputLayoutDesc = {};
 
     // we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
-    g_InputLayoutDesc.NumElements = sizeof(inputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC);
-    g_InputLayoutDesc.pInputElementDescs = inputLayout;
+    g_InputLayoutDesc.NumElements = sizeof(g_InputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC);
+    g_InputLayoutDesc.pInputElementDescs = g_InputLayout;
 }
 
 void CreatePipelineStateObject(ComPtr<ID3D12Device2> device)
