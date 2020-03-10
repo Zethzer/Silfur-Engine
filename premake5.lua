@@ -116,6 +116,7 @@ project "Sandbox"
 		
 	filter "configurations:Debug"
 		kind "ConsoleApp"
+		-- https://github.com/microsoft/DirectX-Graphics-Samples/issues/567
 		links { "dxguid" }
 		defines "_DEBUG"
 		runtime "Debug"
@@ -123,12 +124,16 @@ project "Sandbox"
 
 	filter "configurations:Release"
 		kind "WindowedApp"
+		-- https://github.com/microsoft/DirectX-Graphics-Samples/issues/567
+		links { "dxguid" }
 		defines "_NDEBUG"
 		runtime "Release"
 		optimize "Full"
 
 	filter "configurations:Development"
 		kind "ConsoleApp"
+		-- https://github.com/microsoft/DirectX-Graphics-Samples/issues/567
+		links { "dxguid" }
 		defines "_DEBUG"
 		runtime "Debug"
 		optimize "Debug"

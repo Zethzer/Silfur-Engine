@@ -17,6 +17,11 @@ using namespace Microsoft::WRL;
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+#ifdef _DEBUG
+    #include <dxgidebug.h>
+    UINT g_CreateFactoryFlags = 0;
+#endif
+
 using namespace DirectX;
 
 // D3D12 extension library
@@ -86,13 +91,21 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 void EnableDebugLayer()
 {
-#if defined(_DEBUG)
+#ifdef _DEBUG
     // Always enable the debug layer before doing anything DX12 related
     // so all possible errors generated while creating DX12 objects
     // are caught by the debug layer.
     ComPtr<ID3D12Debug> debugInterface;
-    ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
+    ThrowIfFailed(::D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
     debugInterface->EnableDebugLayer();
+
+    ComPtr<IDXGIInfoQueue> dxgiInfoQueue;
+    if (SUCCEEDED(::DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiInfoQueue))))
+    {
+        g_CreateFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
+        dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
+        dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
+    }
 #endif
 }
 
@@ -157,12 +170,8 @@ HWND CreateWindow(const wchar_t* windowClassName, HINSTANCE hInst,
 ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp)
 {
     ComPtr<IDXGIFactory4> dxgiFactory;
-    UINT createFactoryFlags = 0;
-#if defined(_DEBUG)
-    createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
-#endif
 
-    ThrowIfFailed(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&dxgiFactory)));
+    ThrowIfFailed(CreateDXGIFactory2(g_CreateFactoryFlags, IID_PPV_ARGS(&dxgiFactory)));
     
     ComPtr<IDXGIAdapter1> dxgiAdapter1;
     ComPtr<IDXGIAdapter4> dxgiAdapter4;
@@ -184,7 +193,7 @@ ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp)
             // creating it. The adapter with the largest dedicated video memory
             // is favored.
             if ((dxgiAdapterDesc1.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) == 0 &&
-                SUCCEEDED(D3D12CreateDevice(dxgiAdapter1.Get(),
+                SUCCEEDED(::D3D12CreateDevice(dxgiAdapter1.Get(),
                     D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr)) &&
                 dxgiAdapterDesc1.DedicatedVideoMemory > maxDedicatedVideoMemory)
             {
@@ -200,10 +209,10 @@ ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp)
 ComPtr<ID3D12Device2> CreateDevice(ComPtr<IDXGIAdapter4> adapter)
 {
     ComPtr<ID3D12Device2> d3d12Device2;
-    ThrowIfFailed(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&d3d12Device2)));
+    ThrowIfFailed(::D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&d3d12Device2)));
 
     // Enable debug messages in debug mode.
-#if defined(_DEBUG)
+#ifdef _DEBUG
     ComPtr<ID3D12InfoQueue> pInfoQueue;
     if (SUCCEEDED(d3d12Device2.As(&pInfoQueue)))
     {
@@ -266,7 +275,7 @@ bool CheckTearingSupport()
     // graphics debugging tools which will not support the 1.5 factory interface 
     // until a future update.
     ComPtr<IDXGIFactory4> factory4;
-    if (SUCCEEDED(CreateDXGIFactory1(IID_PPV_ARGS(&factory4))))
+    if (SUCCEEDED(::CreateDXGIFactory1(IID_PPV_ARGS(&factory4))))
     {
         ComPtr<IDXGIFactory5> factory5;
         if (SUCCEEDED(factory4.As(&factory5)))
@@ -289,12 +298,8 @@ ComPtr<IDXGISwapChain4> CreateSwapChain(HWND hWnd,
 {
     ComPtr<IDXGISwapChain4> dxgiSwapChain4;
     ComPtr<IDXGIFactory4> dxgiFactory4;
-    UINT createFactoryFlags = 0;
-#if defined(_DEBUG)
-    createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
-#endif
 
-    ThrowIfFailed(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&dxgiFactory4)));
+    ThrowIfFailed(::CreateDXGIFactory2(g_CreateFactoryFlags, IID_PPV_ARGS(&dxgiFactory4)));
 
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
     swapChainDesc.Width = width;
@@ -433,7 +438,7 @@ void CreateRootSignature(ComPtr<ID3D12Device2> device)
     rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     ID3DBlob* signature;
-    ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr));
+    ThrowIfFailed(::D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr));
 
     ThrowIfFailed(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&g_RootSignature)));
 }
@@ -452,7 +457,7 @@ void CompileShaders()
     // compile vertex shader
     ID3DBlob* vertexShader; // d3d blob for holding vertex shader bytecode
     ID3DBlob* errorBuff = nullptr; // a buffer holding the error data if any
-    ThrowIfFailed(D3DCompileFromFile(L"Shaders\\VertexShader.hlsl",
+    ThrowIfFailed(::D3DCompileFromFile(L"Shaders\\VertexShader.hlsl",
         nullptr,
         nullptr,
         "main",
@@ -470,7 +475,7 @@ void CompileShaders()
 
     // compile pixel shader
     ID3DBlob* pixelShader;
-    ThrowIfFailed(D3DCompileFromFile(L"Shaders\\PixelShader.hlsl",
+    ThrowIfFailed(::D3DCompileFromFile(L"Shaders\\PixelShader.hlsl",
         nullptr,
         nullptr,
         "main",
@@ -527,6 +532,10 @@ void CreatePipelineStateObject(ComPtr<ID3D12Device2> device)
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT); // a default blend state.
     psoDesc.NumRenderTargets = 1; // we are only binding one render target
 
+    // Create the PSO
+    ThrowIfFailed(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&g_PipelineStateObject)));
+
+    // Other method
     /*struct PipelineStateStream
     {
         CD3DX12_PIPELINE_STATE_STREAM_ROOT_SIGNATURE pRootSignature;
@@ -554,13 +563,7 @@ void CreatePipelineStateObject(ComPtr<ID3D12Device2> device)
         sizeof(PipelineStateStream), &pipelineStateStream
     };*/
 
-
-    // EXCEPTION RAISE ???
-    //ThrowIfFailed(device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&g_PipelineStateObject))); // Access violation reading location 0xFFFFFFFFFFFFFFFF.
-
-    // Create the PSO
-    // EXCEPTION RAISE ???
-    ThrowIfFailed(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&g_PipelineStateObject))); // Access violation reading location 0xFFFFFFFFFFFFFFFF.
+    //ThrowIfFailed(device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&g_PipelineStateObject)));
 }
 
 void CreateVertexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsCommandList> commandList,
@@ -594,7 +597,7 @@ void CreateVertexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsComma
     // create upload heap
     // upload heaps are used to upload data to the GPU. CPU can write to it, GPU can read from it
     // We will upload the vertex buffer using this heap to the default heap
-    ID3D12Resource* vBufferUploadHeap;
+    ComPtr<ID3D12Resource> vBufferUploadHeap;
     device->CreateCommittedResource(
         &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), // upload heap
         D3D12_HEAP_FLAG_NONE, // no flags
@@ -610,14 +613,17 @@ void CreateVertexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsComma
     vertexData.RowPitch = vBufferSize; // size of all our triangle vertex data
     vertexData.SlicePitch = vBufferSize; // also the size of our triangle vertex data
 
+    // Reset the command list close at his creation
+    commandList->Reset(g_CommandAllocators[g_CurrentBackBufferIndex].Get(), g_PipelineStateObject.Get());
+
     // we are now creating a command with the command list to copy the data from
     // the upload heap to the default heap
-    UpdateSubresources(commandList.Get(), g_VertexBuffer.Get(), vBufferUploadHeap, 0, 0, 1, &vertexData);
+    UpdateSubresources(commandList.Get(), g_VertexBuffer.Get(), vBufferUploadHeap.Get(), 0, 0, 1, &vertexData);
 
     // transition the vertex buffer data from copy destination state to vertex buffer state
-    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_VertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+    /*commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_VertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
 
-    // Now we execute the command list to upload the initial assets (triangle data)
+    // Now we execute the command list to upload the initial assets (triangle data)*/
     commandList->Close();
     ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
     g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
@@ -680,7 +686,7 @@ void Render()
     auto backBuffer = g_BackBuffers[g_CurrentBackBufferIndex];
 
     commandAllocator->Reset();
-    g_CommandList->Reset(commandAllocator.Get(), nullptr);
+    g_CommandList->Reset(commandAllocator.Get(), g_PipelineStateObject.Get());
 
     // Clear the render target.
     {
@@ -890,7 +896,7 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
     // Using this awareness context allows the client area of the window 
     // to achieve 100% scaling while still allowing non-client window content to 
     // be rendered in a DPI sensitive fashion.
-    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    ::SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     HINSTANCE hInstance;
 #ifdef _DEBUG
@@ -915,9 +921,11 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
     // Initialize the global window rect variable.
     ::GetWindowRect(g_hWnd, &g_WindowRect);
 
-    ComPtr<IDXGIAdapter4> dxgiAdapter4 = GetAdapter(g_UseWarp);
+    {
+        ComPtr<IDXGIAdapter4> dxgiAdapter4 = GetAdapter(g_UseWarp);
 
-    g_Device = CreateDevice(dxgiAdapter4);
+        g_Device = CreateDevice(dxgiAdapter4);
+    }
 
     g_CommandQueue = CreateCommandQueue(g_Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
 
@@ -975,6 +983,34 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
     Flush(g_CommandQueue, g_Fence, g_FenceValue, g_FenceEvent);
 
     ::CloseHandle(g_FenceEvent);
+
+    // Cleaning up
+    g_VertexBuffer.Reset();
+    g_RootSignature.Reset();
+    g_PipelineStateObject.Reset();
+    g_RTVDescriptorHeap.Reset();
+    
+    for (int i = 0; i < g_NumFrames; ++i)
+    {
+        g_CommandAllocators[i].Reset();
+        g_BackBuffers[i].Reset();
+    }
+    
+    g_CommandList.Reset();
+    g_Fence.Reset();
+    g_SwapChain.Reset();
+    g_CommandQueue.Reset();
+    g_Device.Reset();
+
+#ifdef _DEBUG
+    {
+        ComPtr<IDXGIDebug1> dxgiDebug;
+        if (SUCCEEDED(::DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
+        {
+            dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+        }
+    }
+#endif
 
     return 0;
 }
