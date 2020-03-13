@@ -19,7 +19,6 @@ using namespace Microsoft::WRL;
 
 #ifdef _DEBUG
     #include <dxgidebug.h>
-    UINT g_CreateFactoryFlags = 0;
 #endif
 
 using namespace DirectX;
@@ -38,13 +37,13 @@ bool g_UseWarp = false;
 uint32_t g_ClientWidth = 1280;
 uint32_t g_ClientHeight = 720;
 
-// Set to true once the DX12 objects have been initialized.
-bool g_IsInitialized = false;
-
 // Window handle.
 HWND g_hWnd;
 // Window rectangle (used to toggle fullscreen state).
 RECT g_WindowRect;
+
+bool g_IsInitialized = false;
+UINT g_CreateFactoryFlags = 0;
 
 // DirectX 12 Objects
 ComPtr<ID3D12Device2> g_Device;
@@ -62,6 +61,8 @@ D3D12_VIEWPORT g_Viewport;
 D3D12_RECT g_ScissorRect;
 ComPtr<ID3D12Resource> g_VertexBuffer;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView;
+ComPtr<ID3D12Resource> g_IndexBuffer;
+D3D12_INDEX_BUFFER_VIEW g_IndexBufferView;
 D3D12_SHADER_BYTECODE g_VertexShaderBytecode;
 D3D12_SHADER_BYTECODE g_PixelShaderBytecode;
 D3D12_INPUT_ELEMENT_DESC g_InputLayout[2];
@@ -86,6 +87,7 @@ HANDLE g_FenceEvent;
 
 // By default, enable V-Sync.
 // Can be toggled with the V key.
+// NOTE : In release mode, in fullscreen, with V-Sync activate, there is artefact only if it's the active window
 bool g_VSync = true;
 bool g_TearingSupported = false;
 // By default, use windowed mode.
@@ -95,9 +97,9 @@ bool g_Fullscreen = false;
 // Window callback function.
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
+#ifdef _DEBUG
 void EnableDebugLayer()
 {
-#ifdef _DEBUG
     // Always enable the debug layer before doing anything DX12 related
     // so all possible errors generated while creating DX12 objects
     // are caught by the debug layer.
@@ -112,7 +114,25 @@ void EnableDebugLayer()
         dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
         dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
     }
+}
 #endif
+
+/*
+ * Function from DirectX12 example
+ * Wait for pending GPU work to complete.
+ * https://github.com/microsoft/DirectX-Graphics-Samples
+ */
+void WaitForGpu()
+{
+    // Schedule a Signal command in the queue.
+    ThrowIfFailed(g_CommandQueue->Signal(g_Fence.Get(), g_FrameFenceValues[g_CurrentBackBufferIndex]));
+
+    // Wait until the fence has been processed.
+    ThrowIfFailed(g_Fence->SetEventOnCompletion(g_FrameFenceValues[g_CurrentBackBufferIndex], g_FenceEvent));
+    ::WaitForSingleObjectEx(g_FenceEvent, INFINITE, FALSE);
+
+    // Increment the fence value for the current frame.
+    g_FrameFenceValues[g_CurrentBackBufferIndex]++;
 }
 
 void RegisterWindowClass(HINSTANCE hInst, const wchar_t* windowClassName)
@@ -576,10 +596,18 @@ void CreateVertexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsComma
     UINT currentBackBufferIndex)
 {
     // a triangle
+    //Vertex vList[] = {
+    //    { 0.0f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
+    //    { 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
+    //    { -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f }
+    //};
+
+    // a quad
     Vertex vList[] = {
-        { 0.0f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
+        { 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
         { 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-        { -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f }
+        { -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
+        { -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f }
     };
 
     int vBufferSize = sizeof(vList);
@@ -627,21 +655,88 @@ void CreateVertexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsComma
     UpdateSubresources(commandList.Get(), g_VertexBuffer.Get(), vBufferUploadHeap.Get(), 0, 0, 1, &vertexData);
 
     // transition the vertex buffer data from copy destination state to vertex buffer state
-    /*commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_VertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_VertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
 
-    // Now we execute the command list to upload the initial assets (triangle data)*/
+    // Now we execute the command list to upload the initial assets (triangle data)
     commandList->Close();
     ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
     g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-    // increment the fence value now, otherwise the buffer might not be uploaded by the time we start drawing
-    g_FrameFenceValues[currentBackBufferIndex]++;
-    ThrowIfFailed(g_CommandQueue->Signal(g_Fence.Get(), g_FrameFenceValues[currentBackBufferIndex]));
+    WaitForGpu();
 
     // create a vertex buffer view for the triangle. We get the GPU memory address to the vertex pointer using the GetGPUVirtualAddress() method
     g_VertexBufferView.BufferLocation = g_VertexBuffer->GetGPUVirtualAddress();
     g_VertexBufferView.StrideInBytes = sizeof(Vertex);
     g_VertexBufferView.SizeInBytes = vBufferSize;
+}
+
+void CreateIndexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsCommandList> commandList,
+    UINT currentBackBufferIndex)
+{
+    // List of indices of the quad
+    uint32_t iList[] = {
+        0, 1, 2, // first triangle
+        2, 3, 0 // second triangle
+    };
+
+    int iBufferSize = sizeof(iList);
+
+    // create default heap
+    // default heap is memory on the GPU. Only the GPU has access to this memory
+    // To get data into this heap, we will have to upload the data using
+    // an upload heap
+    device->CreateCommittedResource(
+        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), // a default heap
+        D3D12_HEAP_FLAG_NONE, // no flags
+        &CD3DX12_RESOURCE_DESC::Buffer(iBufferSize), // resource description for a buffer
+        D3D12_RESOURCE_STATE_COPY_DEST, // we will start this heap in the copy destination state since we will copy data
+                                        // from the upload heap to this heap
+        nullptr, // optimized clear value must be null for this type of resource. used for render targets and depth/stencil buffers
+        IID_PPV_ARGS(&g_IndexBuffer));
+
+    // we can give resource heaps a name so when we debug with the graphics debugger we know what resource we are looking at
+    g_IndexBuffer->SetName(L"Index Buffer Resource Heap");
+
+    // create upload heap
+    // upload heaps are used to upload data to the GPU. CPU can write to it, GPU can read from it
+    // We will upload the index buffer using this heap to the default heap
+    ComPtr<ID3D12Resource> iBufferUploadHeap;
+    device->CreateCommittedResource(
+        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), // upload heap
+        D3D12_HEAP_FLAG_NONE, // no flags
+        &CD3DX12_RESOURCE_DESC::Buffer(iBufferSize), // resource description for a buffer
+        D3D12_RESOURCE_STATE_GENERIC_READ, // GPU will read from this buffer and copy its contents to the default heap
+        nullptr,
+        IID_PPV_ARGS(&iBufferUploadHeap));
+    iBufferUploadHeap->SetName(L"Index Buffer Upload Resource Heap");
+
+    // store vertex buffer in upload heap
+    D3D12_SUBRESOURCE_DATA indexData = {};
+    indexData.pData = reinterpret_cast<BYTE*>(iList); // pointer to our index array
+    indexData.RowPitch = iBufferSize; // size of all our (triangle or quad) index data
+    indexData.SlicePitch = iBufferSize; // also the size of our (triangle or quad) index data
+
+    // Reset the command list close at his creation
+    commandList->Reset(g_CommandAllocators[g_CurrentBackBufferIndex].Get(), g_PipelineStateObject.Get());
+
+    // we are now creating a command with the command list to copy the data from
+    // the upload heap to the default heap
+    UpdateSubresources(commandList.Get(), g_IndexBuffer.Get(), iBufferUploadHeap.Get(), 0, 0, 1, &indexData);
+
+    // transition the index buffer data from copy destination state to index buffer state
+    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_IndexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+
+    // Now we execute the command list to upload the initial assets (triangle or quad data)
+    commandList->Close();
+    ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
+    g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+    WaitForGpu();
+
+    // create a index buffer view for the triangle or quad. We get the GPU memory address to the vertex pointer using the GetGPUVirtualAddress() method
+    g_IndexBufferView.BufferLocation = g_IndexBuffer->GetGPUVirtualAddress();
+    g_IndexBufferView.Format = DXGI_FORMAT_R32_UINT;
+    g_IndexBufferView.SizeInBytes = iBufferSize;
 }
 
 void DefineViewport(uint32_t width, uint32_t height)
@@ -717,7 +812,9 @@ void Render()
         g_CommandList->RSSetScissorRects(1, &g_ScissorRect); // Set the scissor rects
         g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // Set the primitive topology
         g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView); // Set the vertex buffer (using the vertex buffer view)
-        g_CommandList->DrawInstanced(3, 1, 0, 0); // Finally draw 3 vertices (draw the triangle)
+        g_CommandList->IASetIndexBuffer(&g_IndexBufferView); // Set the index buffer (using the index buffer view)
+        //g_CommandList->DrawInstanced(3, 1, 0, 0); // Finally draw 3 vertices (draw the triangle)
+        g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); // Draw the quad with indices
     }
 
     // Present
@@ -793,14 +890,14 @@ void SetFullscreen(bool fullscreen)
             ::GetWindowRect(g_hWnd, &g_WindowRect);
 
             // Set the window style to a borderless window so the client area fills
-// the entire screen.
+            // the entire screen.
             UINT windowStyle = WS_OVERLAPPEDWINDOW & ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
 
             ::SetWindowLongW(g_hWnd, GWL_STYLE, windowStyle);
 
             // Query the name of the nearest display device for the window.
-// This is required to set the fullscreen dimensions of the window
-// when using a multi-monitor setup.
+            // This is required to set the fullscreen dimensions of the window
+            // when using a multi-monitor setup.
             HMONITOR hMonitor = ::MonitorFromWindow(g_hWnd, MONITOR_DEFAULTTONEAREST);
             MONITORINFOEX monitorInfo = {};
             monitorInfo.cbSize = sizeof(MONITORINFOEX);
@@ -906,6 +1003,8 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
 
     HINSTANCE hInstance;
 #ifdef _DEBUG
+    EnableDebugLayer();
+
     hInstance = ::GetModuleHandle(nullptr);
 #else
     hInstance = p_hInstance;
@@ -915,8 +1014,6 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
 
     // Window class name. Used for registering / creating the window.
     const wchar_t* windowClassName = L"DX12WindowClass";
-
-    EnableDebugLayer();
 
     g_TearingSupported = CheckTearingSupport();
 
@@ -965,6 +1062,8 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
 
     CreateVertexBuffer(g_Device, g_CommandList, g_CurrentBackBufferIndex);
 
+    CreateIndexBuffer(g_Device, g_CommandList, g_CurrentBackBufferIndex);
+
     DefineViewport(g_ClientWidth, g_ClientHeight);
     DefineScissorRect(g_ClientWidth, g_ClientHeight);
 
@@ -991,6 +1090,7 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
     ::CloseHandle(g_FenceEvent);
 
     // Cleaning up
+    g_IndexBuffer.Reset();
     g_VertexBuffer.Reset();
     g_RootSignature.Reset();
     g_PipelineStateObject.Reset();
