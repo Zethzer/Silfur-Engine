@@ -88,6 +88,7 @@ HANDLE g_FenceEvent;
 // By default, enable V-Sync.
 // Can be toggled with the V key.
 // NOTE : In release mode, in fullscreen, with V-Sync activate, there is artefact only if it's the active window
+// In debug mode, it does the same thing if you disable the V-Sync then enable it again
 bool g_VSync = true;
 bool g_TearingSupported = false;
 // By default, use windowed mode.
