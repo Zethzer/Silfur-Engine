@@ -12,12 +12,3 @@ inline void ThrowIfFailed(HRESULT hr)
         throw std::exception();
     }
 }
-
-inline void ThrowIfFailed(HRESULT hr, ID3DBlob* blob)
-{
-    if (FAILED(hr))
-    {
-        SF_ERROR(Init, 42, "{}", (char*)blob->GetBufferPointer());
-        throw std::exception();
-    }
-}

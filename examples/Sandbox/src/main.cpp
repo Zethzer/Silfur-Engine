@@ -64,12 +64,18 @@ ComPtr<ID3D12Resource> g_VertexBuffer;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView;
 D3D12_SHADER_BYTECODE g_VertexShaderBytecode;
 D3D12_SHADER_BYTECODE g_PixelShaderBytecode;
-D3D12_INPUT_ELEMENT_DESC g_InputLayout[1];
+D3D12_INPUT_ELEMENT_DESC g_InputLayout[2];
 D3D12_INPUT_LAYOUT_DESC g_InputLayoutDesc;
 
 struct Vertex
 {
     XMFLOAT3 Position;
+    XMFLOAT4 Color;
+
+    Vertex(float x, float y, float z, float r, float g, float b, float a) :
+        Position(x, y, z),
+        Color(r, g, b, a)
+    {}
 };
 
 // Synchronization objects
@@ -465,7 +471,7 @@ void CompileShaders()
         D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
         0,
         &vertexShader,
-        &errorBuff), errorBuff);
+        &errorBuff));
 
     // fill out a shader bytecode structure, which is basically just a pointer
     // to the shader bytecode and the size of the shader bytecode
@@ -483,7 +489,7 @@ void CompileShaders()
         D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
         0,
         &pixelShader,
-        &errorBuff), errorBuff);
+        &errorBuff));
 
     // fill out shader bytecode structure for pixel shader
     g_PixelShaderBytecode = {};
@@ -496,9 +502,9 @@ void CreateInputLayout()
     // The input layout is used by the Input Assembler so that it knows
     // how to read the vertex data bound to it.
 
-    g_InputLayout[0] =
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-
+    g_InputLayout[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+    g_InputLayout[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+    
     // fill out an input layout description structure
     g_InputLayoutDesc = {};
 
@@ -571,9 +577,9 @@ void CreateVertexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsComma
 {
     // a triangle
     Vertex vList[] = {
-        { { 0.0f, 0.5f, 0.5f } },
-        { { 0.5f, -0.5f, 0.5f } },
-        { { -0.5f, -0.5f, 0.5f } },
+        { 0.0f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
+        { 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
+        { -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f }
     };
 
     int vBufferSize = sizeof(vList);
@@ -696,7 +702,7 @@ void Render()
 
         g_CommandList->ResourceBarrier(1, &barrier);
 
-        FLOAT clearColor[] = { 0.4f, 0.6f, 0.9f, 1.0f };
+        FLOAT clearColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
         CD3DX12_CPU_DESCRIPTOR_HANDLE rtv(g_RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
             g_CurrentBackBufferIndex, g_RTVDescriptorSize);
 
