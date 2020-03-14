@@ -878,56 +878,80 @@ void Resize(uint32_t width, uint32_t height)
     }
 }
 
-void SetFullscreen(bool fullscreen)
+void SetFullscreen()
 {
-    if (g_Fullscreen != fullscreen)
+    if (g_Fullscreen)
     {
-        g_Fullscreen = fullscreen;
+        // Restore the window's attributes and size.
+        SetWindowLong(g_hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 
-        if (g_Fullscreen) // Switching to fullscreen.
-        {
-            // Store the current window dimensions so they can be restored 
-            // when switching out of fullscreen state.
-            ::GetWindowRect(g_hWnd, &g_WindowRect);
+        SetWindowPos(
+            g_hWnd,
+            HWND_NOTOPMOST,
+            g_WindowRect.left,
+            g_WindowRect.top,
+            g_WindowRect.right - g_WindowRect.left,
+            g_WindowRect.bottom - g_WindowRect.top,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
-            // Set the window style to a borderless window so the client area fills
-            // the entire screen.
-            UINT windowStyle = WS_OVERLAPPEDWINDOW & ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
-
-            ::SetWindowLongW(g_hWnd, GWL_STYLE, windowStyle);
-
-            // Query the name of the nearest display device for the window.
-            // This is required to set the fullscreen dimensions of the window
-            // when using a multi-monitor setup.
-            HMONITOR hMonitor = ::MonitorFromWindow(g_hWnd, MONITOR_DEFAULTTONEAREST);
-            MONITORINFOEX monitorInfo = {};
-            monitorInfo.cbSize = sizeof(MONITORINFOEX);
-            ::GetMonitorInfo(hMonitor, &monitorInfo);
-
-            ::SetWindowPos(g_hWnd, HWND_TOP,
-                monitorInfo.rcMonitor.left,
-                monitorInfo.rcMonitor.top,
-                monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
-                monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top,
-                SWP_FRAMECHANGED | SWP_NOACTIVATE);
-
-            ::ShowWindow(g_hWnd, SW_MAXIMIZE);
-        }
-        else
-        {
-            // Restore all the window decorators.
-            ::SetWindowLong(g_hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-
-            ::SetWindowPos(g_hWnd, HWND_NOTOPMOST,
-                g_WindowRect.left,
-                g_WindowRect.top,
-                g_WindowRect.right - g_WindowRect.left,
-                g_WindowRect.bottom - g_WindowRect.top,
-                SWP_FRAMECHANGED | SWP_NOACTIVATE);
-
-            ::ShowWindow(g_hWnd, SW_NORMAL);
-        }
+        ShowWindow(g_hWnd, SW_NORMAL);
     }
+    else
+    {
+        // Save the old window rect so we can restore it when exiting fullscreen mode.
+        GetWindowRect(g_hWnd, &g_WindowRect);
+
+        // Make the window borderless so that the client area can fill the screen.
+        SetWindowLong(g_hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME));
+
+        RECT fullscreenWindowRect;
+        try
+        {
+            if (g_SwapChain)
+            {
+                // Get the settings of the display on which the app's window is currently displayed
+                ComPtr<IDXGIOutput> pOutput;
+                ThrowIfFailed(g_SwapChain->GetContainingOutput(&pOutput));
+                DXGI_OUTPUT_DESC Desc;
+                ThrowIfFailed(pOutput->GetDesc(&Desc));
+                fullscreenWindowRect = Desc.DesktopCoordinates;
+            }
+            else
+            {
+                // Fallback to EnumDisplaySettings implementation
+                throw HrException(S_FALSE);
+            }
+        }
+        catch (HrException & e)
+        {
+            UNREFERENCED_PARAMETER(e);
+
+            // Get the settings of the primary display
+            DEVMODE devMode = {};
+            devMode.dmSize = sizeof(DEVMODE);
+            EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
+
+            fullscreenWindowRect = {
+                devMode.dmPosition.x,
+                devMode.dmPosition.y,
+                devMode.dmPosition.x + static_cast<LONG>(devMode.dmPelsWidth),
+                devMode.dmPosition.y + static_cast<LONG>(devMode.dmPelsHeight)
+            };
+        }
+
+        SetWindowPos(
+            g_hWnd,
+            HWND_TOP,
+            fullscreenWindowRect.left,
+            fullscreenWindowRect.top,
+            fullscreenWindowRect.right,
+            fullscreenWindowRect.bottom,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE);
+
+        ShowWindow(g_hWnd, SW_MAXIMIZE);
+    }
+
+    g_Fullscreen = !g_Fullscreen;
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -953,7 +977,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 if (alt)
                 {
             case VK_F11:
-                SetFullscreen(!g_Fullscreen);
+                SetFullscreen();
                 }
                 break;
             }
