@@ -118,24 +118,6 @@ void EnableDebugLayer()
 }
 #endif
 
-/*
- * Function from DirectX12 example
- * Wait for pending GPU work to complete.
- * https://github.com/microsoft/DirectX-Graphics-Samples
- */
-void WaitForGpu()
-{
-    // Schedule a Signal command in the queue.
-    ThrowIfFailed(g_CommandQueue->Signal(g_Fence.Get(), g_FrameFenceValues[g_CurrentBackBufferIndex]));
-
-    // Wait until the fence has been processed.
-    ThrowIfFailed(g_Fence->SetEventOnCompletion(g_FrameFenceValues[g_CurrentBackBufferIndex], g_FenceEvent));
-    ::WaitForSingleObjectEx(g_FenceEvent, INFINITE, FALSE);
-
-    // Increment the fence value for the current frame.
-    g_FrameFenceValues[g_CurrentBackBufferIndex]++;
-}
-
 void RegisterWindowClass(HINSTANCE hInst, const wchar_t* windowClassName)
 {
     // Register a window class for creating our render window with.
@@ -352,7 +334,7 @@ ComPtr<IDXGISwapChain4> CreateSwapChain(HWND hWnd,
         &swapChain1));
 
     // Disable the Alt+Enter fullscreen toggle feature. Switching to fullscreen
-    // will be handled manually.
+    // will be handled manually if tearing is supported
     ThrowIfFailed(dxgiFactory4->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
 
     ThrowIfFailed(swapChain1.As(&dxgiSwapChain4));
@@ -458,6 +440,24 @@ void Flush(ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence,
     uint64_t fenceValueForSignal = Signal(commandQueue, fence, fenceValue);
     WaitForFenceValue(fence, fenceValueForSignal, fenceEvent);
 }
+
+/*
+ * Function from DirectX12 example equivalent to Flush function
+ * Wait for pending GPU work to complete.
+ * https://github.com/microsoft/DirectX-Graphics-Samples
+ */
+/*void WaitForGpu()
+{
+    // Schedule a Signal command in the queue.
+    ThrowIfFailed(g_CommandQueue->Signal(g_Fence.Get(), g_FrameFenceValues[g_CurrentBackBufferIndex]));
+
+    // Wait until the fence has been processed.
+    ThrowIfFailed(g_Fence->SetEventOnCompletion(g_FrameFenceValues[g_CurrentBackBufferIndex], g_FenceEvent));
+    ::WaitForSingleObjectEx(g_FenceEvent, INFINITE, FALSE);
+
+    // Increment the fence value for the current frame.
+    g_FrameFenceValues[g_CurrentBackBufferIndex]++;
+}*/
 
 void CreateRootSignature(ComPtr<ID3D12Device2> device)
 {
@@ -656,14 +656,15 @@ void CreateVertexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsComma
     UpdateSubresources(commandList.Get(), g_VertexBuffer.Get(), vBufferUploadHeap.Get(), 0, 0, 1, &vertexData);
 
     // transition the vertex buffer data from copy destination state to vertex buffer state
-    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_VertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+    // Not needed because it is doing implicit transition
+    //commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_VertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
 
     // Now we execute the command list to upload the initial assets (triangle data)
     commandList->Close();
     ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
     g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-    WaitForGpu();
+    Flush(g_CommandQueue, g_Fence, g_FenceValue, g_FenceEvent);
 
     // create a vertex buffer view for the triangle. We get the GPU memory address to the vertex pointer using the GetGPUVirtualAddress() method
     g_VertexBufferView.BufferLocation = g_VertexBuffer->GetGPUVirtualAddress();
@@ -725,14 +726,15 @@ void CreateIndexBuffer(ComPtr<ID3D12Device2> device, ComPtr<ID3D12GraphicsComman
     UpdateSubresources(commandList.Get(), g_IndexBuffer.Get(), iBufferUploadHeap.Get(), 0, 0, 1, &indexData);
 
     // transition the index buffer data from copy destination state to index buffer state
-    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_IndexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+    // Not needed because it is doing implicit transition
+    //commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_IndexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
 
     // Now we execute the command list to upload the initial assets (triangle or quad data)
     commandList->Close();
     ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
     g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-    WaitForGpu();
+    Flush(g_CommandQueue, g_Fence, g_FenceValue, g_FenceEvent);
 
     // create a index buffer view for the triangle or quad. We get the GPU memory address to the vertex pointer using the GetGPUVirtualAddress() method
     g_IndexBufferView.BufferLocation = g_IndexBuffer->GetGPUVirtualAddress();
@@ -878,6 +880,13 @@ void Resize(uint32_t width, uint32_t height)
     }
 }
 
+/*
+ * Function from DirectX12 example
+ * There's no reason for a exclusive fullscreen nowadays so we switch
+ * to a borderless window with the dimension of the monitor.
+ * We can improve for handle different resolution of fullscreen
+ * https://github.com/microsoft/DirectX-Graphics-Samples
+ */
 void SetFullscreen()
 {
     if (g_Fullscreen)
@@ -977,7 +986,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 if (alt)
                 {
             case VK_F11:
-                SetFullscreen();
+                    SetFullscreen();
                 }
                 break;
             }
@@ -1111,6 +1120,12 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
 
     // Make sure the command queue has finished all commands before closing.
     Flush(g_CommandQueue, g_Fence, g_FenceValue, g_FenceEvent);
+
+    if (g_Fullscreen)
+    {
+        // Fullscreen state should always be false before exiting the app.
+        ThrowIfFailed(g_SwapChain->SetFullscreenState(FALSE, nullptr));
+    }
 
     ::CloseHandle(g_FenceEvent);
 
