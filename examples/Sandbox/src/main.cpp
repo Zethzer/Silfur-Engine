@@ -3,10 +3,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#if defined(CreateWindow)
-    #undef CreateWindow
-#endif
-
 // Windows Runtime Library. Needed for Microsoft::WRL::ComPtr<> template class.
 #include <wrl.h>
 using namespace Microsoft::WRL;
@@ -87,8 +83,6 @@ HANDLE g_FenceEvent;
 
 // By default, enable V-Sync.
 // Can be toggled with the V key.
-// NOTE : In release mode, in fullscreen, with V-Sync activate, there is artefact only if it's the active window
-// In debug mode, it does the same thing if you disable the V-Sync then enable it again
 bool g_VSync = true;
 bool g_TearingSupported = false;
 // By default, use windowed mode.
@@ -117,64 +111,6 @@ void EnableDebugLayer()
     }
 }
 #endif
-
-void RegisterWindowClass(HINSTANCE hInst, const wchar_t* windowClassName)
-{
-    // Register a window class for creating our render window with.
-    WNDCLASSEXW windowClass = {};
-
-    windowClass.cbSize = sizeof(WNDCLASSEX);
-    windowClass.style = CS_HREDRAW | CS_VREDRAW;
-    windowClass.lpfnWndProc = &WndProc;
-    windowClass.cbClsExtra = 0;
-    windowClass.cbWndExtra = 0;
-    windowClass.hInstance = hInst;
-    windowClass.hIcon = ::LoadIcon(hInst, NULL);
-    windowClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-    windowClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    windowClass.lpszMenuName = NULL;
-    windowClass.lpszClassName = windowClassName;
-    windowClass.hIconSm = ::LoadIcon(hInst, NULL);
-
-    static ATOM atom = ::RegisterClassExW(&windowClass);
-    SF_ASSERT(atom > 0, "Failed to register Window Class");
-}
-
-HWND CreateWindow(const wchar_t* windowClassName, HINSTANCE hInst,
-    const wchar_t* windowTitle, uint32_t width, uint32_t height)
-{
-    int screenWidth = ::GetSystemMetrics(SM_CXSCREEN);
-    int screenHeight = ::GetSystemMetrics(SM_CYSCREEN);
-
-    RECT windowRect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
-    ::AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
-
-    int windowWidth = windowRect.right - windowRect.left;
-    int windowHeight = windowRect.bottom - windowRect.top;
-
-    // Center the window within the screen. Clamp to 0, 0 for the top-left corner.
-    int windowX = std::max<int>(0, (screenWidth - windowWidth) / 2);
-    int windowY = std::max<int>(0, (screenHeight - windowHeight) / 2);
-
-    HWND hWnd = ::CreateWindowExW(
-        NULL,
-        windowClassName,
-        windowTitle,
-        WS_OVERLAPPEDWINDOW,
-        windowX,
-        windowY,
-        windowWidth,
-        windowHeight,
-        NULL,
-        NULL,
-        hInst,
-        nullptr
-    );
-
-    SF_ASSERT(hWnd, "Failed to create window");
-
-    return hWnd;
-}
 
 ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp)
 {
@@ -275,32 +211,6 @@ ComPtr<ID3D12CommandQueue> CreateCommandQueue(ComPtr<ID3D12Device2> device, D3D1
     return d3d12CommandQueue;
 }
 
-bool CheckTearingSupport()
-{
-    BOOL allowTearing = FALSE;
-
-    // Rather than create the DXGI 1.5 factory interface directly, we create the
-    // DXGI 1.4 interface and query for the 1.5 interface. This is to enable the 
-    // graphics debugging tools which will not support the 1.5 factory interface 
-    // until a future update.
-    ComPtr<IDXGIFactory4> factory4;
-    if (SUCCEEDED(::CreateDXGIFactory1(IID_PPV_ARGS(&factory4))))
-    {
-        ComPtr<IDXGIFactory5> factory5;
-        if (SUCCEEDED(factory4.As(&factory5)))
-        {
-            if (FAILED(factory5->CheckFeatureSupport(
-                DXGI_FEATURE_PRESENT_ALLOW_TEARING,
-                &allowTearing, sizeof(allowTearing))))
-            {
-                allowTearing = FALSE;
-            }
-        }
-    }
-
-    return allowTearing == TRUE;
-}
-
 ComPtr<IDXGISwapChain4> CreateSwapChain(HWND hWnd,
     ComPtr<ID3D12CommandQueue> commandQueue,
     uint32_t width, uint32_t height, uint32_t bufferCount)
@@ -322,7 +232,7 @@ ComPtr<IDXGISwapChain4> CreateSwapChain(HWND hWnd,
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     // It is recommended to always allow tearing if tearing support is available.
-    swapChainDesc.Flags = CheckTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+    swapChainDesc.Flags = g_TearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
     ComPtr<IDXGISwapChain1> swapChain1;
     ThrowIfFailed(dxgiFactory4->CreateSwapChainForHwnd(
@@ -963,66 +873,6 @@ void SetFullscreen()
     g_Fullscreen = !g_Fullscreen;
 }
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    if (g_IsInitialized)
-    {
-        switch (message)
-        {
-        case WM_SYSKEYDOWN:
-        case WM_KEYDOWN:
-        {
-            bool alt = (::GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
-
-            switch (wParam)
-            {
-            case 'V':
-                g_VSync = !g_VSync;
-                break;
-            case VK_ESCAPE:
-                ::PostQuitMessage(0);
-                break;
-            case VK_RETURN:
-                if (alt)
-                {
-            case VK_F11:
-                    SetFullscreen();
-                }
-                break;
-            }
-        }
-        break;
-        // The default window procedure will play a system notification sound 
-        // when pressing the Alt+Enter keyboard combination if this message is 
-        // not handled.
-        case WM_SYSCHAR:
-            break;
-        case WM_SIZE:
-        {
-            RECT clientRect = {};
-            ::GetClientRect(g_hWnd, &clientRect);
-
-            int width = clientRect.right - clientRect.left;
-            int height = clientRect.bottom - clientRect.top;
-
-            Resize(width, height);
-        }
-        break;
-        case WM_DESTROY:
-            ::PostQuitMessage(0);
-            break;
-        default:
-            return ::DefWindowProcW(hwnd, message, wParam, lParam);
-        }
-    }
-    else
-    {
-        return ::DefWindowProcW(hwnd, message, wParam, lParam);
-    }
-
-    return 0;
-}
-
 #ifdef _DEBUG
 int main()
 #else
@@ -1044,16 +894,13 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
     hInstance = p_hInstance;
 #endif
 
-    Silfur::Log::Init();
+    Silfur::Application app;
 
-    // Window class name. Used for registering / creating the window.
-    const wchar_t* windowClassName = L"DX12WindowClass";
+    g_TearingSupported = app.TearingSupported;
 
-    g_TearingSupported = CheckTearingSupport();
+    app.CreateWindow(Silfur::VideoMode(1280, 720), L"Silfur Engine");
 
-    RegisterWindowClass(hInstance, windowClassName);
-    g_hWnd = CreateWindow(windowClassName, hInstance, L"Learning DirectX 12",
-        g_ClientWidth, g_ClientHeight);
+    g_hWnd = static_cast<HWND>(app.GetSystemWindowHandle());
 
     // Initialize the global window rect variable.
     ::GetWindowRect(g_hWnd, &g_WindowRect);
@@ -1103,17 +950,8 @@ int CALLBACK wWinMain(HINSTANCE p_hInstance, HINSTANCE p_hPrevInstance, PWSTR p_
 
     g_IsInitialized = true;
 
-    ::ShowWindow(g_hWnd, SW_SHOW);
-
-    MSG msg = {};
-    while (msg.message != WM_QUIT)
+    while (app.Run())
     {
-        if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            ::TranslateMessage(&msg);
-            ::DispatchMessage(&msg);
-        }
-
         Update();
         Render();
     }

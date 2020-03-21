@@ -4,13 +4,14 @@
 #include <filesystem>
 #include <fstream>
 #include <ctime>
+#include <string>
 
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
 namespace Silfur
 {
-    std::shared_ptr<spdlog::logger> Log::s_logger;
+    Ref<spdlog::logger> Log::s_logger;
 
     void Log::Init()
     {

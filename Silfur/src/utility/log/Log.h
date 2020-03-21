@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
-#include <string>
+#ifndef LOG_H
+#define LOG_H
 
 #include "core/Core.h"
 #ifdef SF_CORE
@@ -15,7 +15,6 @@
 
 namespace Silfur
 {
-    /// <summary>Log static class</summary>
     class Log
     {
     public:
@@ -23,9 +22,11 @@ namespace Silfur
 
         static void Init();
 
-        inline static std::shared_ptr<spdlog::logger>& GetLogger() { return s_logger; }
+        inline static Ref<spdlog::logger>& GetLogger() { return s_logger; }
 
     private:
-        static std::shared_ptr<spdlog::logger> s_logger;
+        static Ref<spdlog::logger> s_logger;
     };
 }
+
+#endif // LOG_H

@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CORE_H
+#define CORE_H
+
 /* -------- PLATFORM DETECTION -------- */
 #ifdef _WIN32
     /* Windows x64/x86 */
@@ -40,9 +43,10 @@
     #define FORCENOINLINE
 #endif
 
+#include <memory>
 namespace Silfur
 {
-    // TODO : Work on references system
+    // TODO (Zeth) : Work on references system
     template<typename T>
     using Scope = std::unique_ptr<T>;
     template<typename T, typename ... Args>
@@ -59,3 +63,5 @@ namespace Silfur
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 }
+
+#endif // CORE_H

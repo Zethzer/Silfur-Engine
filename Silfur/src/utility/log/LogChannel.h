@@ -1,5 +1,7 @@
 #pragma once
-//#pragma warning (disable: 4251)
+
+#ifndef LOG_CHANNEL_H
+#define LOG_CHANNEL_H
 
 #include "core/Core.h"
 
@@ -20,3 +22,5 @@ struct LogChannel : public LogChannelBase
 {
     explicit LogChannel(const std::string& p_name) : LogChannelBase(p_name) {}
 };
+
+#endif // LOG_CHANNEL_H

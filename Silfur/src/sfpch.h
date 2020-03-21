@@ -1,6 +1,10 @@
 #pragma once
 
+#ifndef SFPCH_H
+#define SFPCH_H
+
 #include <iostream>
+#include <stdint.h>
 #include <memory>
 #include <utility>
 #include <algorithm>
@@ -13,6 +17,4 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "core/Core.h"
-#include "utility/log/Log.h"
-#include "utility/log/LogChannelsMacros.h"
+#endif // SFPCH_H

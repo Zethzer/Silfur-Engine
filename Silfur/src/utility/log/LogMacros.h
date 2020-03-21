@@ -1,5 +1,10 @@
 #pragma once
 
+#ifndef LOG_MACROS_H
+#define LOG_MACROS_H
+
+#include <string>
+
 #define SF_LOG_LEVEL_TRACE 6
 #define SF_LOG_LEVEL_DEBUG 5
 #define SF_LOG_LEVEL_INFO 4
@@ -58,3 +63,4 @@
     #define SF_FATAL(p_channelName, p_FatalCode,...)
 #endif
 
+#endif // LOG_MACROS_H

@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef LOG_CHANNEL_MACROS_H
+#define LOG_CHANNEL_MACROS_H
+
 #include "core/Core.h"
 #include "LogChannel.h"
 
@@ -41,3 +44,5 @@ DECLARE_LOG_CHANNEL_EXTERN(Texture)
 DECLARE_LOG_CHANNEL_EXTERN(Material)
 DECLARE_LOG_CHANNEL_EXTERN(Font)
 DECLARE_LOG_CHANNEL_EXTERN(Image)
+
+#endif // LOG_CHANNEL_MACROS_H

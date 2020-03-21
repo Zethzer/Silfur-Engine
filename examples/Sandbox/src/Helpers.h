@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef HELPERS_H
+#define HELPERS_H
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> // For HRESULT
 
@@ -28,3 +31,5 @@ public:
 private:
     const HRESULT m_hr;
 };
+
+#endif // HELPERS_H
