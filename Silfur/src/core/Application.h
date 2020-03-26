@@ -15,16 +15,10 @@ namespace Silfur
         Application();
         ~Application();
 
-        void CreateWindow(VideoMode p_mode, const wchar_t* p_title);
+        void CreateRenderWindow(VideoMode p_mode, const wchar_t* p_title);
         bool Run();
 
         void* GetSystemWindowHandle();
-
-    private:
-        void CheckTearingSupport();
-
-    public:
-        bool TearingSupported;
 
     private:
         Scope<Window> m_Window;

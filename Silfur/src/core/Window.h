@@ -5,13 +5,6 @@
 
 #include "VideoMode.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
-#if defined(CreateWindow)
-    #undef CreateWindow
-#endif
-
 namespace Silfur
 {
     class Window
@@ -23,15 +16,12 @@ namespace Silfur
 
         void ProcessEvents();
 
-    protected:
-        static LRESULT CALLBACK HandleMessages(HWND p_hWnd, UINT p_msg, WPARAM p_wParam, LPARAM p_lParam);
-
     private:
         void Create(VideoMode p_mode, const wchar_t* p_title);
         void Shutdown();
 
     public:
-        HWND HWnd;
+        void* HWnd;
         bool IsClosed;
     };
 }

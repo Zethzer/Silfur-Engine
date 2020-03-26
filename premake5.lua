@@ -19,10 +19,14 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
+IncludeDir["GLFW"] = "Silfur/vendor/GLFW/include"
+IncludeDir["vulkan"] = "$(VULKAN_SDK)/include"
 IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
 IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
-IncludeDir["D3DX12"] = "Silfur/vendor/D3DX12"
 
+group "Dependencies"
+	include "Silfur/vendor/GLFW"
+	
 group ""
 
 project "Silfur"
@@ -53,9 +57,16 @@ project "Silfur"
 	includedirs
 	{
 		"%{prj.name}/src",
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.portableSnippets}",
-		"%{IncludeDir.D3DX12}"
+	}
+	
+	links
+	{
+		"GLFW",
+		"$(VULKAN_SDK)/lib/vulkan-1.lib"
 	}
 
 	filter "system:windows"
@@ -98,11 +109,11 @@ project "Sandbox"
 
 	includedirs
 	{
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.portableSnippets}",
-		"%{IncludeDir.D3DX12}",
-		"Silfur/src",
-		"Silfur/vendor"
+		"Silfur/src"
 	}
 
 	links
@@ -112,28 +123,21 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
-		links { "d3d12", "dxgi", "d3dcompiler" }
 		
 	filter "configurations:Debug"
 		kind "ConsoleApp"
-		-- https://github.com/microsoft/DirectX-Graphics-Samples/issues/567
-		links { "dxguid" }
 		defines "_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
 		kind "WindowedApp"
-		-- https://github.com/microsoft/DirectX-Graphics-Samples/issues/567
-		links { "dxguid" }
 		defines "_NDEBUG"
 		runtime "Release"
 		optimize "Full"
 
 	filter "configurations:Development"
 		kind "ConsoleApp"
-		-- https://github.com/microsoft/DirectX-Graphics-Samples/issues/567
-		links { "dxguid" }
 		defines "_DEBUG"
 		runtime "Debug"
 		optimize "Debug"
