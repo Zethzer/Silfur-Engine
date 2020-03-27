@@ -62,12 +62,6 @@ project "Silfur"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.portableSnippets}",
 	}
-	
-	links
-	{
-		"GLFW",
-		"$(VULKAN_SDK)/lib/vulkan-1.lib" -- TODO : Check Linux compatibility
-	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -118,7 +112,9 @@ project "Sandbox"
 
 	links
 	{
-		"Silfur"
+		"Silfur",
+		"GLFW",
+		"$(VULKAN_SDK)/lib/vulkan-1.lib" -- TODO : Check Linux compatibility
 	}
 
 	filter "system:windows"
@@ -129,15 +125,15 @@ project "Sandbox"
 		defines "_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		
+	filter "configurations:Development"
+		kind "ConsoleApp"
+		defines "_DEBUG"
+		runtime "Debug"
+		optimize "Debug"
 
 	filter "configurations:Release"
 		kind "WindowedApp"
 		defines "_NDEBUG"
 		runtime "Release"
 		optimize "Full"
-
-	filter "configurations:Development"
-		kind "ConsoleApp"
-		defines "_DEBUG"
-		runtime "Debug"
-		optimize "Debug"
