@@ -11,6 +11,11 @@ Upon completion, this will be a free, open-source game engine. The source code i
 
 The game engine is under active development. You can follow the progress of the development with the devlogs on [itch.io.](https://duality-workshop.itch.io/silfur-engine)
 
+## Prerequisites
+
+* Install Vulkan SDK before compiling the project : [Download](https://vulkan.lunarg.com/sdk/home)
+  * Tested only on Windows.
+
 ## Compile the project
 
 * On Windows:
