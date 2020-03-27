@@ -20,7 +20,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "Silfur/vendor/GLFW/include"
-IncludeDir["vulkan"] = "$(VULKAN_SDK)/include"
+IncludeDir["vulkan"] = "$(VULKAN_SDK)/include" -- TODO : Check Linux compatibility
 IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
 IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
 
@@ -66,7 +66,7 @@ project "Silfur"
 	links
 	{
 		"GLFW",
-		"$(VULKAN_SDK)/lib/vulkan-1.lib"
+		"$(VULKAN_SDK)/lib/vulkan-1.lib" -- TODO : Check Linux compatibility
 	}
 
 	filter "system:windows"
