@@ -14,6 +14,10 @@
 const int WIDTH = 1280;
 const int HEIGHT = 720;
 
+const std::vector<const char*> deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
@@ -61,6 +65,13 @@ struct QueueFamilyIndices
         return graphicsFamily.has_value()
             && presentFamily.has_value();
     }
+};
+
+struct SwapChainSupportDetails
+{
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentMode;
 };
 
 class HelloTriangleApplication
@@ -240,7 +251,8 @@ private:
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
         createInfo.pEnabledFeatures = &deviceFeatures;
-        createInfo.enabledExtensionCount = 0;
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
         if (enableValidationLayers)
         {
@@ -267,6 +279,39 @@ private:
         {
             throw std::runtime_error("Failed to create window surface!");
         }
+    }
+
+    bool isDeviceSuitable(VkPhysicalDevice p_Device)
+    {
+        QueueFamilyIndices indices = findQueueFamilies(p_Device);
+        bool extensionsSupported = checkDeviceExtensionsSupport(p_Device);
+
+        bool swapChainAdequate = false;
+        if (extensionsSupported)
+        {
+            SwapChainSupportDetails swapChainSupport = querySwapChainSupport(p_Device);
+            swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentMode.empty();
+        }
+
+        return indices.isComplete() && extensionsSupported && swapChainAdequate;
+    }
+
+    bool checkDeviceExtensionsSupport(VkPhysicalDevice p_device)
+    {
+        uint32_t extensionCount;
+        vkEnumerateDeviceExtensionProperties(p_device, nullptr, &extensionCount, nullptr);
+
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(p_device, nullptr, &extensionCount, availableExtensions.data());
+
+        std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+        for (const auto& extension : availableExtensions)
+        {
+            requiredExtensions.erase(extension.extensionName);
+        }
+
+        return requiredExtensions.empty();
     }
 
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice p_Device)
@@ -304,11 +349,31 @@ private:
         return indices;
     }
 
-    bool isDeviceSuitable(VkPhysicalDevice p_Device)
+    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice p_Device)
     {
-        QueueFamilyIndices indices = findQueueFamilies(p_Device);
+        SwapChainSupportDetails details;
 
-        return indices.isComplete();
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(p_Device, m_Surface, &details.capabilities);
+
+        uint32_t formatCount;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(p_Device, m_Surface, &formatCount, nullptr);
+
+        if (formatCount != 0)
+        {
+            details.formats.resize(formatCount);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(p_Device, m_Surface, &formatCount, details.formats.data());
+        }
+
+        uint32_t presentModeCount;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(p_Device, m_Surface, &presentModeCount, nullptr);
+
+        if (presentModeCount != 0)
+        {
+            details.presentMode.resize(presentModeCount);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(p_Device, m_Surface, &presentModeCount, details.presentMode.data());
+        }
+
+        return details;
     }
 
     std::vector<const char*> getRequiredExtensions()
