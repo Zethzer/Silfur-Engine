@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <vector>
 #include <optional>
+#include <set>
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
@@ -53,10 +54,12 @@ void DestroyDebugUtilsMessengerEXT(VkInstance p_Instance,
 struct QueueFamilyIndices
 {
     std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
 
     bool isComplete()
     {
-        return graphicsFamily.has_value();
+        return graphicsFamily.has_value()
+            && presentFamily.has_value();
     }
 };
 
@@ -86,6 +89,7 @@ private:
     {
         createInstance();
         setupDebugMessenger();
+        createSurface();
         selectPhysicalDevice();
         createLogicalDevice();
     }
@@ -107,6 +111,7 @@ private:
             DestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
         }
 
+        vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
         vkDestroyInstance(m_Instance, nullptr);
 
         glfwDestroyWindow(m_Window);
@@ -213,20 +218,27 @@ private:
     {
         QueueFamilyIndices indices = findQueueFamilies(m_PhysicalDevice);
 
-        VkDeviceQueueCreateInfo queueCreateInfo = {};
-        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-        queueCreateInfo.queueCount = 1;
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+        std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
         float queuePriority = 1.0f;
-        queueCreateInfo.pQueuePriorities = &queuePriority;
+        for (uint32_t queueFamily : uniqueQueueFamilies)
+        {
+            VkDeviceQueueCreateInfo queueCreateInfo = {};
+            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfo.queueFamilyIndex = queueFamily;
+            queueCreateInfo.queueCount = 1;
+            queueCreateInfo.pQueuePriorities = &queuePriority;
+            
+            queueCreateInfos.push_back(queueCreateInfo);
+        }
 
         VkPhysicalDeviceFeatures deviceFeatures = {};
 
         VkDeviceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.pQueueCreateInfos = &queueCreateInfo;
-        createInfo.queueCreateInfoCount = 1;
+        createInfo.pQueueCreateInfos = queueCreateInfos.data();
+        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
         createInfo.pEnabledFeatures = &deviceFeatures;
         createInfo.enabledExtensionCount = 0;
 
@@ -246,6 +258,15 @@ private:
         }
 
         vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
+        vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &m_PresentQueue);
+    }
+
+    void createSurface()
+    {
+        if (glfwCreateWindowSurface(m_Instance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create window surface!");
+        }
     }
 
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice p_Device)
@@ -258,12 +279,20 @@ private:
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(p_Device, &queueFamilyCount, queueFamilies.data());
 
+        VkBool32 presentSupport = false;
         uint32_t i = 0;
         for (const auto& queueFamily : queueFamilies)
         {
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
             {
                 indices.graphicsFamily = i;
+            }
+
+            vkGetPhysicalDeviceSurfaceSupportKHR(p_Device, i, m_Surface, &presentSupport);
+
+            if (presentSupport)
+            {
+                indices.presentFamily = i;
             }
 
             if (indices.isComplete())
@@ -399,9 +428,11 @@ private:
 
     VkInstance m_Instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
+    VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
     VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
     VkDevice m_Device = VK_NULL_HANDLE;
     VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
+    VkQueue m_PresentQueue = VK_NULL_HANDLE;
 };
 
 #if defined(_WIN32) && defined(_MSC_VER) && defined(_NDEBUG)
