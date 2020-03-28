@@ -335,6 +335,13 @@ private:
         {
             throw std::runtime_error("Failed to create swap chain!");
         }
+
+        vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, nullptr);
+        swapChainImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, swapChainImages.data());
+
+        swapChainImageFormat = surfaceFormat.format;
+        swapChainExtent = extent;
     }
 
     bool isDeviceSuitable(VkPhysicalDevice p_Device)
@@ -601,6 +608,9 @@ private:
     VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
     VkQueue m_PresentQueue = VK_NULL_HANDLE;
     VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat;
+    VkExtent2D swapChainExtent;
 };
 
 #if defined(_WIN32) && defined(_MSC_VER) && defined(_NDEBUG)
