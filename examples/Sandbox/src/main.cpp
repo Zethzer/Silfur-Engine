@@ -796,6 +796,17 @@ private:
 
     void recreateSwapChain()
     {
+        // Handling minimization of the window
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(m_Window, &width, &height);
+        while (width == 0 || height == 0)
+        {
+            glfwGetFramebufferSize(m_Window, &width, &height);
+
+            // Wait until next event : normally the window appear in the foreground
+            glfwWaitEvents();
+        }
+
         // Wait for GPU to finish execute commands
         vkDeviceWaitIdle(m_Device);
 
