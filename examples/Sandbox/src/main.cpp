@@ -142,8 +142,6 @@ private:
 
         vkFreeCommandBuffers(m_Device, m_CommandPool,
             static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
-        vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
         vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
 
         for (auto imageView : m_SwapChainImageViews)
@@ -169,6 +167,8 @@ private:
         }
 
         vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+        vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
         vkDestroyDevice(m_Device, nullptr);
         
         if (enableValidationLayers)
@@ -576,24 +576,12 @@ private:
         inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-        VkViewport viewport = {};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = (float) m_SwapChainExtent.width;
-        viewport.height = (float) m_SwapChainExtent.height;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-
-        VkRect2D scissor = {};
-        scissor.offset = { 0, 0 };
-        scissor.extent = m_SwapChainExtent;
-
         VkPipelineViewportStateCreateInfo viewportState = {};
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportState.viewportCount = 1;
-        viewportState.pViewports = &viewport;
+        viewportState.pViewports = nullptr; // Dynamic
         viewportState.scissorCount = 1;
-        viewportState.pScissors = &scissor;
+        viewportState.pScissors = nullptr; // Dynamic
 
         VkPipelineRasterizationStateCreateInfo rasterizer = {};
         rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -639,6 +627,16 @@ private:
         colorBlending.blendConstants[2] = 0.0f; // Optional
         colorBlending.blendConstants[3] = 0.0f; // Optional
 
+        VkDynamicState dynamicStates[] = {
+            VK_DYNAMIC_STATE_VIEWPORT,
+            VK_DYNAMIC_STATE_SCISSOR
+        };
+
+        VkPipelineDynamicStateCreateInfo dynamicState = {};
+        dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicState.dynamicStateCount = 2;
+        dynamicState.pDynamicStates = dynamicStates;
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0; // Optional
@@ -662,7 +660,7 @@ private:
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pDepthStencilState = nullptr; // Optional
         pipelineInfo.pColorBlendState = &colorBlending;
-        pipelineInfo.pDynamicState = nullptr; // Optional
+        pipelineInfo.pDynamicState = &dynamicState;
         pipelineInfo.layout = m_PipelineLayout;
         pipelineInfo.renderPass = m_RenderPass;
         pipelineInfo.subpass = 0;
@@ -746,6 +744,18 @@ private:
                 throw std::runtime_error("Failed to begin recording command buffer!");
             }
 
+            VkViewport viewport = {};
+            viewport.x = 0.0f;
+            viewport.y = 0.0f;
+            viewport.width = (float)m_SwapChainExtent.width;
+            viewport.height = (float)m_SwapChainExtent.height;
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+
+            VkRect2D scissor = {};
+            scissor.offset = { 0, 0 };
+            scissor.extent = m_SwapChainExtent;
+
             VkRenderPassBeginInfo renderPassInfo = {};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
             renderPassInfo.renderPass = m_RenderPass;
@@ -759,6 +769,8 @@ private:
 
             vkCmdBeginRenderPass(m_CommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
             vkCmdBindPipeline(m_CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
+            vkCmdSetViewport(m_CommandBuffers[i], 0, 1, &viewport);
+            vkCmdSetScissor(m_CommandBuffers[i], 0, 1, &scissor);
             vkCmdDraw(m_CommandBuffers[i], 3, 1, 0, 0);
             vkCmdEndRenderPass(m_CommandBuffers[i]);
 
@@ -815,7 +827,6 @@ private:
         createSwapChain();
         createImageViews();
         createRenderPass();
-        createGraphicsPipeline();
         createFrameBuffers();
         createCommandBuffers();
     }
