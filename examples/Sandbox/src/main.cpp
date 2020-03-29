@@ -12,6 +12,7 @@
 #include <optional>
 #include <vector>
 #include <set>
+#include <fstream>
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
@@ -31,14 +32,14 @@ const std::vector<const char*> validationLayers = {
 #endif // _DEBUG
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance p_Instance,
-    const VkDebugUtilsMessengerCreateInfoEXT* p_CreateInfo,
-    const VkAllocationCallbacks* p_Allocator,
-    VkDebugUtilsMessengerEXT* p_DebugMessenger)
+    const VkDebugUtilsMessengerCreateInfoEXT* p_pCreateInfo,
+    const VkAllocationCallbacks* p_pAllocator,
+    VkDebugUtilsMessengerEXT* p_pDebugMessenger)
 {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(p_Instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr)
     {
-        return func(p_Instance, p_CreateInfo, p_Allocator, p_DebugMessenger);
+        return func(p_Instance, p_pCreateInfo, p_pAllocator, p_pDebugMessenger);
     }
     else
     {
@@ -48,12 +49,12 @@ VkResult CreateDebugUtilsMessengerEXT(VkInstance p_Instance,
 
 void DestroyDebugUtilsMessengerEXT(VkInstance p_Instance,
     VkDebugUtilsMessengerEXT p_DebugMessenger,
-    const VkAllocationCallbacks* p_Allocator)
+    const VkAllocationCallbacks* p_pAllocator)
 {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(p_Instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr)
     {
-        func(p_Instance, p_DebugMessenger, p_Allocator);
+        func(p_Instance, p_DebugMessenger, p_pAllocator);
     }
 }
 
@@ -107,6 +108,7 @@ private:
         createLogicalDevice();
         createSwapChain();
         createImageViews();
+        createGraphicsPipeline();
     }
 
     void mainLoop()
@@ -378,6 +380,34 @@ private:
         }
     }
 
+    void createGraphicsPipeline()
+    {
+        auto vertShaderCode = readFile("shaders/VertexShader.spv");
+        auto fragShaderCode = readFile("shaders/FragmentShader.spv");
+
+        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.pName = "main";
+        vertShaderStageInfo.pSpecializationInfo = nullptr; // Optional : Specify values for shader constants
+
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.pName = "main";
+        fragShaderStageInfo.pSpecializationInfo = nullptr; // Optional : Specify values for shader constants
+
+        VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+        vkDestroyShaderModule(m_Device, fragShaderModule, nullptr);
+        vkDestroyShaderModule(m_Device, vertShaderModule, nullptr);
+    }
+
     bool isDeviceSuitable(VkPhysicalDevice p_Device)
     {
         QueueFamilyIndices indices = findQueueFamilies(p_Device);
@@ -393,9 +423,9 @@ private:
         return indices.isComplete() && extensionsSupported && swapChainAdequate;
     }
 
-    VkSurfaceFormatKHR selectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+    VkSurfaceFormatKHR selectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& p_AvailableFormats)
     {
-        for (const auto& availableFormat : availableFormats)
+        for (const auto& availableFormat : p_AvailableFormats)
         {
             if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB
                 && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
@@ -404,12 +434,12 @@ private:
             }
         }
 
-        return availableFormats[0];
+        return p_AvailableFormats[0];
     }
 
-    VkPresentModeKHR selectSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+    VkPresentModeKHR selectSwapPresentMode(const std::vector<VkPresentModeKHR>& p_AvailablePresentModes)
     {
-        for (const auto& availablePresentMode : availablePresentModes)
+        for (const auto& availablePresentMode : p_AvailablePresentModes)
         {
             if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
             {
@@ -420,32 +450,32 @@ private:
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 
-    VkExtent2D selectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+    VkExtent2D selectSwapExtent(const VkSurfaceCapabilitiesKHR& p_Capabilities)
     {
-        if (capabilities.currentExtent.width != UINT32_MAX)
+        if (p_Capabilities.currentExtent.width != UINT32_MAX)
         {
-            return capabilities.currentExtent;
+            return p_Capabilities.currentExtent;
         }
         else
         {
             VkExtent2D actualExtent = { WIDTH, HEIGHT };
 
-            actualExtent.width = std::max(capabilities.minImageExtent.width,
-                std::min(capabilities.maxImageExtent.width, actualExtent.width));
-            actualExtent.height = std::max(capabilities.minImageExtent.height,
-                std::min(capabilities.maxImageExtent.height, actualExtent.height));
+            actualExtent.width = std::max(p_Capabilities.minImageExtent.width,
+                std::min(p_Capabilities.maxImageExtent.width, actualExtent.width));
+            actualExtent.height = std::max(p_Capabilities.minImageExtent.height,
+                std::min(p_Capabilities.maxImageExtent.height, actualExtent.height));
 
             return actualExtent;
         }
     }
 
-    bool checkDeviceExtensionsSupport(VkPhysicalDevice p_device)
+    bool checkDeviceExtensionsSupport(VkPhysicalDevice p_Device)
     {
         uint32_t extensionCount;
-        vkEnumerateDeviceExtensionProperties(p_device, nullptr, &extensionCount, nullptr);
+        vkEnumerateDeviceExtensionProperties(p_Device, nullptr, &extensionCount, nullptr);
 
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(p_device, nullptr, &extensionCount, availableExtensions.data());
+        vkEnumerateDeviceExtensionProperties(p_Device, nullptr, &extensionCount, availableExtensions.data());
 
         std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
@@ -517,6 +547,23 @@ private:
         }
 
         return details;
+    }
+
+    VkShaderModule createShaderModule(const std::vector<char>& p_Code)
+    {
+        VkShaderModuleCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = p_Code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(p_Code.data());
+
+        VkShaderModule shaderModule;
+
+        if (vkCreateShaderModule(m_Device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create shader module!");
+        }
+
+        return shaderModule;
     }
 
     std::vector<const char*> getRequiredExtensions()
@@ -593,17 +640,6 @@ private:
         return true;
     }
 
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT messageType,
-        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-        void* pUserData)
-    {
-        std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
-
-        return VK_FALSE;
-    }
-
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_CreateInfo)
     {
         p_CreateInfo = {};
@@ -629,6 +665,37 @@ private:
         {
             throw std::runtime_error("Failed to set up debug messenger!");
         }
+    }
+
+    static std::vector<char> readFile(const std::string& p_Filename)
+    {
+        std::ifstream file(p_Filename, std::ios::ate | std::ios::binary);
+
+        if (!file.is_open())
+        {
+            throw std::runtime_error("Failed to open file!");
+        }
+        
+        size_t fileSize = (size_t) file.tellg();
+        std::vector<char> buffer(fileSize);
+
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+
+        file.close();
+
+        return buffer;
+    }
+
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+        VkDebugUtilsMessageSeverityFlagBitsEXT p_MessageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT p_MessageType,
+        const VkDebugUtilsMessengerCallbackDataEXT* p_pCallbackData,
+        void* p_pUserData)
+    {
+        std::cerr << "Validation layer: " << p_pCallbackData->pMessage << std::endl;
+
+        return VK_FALSE;
     }
 
 private:
