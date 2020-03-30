@@ -142,6 +142,12 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
+		prebuildcommands
+		{
+			"pushd ..\\..\\scripts",
+			"call CompileShaders.bat",
+			"popd"
+		}
 		
 	filter "configurations:Debug"
 		kind "ConsoleApp"
