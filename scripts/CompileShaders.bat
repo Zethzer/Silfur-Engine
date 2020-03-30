@@ -7,5 +7,4 @@ pushd %~dp0\..\
 	%VULKAN_SDK%/Bin/glslc "%%i" -o "%%~dpi/%%~ni.spv"
 ))
 popd
-endlocal
 pause
