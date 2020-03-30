@@ -14,6 +14,11 @@ workspace "Silfur Engine"
 	{
 		"MultiProcessorCompile"
 	}
+	
+	removefiles
+	{
+		"**.spv"
+	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -44,8 +49,14 @@ project "Silfur"
 
 	files
 	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.location}/src/**.h",
+		"%{prj.location}/src/**.cpp",
+		"%{prj.location}/**.vert",
+		"%{prj.location}/**.frag",
+		"%{prj.location}/**.tesc",
+		"%{prj.location}/**.tese",
+		"%{prj.location}/**.geom",
+		"%{prj.location}/**.comp"
 	}
 
 	defines
@@ -66,6 +77,12 @@ project "Silfur"
 	filter "system:windows"
 		systemversion "latest"
 		defines "_WIN32"
+		prebuildcommands
+		{
+			"pushd ..\\scripts",
+			"call CompileShaders.bat",
+			"popd"
+		}
 
 	filter "configurations:Debug"
 		defines "SF_DEBUG"
@@ -98,7 +115,13 @@ project "Sandbox"
 	files
 	{
 		"%{prj.location}/src/**.h",
-		"%{prj.location}/src/**.cpp"
+		"%{prj.location}/src/**.cpp",
+		"%{prj.location}/**.vert",
+		"%{prj.location}/**.frag",
+		"%{prj.location}/**.tesc",
+		"%{prj.location}/**.tese",
+		"%{prj.location}/**.geom",
+		"%{prj.location}/**.comp"
 	}
 
 	includedirs

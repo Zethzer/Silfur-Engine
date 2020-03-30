@@ -27,8 +27,6 @@ install:
 
     echo | call Win-GenProjects.bat
 
-    echo | call CompileShaders.bat
-
     cd ..
 build:
   parallel: true
