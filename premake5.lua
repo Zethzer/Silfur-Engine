@@ -26,6 +26,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Silfur/vendor/GLFW/include"
 IncludeDir["vulkan"] = "$(VULKAN_SDK)/include" -- TODO : Check Linux compatibility
+IncludeDir["glm"] = "Silfur/vendor/glm"
 IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
 IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
 
@@ -70,6 +71,7 @@ project "Silfur"
 		"%{prj.name}/src",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.vulkan}",
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.portableSnippets}",
 	}
@@ -128,6 +130,7 @@ project "Sandbox"
 	{
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.vulkan}",
+		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.portableSnippets}",
 		"Silfur/src"
