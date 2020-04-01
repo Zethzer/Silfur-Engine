@@ -117,9 +117,14 @@ struct Vertex
 };
 
 const std::vector<Vertex> vertices = {
-    {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+};
+
+const std::vector<uint16_t> indices = {
+    0, 1, 2, 2, 3, 0
 };
 
 struct SwapChainSupportDetails
@@ -170,8 +175,9 @@ private:
         createRenderPass();
         createGraphicsPipeline();
         createFrameBuffers();
-        createCommandPool();
+        createCommandPools();
         createVertexBuffer();
+        createIndexBuffer();
         createCommandBuffers();
         CreateSyncObjects();
     }
@@ -211,6 +217,8 @@ private:
 
         cleanUpSwapChain();
 
+        vkDestroyBuffer(m_Device, m_IndexBuffer, nullptr);
+        vkFreeMemory(m_Device, m_IndexBufferMemory, nullptr);
         vkDestroyBuffer(m_Device, m_VertexBuffer, nullptr);
         vkFreeMemory(m_Device, m_VertexBufferMemory, nullptr);
 
@@ -765,7 +773,7 @@ private:
         }
     }
 
-    void createCommandPool()
+    void createCommandPools()
     {
         QueueFamilyIndices queueFamilyIndices = findQueueFamilies(m_PhysicalDevice);
 
@@ -852,6 +860,29 @@ private:
         vkFreeMemory(m_Device, stagingBufferMemory, nullptr);
     }
 
+    void createIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+            | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(m_Device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices.data(), (size_t) bufferSize);
+        vkUnmapMemory(m_Device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+            | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_IndexBuffer, m_IndexBufferMemory);
+
+        copyBuffer(stagingBuffer, m_IndexBuffer, bufferSize);
+
+        vkDestroyBuffer(m_Device, stagingBuffer, nullptr);
+        vkFreeMemory(m_Device, stagingBufferMemory, nullptr);
+    }
+
     void createCommandBuffers()
     {
         m_CommandBuffers.resize(m_SwapChainFramebuffers.size());
@@ -882,8 +913,8 @@ private:
             VkViewport viewport = {};
             viewport.x = 0.0f;
             viewport.y = 0.0f;
-            viewport.width = (float)m_SwapChainExtent.width;
-            viewport.height = (float)m_SwapChainExtent.height;
+            viewport.width = (float) m_SwapChainExtent.width;
+            viewport.height = (float) m_SwapChainExtent.height;
             viewport.minDepth = 0.0f;
             viewport.maxDepth = 1.0f;
 
@@ -908,9 +939,11 @@ private:
             vkCmdBeginRenderPass(m_CommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
             vkCmdBindPipeline(m_CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
             vkCmdBindVertexBuffers(m_CommandBuffers[i], 0, 1, vertexBuffers, offsets);
+            vkCmdBindIndexBuffer(m_CommandBuffers[i], m_IndexBuffer, 0, VK_INDEX_TYPE_UINT16);
             vkCmdSetViewport(m_CommandBuffers[i], 0, 1, &viewport);
             vkCmdSetScissor(m_CommandBuffers[i], 0, 1, &scissor);
-            vkCmdDraw(m_CommandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+            vkCmdDrawIndexed(m_CommandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+            //vkCmdDraw(m_CommandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
             vkCmdEndRenderPass(m_CommandBuffers[i]);
 
             if (vkEndCommandBuffer(m_CommandBuffers[i]) != VK_SUCCESS)
@@ -1353,11 +1386,13 @@ private:
     VkPipeline m_GraphicsPipeline;
 
     VkCommandPool m_CommandPool;
-    std::vector<VkCommandBuffer> m_CommandBuffers;
     VkCommandPool m_TransferCommandPool;
+    std::vector<VkCommandBuffer> m_CommandBuffers;
 
     VkBuffer m_VertexBuffer;
     VkDeviceMemory m_VertexBufferMemory;
+    VkBuffer m_IndexBuffer;
+    VkDeviceMemory m_IndexBufferMemory;
 
     std::vector<VkSemaphore> m_ImageAvailableSemaphore;
     std::vector<VkSemaphore> m_RenderFinishedSemaphore;
