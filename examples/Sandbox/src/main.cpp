@@ -3,6 +3,9 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
@@ -74,20 +77,10 @@ struct QueueFamilyIndices
     }
 };
 
-struct Vec2
-{
-    float x, y;
-};
-
-struct Vec3
-{
-    float x, y, z;
-};
-
 struct Vertex
 {
-    Vec2 pos;
-    Vec3 color;
+    glm::vec2 pos;
+    glm::vec3 color;
 
     static VkVertexInputBindingDescription getBindingDescription()
     {
