@@ -193,6 +193,12 @@ private:
     {
         while (!glfwWindowShouldClose(m_Window))
         {
+            /*
+             * TODO : Conditional sleep if FPS are too high :
+             *    - Test with a limit of 1000 FPS
+             * Or don't use mailbox presentation mode during
+             * development and use FIFO instead
+             */
             glfwPollEvents();
             drawFrame();
         }
