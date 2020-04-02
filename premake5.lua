@@ -28,6 +28,7 @@ IncludeDir["GLFW"] = "Silfur/vendor/GLFW/include"
 IncludeDir["vulkan"] = "$(VULKAN_SDK)/include" -- TODO : Check Linux compatibility
 IncludeDir["glm"] = "Silfur/vendor/glm"
 IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
+IncludeDir["stb"] = "Silfur/vendor/stb"
 IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
 
 group "Dependencies"
@@ -52,6 +53,8 @@ project "Silfur"
 	{
 		"%{prj.location}/src/**.h",
 		"%{prj.location}/src/**.cpp",
+		"%{prj.name}/vendor/stb/**.h",
+		"%{prj.name}/vendor/stb/**.cpp",
 		"%{prj.location}/**.vert",
 		"%{prj.location}/**.frag",
 		"%{prj.location}/**.tesc",
@@ -73,6 +76,7 @@ project "Silfur"
 		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.stb}",
 		"%{IncludeDir.portableSnippets}",
 	}
 
@@ -132,6 +136,7 @@ project "Sandbox"
 		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.stb}",
 		"%{IncludeDir.portableSnippets}",
 		"Silfur/src"
 	}
