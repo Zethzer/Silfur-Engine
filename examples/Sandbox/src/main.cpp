@@ -193,20 +193,7 @@ private:
     {
         while (!glfwWindowShouldClose(m_Window))
         {
-#ifdef _DEBUG
             glfwPollEvents();
-#else
-            /* glfwPollEvents() doesn't work properly on Windows in Release Mode
-             * with Mailbox present mode. It works with FIFO present mode
-             * Not tested on Linux.
-             * It cause lag on render images.
-             * We have to put a little delay on the main thread for continue to
-             * use Mailbox present mode.
-             * Maybe when the rendering will be an other thread than the events,
-             * it will work.
-             */
-            glfwWaitEventsTimeout(0.001);
-#endif
             drawFrame();
         }
     }
@@ -294,8 +281,6 @@ private:
             throw std::runtime_error("Failed to acquire swap chain image!");
         }
 
-        updateUniformBuffer(imageIndex);
-
         // Check if a previous frame is using this image (i.e. there is its fence to wait on)
         if (m_ImagesInFlight[imageIndex] != VK_NULL_HANDLE)
         {
@@ -304,6 +289,8 @@ private:
 
         // Mark the image as now being in use by this frame
         m_ImagesInFlight[imageIndex] = m_inFlightFences[m_CurrentFrame];
+
+        updateUniformBuffer(imageIndex);
 
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
