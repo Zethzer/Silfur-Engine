@@ -5,6 +5,7 @@ rem NOTE : Names must be unique between different shaders
 echo Compile shaders...
 pushd %~dp0\..\
 (for /r %%i in (*.frag, *.vert, *.tesc, *.tese, *.geom, *.comp) do (
-	%VULKAN_SDK%/Bin/glslc "%%i" -o "%%~dpi/%%~ni.spv"
+	%VULKAN_SDK%/Bin/glslangvalidator -V "%%i" -o "%%~dpi/%%~ni.spv"
 ))
 popd
+pause
