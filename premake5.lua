@@ -30,6 +30,7 @@ IncludeDir["glm"] = "Silfur/vendor/glm"
 IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
 IncludeDir["stb"] = "Silfur/vendor/stb"
 IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
+IncludeDir["tinyobjloader"] = "Silfur/vendor/tinyobjloader"
 
 group "Dependencies"
 	include "Silfur/vendor/GLFW"
@@ -78,6 +79,7 @@ project "Silfur"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.portableSnippets}",
+		"%{IncludeDir.tinyobjloader}"
 	}
 
 	filter "system:windows"
@@ -138,6 +140,7 @@ project "Sandbox"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.portableSnippets}",
+		"%{IncludeDir.tinyobjloader}",
 		"Silfur/src"
 	}
 
