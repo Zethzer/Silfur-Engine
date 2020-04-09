@@ -1,7 +1,6 @@
 #include <Silfur.h>
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -201,13 +200,10 @@ private:
 
         m_Window = glfwCreateWindow(WIDTH, HEIGHT, "Learning Vulkan", nullptr, nullptr);
         glfwSetWindowUserPointer(m_Window, this);
-        glfwSetFramebufferSizeCallback(m_Window, framebufferResizeCallback);
-    }
-
-    static void framebufferResizeCallback(GLFWwindow* p_Window, int p_Width, int p_Height)
-    {
-        auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(p_Window));
-        app->m_FrameBufferResized = true;
+        glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* p_Window, int p_Width, int p_Height) {
+            auto window = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(p_Window));
+            window->m_FrameBufferResized = true;
+        });
     }
 
     void initVulkan()
@@ -522,10 +518,11 @@ private:
 
     void createSurface()
     {
-        if (glfwCreateWindowSurface(m_Instance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
+        // #TODO : This task will be for the renderer
+        /*if (glfwCreateWindowSurface(m_Instance, m_Window, nullptr, &m_Surface) != VK_SUCCESS)
         {
             throw std::runtime_error("Failed to create window surface!");
-        }
+        }*/
     }
 
     void selectPhysicalDevice()

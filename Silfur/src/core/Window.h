@@ -5,6 +5,8 @@
 
 #include "VideoMode.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Silfur
 {
     class Window
@@ -21,8 +23,11 @@ namespace Silfur
         void Shutdown();
 
     public:
-        void* HWnd;
+        GLFWwindow* WinHandle;
         bool IsClosed;
+
+    private:
+        bool m_FrameBufferResized;
     };
 }
 

@@ -33,6 +33,6 @@ namespace Silfur
 
     void* Application::GetSystemWindowHandle()
     {
-        return m_Window->HWnd;
+        return m_Window->WinHandle;
     }
 }
