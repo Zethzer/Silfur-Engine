@@ -23,11 +23,8 @@ namespace Silfur
         void Shutdown();
 
     public:
-        GLFWwindow* WinHandle;
-        bool IsClosed;
-
-    private:
-        bool m_FrameBufferResized;
+        GLFWwindow* WinHandle {};
+        bool IsClosed = false;
     };
 }
 

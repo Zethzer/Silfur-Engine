@@ -3,9 +3,10 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include "utility/log/Log.h"
 #include "core/Core.h"
-
 #include "Window.h"
+#include "graphics/RendererVulkan.h"
 
 namespace Silfur
 {
@@ -21,7 +22,8 @@ namespace Silfur
         void* GetSystemWindowHandle();
 
     private:
-        Scope<Window> m_Window;
+        Scope<Window> m_Window {};
+        Scope<Renderer> m_Renderer {};
     };
 }
 
