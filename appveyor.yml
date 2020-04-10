@@ -12,7 +12,7 @@ platform: x64
 clone_depth: 5
 init:
 - cmd: >-
-    appveyor DownloadFile https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe?Human=true -FileName VulkanSDK.exe
+    appveyor DownloadFile https://vulkan.lunarg.com/sdk/download/1.0.51.0/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true -FileName VulkanSDK.exe
 
     .\VulkanSDK.exe /S
 
