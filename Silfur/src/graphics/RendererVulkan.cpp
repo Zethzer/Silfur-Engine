@@ -179,9 +179,6 @@ namespace Silfur
 
         vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
         vkDestroyInstance(m_Instance, nullptr);
-
-        glfwDestroyWindow(m_OSWindow);
-        glfwTerminate();
     }
 
     ///////////////////////////////////////////////

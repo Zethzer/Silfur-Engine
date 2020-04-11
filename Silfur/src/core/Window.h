@@ -14,7 +14,7 @@ namespace Silfur
     public:
         Window() = delete;
         Window(VideoMode p_mode, const wchar_t* p_title);
-        ~Window() = default;
+        ~Window();
 
         void ProcessEvents();
 

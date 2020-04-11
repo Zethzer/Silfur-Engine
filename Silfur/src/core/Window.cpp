@@ -12,6 +12,12 @@ namespace Silfur
         Create(p_mode, p_title);
     }
 
+    Window::~Window()
+    {
+        glfwDestroyWindow(WinHandle);
+        glfwTerminate();
+    }
+
     void Window::ProcessEvents()
     {
         if (glfwWindowShouldClose(WinHandle))
