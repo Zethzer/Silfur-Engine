@@ -5,7 +5,7 @@
 
 #include "VideoMode.h"
 
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 namespace Silfur
 {

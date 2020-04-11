@@ -1,6 +1,8 @@
 #include "sfpch.h"
 #include "Window.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Silfur
 {
     Window::Window(VideoMode p_mode, const wchar_t* p_title) :
