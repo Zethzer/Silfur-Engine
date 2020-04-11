@@ -10,6 +10,8 @@ namespace Silfur
 
     Application::~Application()
     {
+        m_Renderer.reset();
+        m_Window.reset();
     }
 
     void Application::CreateRenderWindow(VideoMode p_mode, const wchar_t* p_title)
