@@ -12,7 +12,7 @@ The game engine is under active development. You can follow the progress of the 
 
 ## Prerequisites
 
-* Install Vulkan SDK before compiling the project : [Download](https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe?Human=true)
+* Install Vulkan SDK (v1.2.131.2) before compiling the project : [Download](https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true)
   * Tested only on Windows.
 
 ## Compile the project
