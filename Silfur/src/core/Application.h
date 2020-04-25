@@ -22,8 +22,8 @@ namespace Silfur
         void* GetSystemWindowHandle();
 
     private:
-        Scope<Window> m_Window {};
-        Scope<Renderer> m_Renderer {};
+        WindowPtr m_Window = nullptr;
+        Scope<Renderer> m_Renderer = nullptr;
     };
 }
 

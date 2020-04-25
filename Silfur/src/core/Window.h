@@ -9,6 +9,9 @@ struct GLFWwindow;
 
 namespace Silfur
 {
+    class Window;
+    using WindowPtr = Scope<Window>;
+
     class Window
     {
     public:
