@@ -3,7 +3,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "VideoMode.h"
+#include "core/Core.h"
+#include "core/VideoMode.h"
 
 struct GLFWwindow;
 

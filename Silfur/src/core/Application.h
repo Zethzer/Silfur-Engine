@@ -5,7 +5,7 @@
 
 #include "utility/log/Log.h"
 #include "core/Core.h"
-#include "Window.h"
+#include "core/Window.h"
 #include "graphics/RendererVulkan.h"
 
 namespace Silfur
