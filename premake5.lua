@@ -47,12 +47,14 @@ project "Silfur"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-	pchheader "sfpch.h"
+	pchheader "sfpch.hpp"
 	pchsource "Silfur/src/sfpch.cpp"
 
 	files
 	{
 		"%{prj.location}/src/**.h",
+		"%{prj.location}/src/**.hpp",
+		"%{prj.location}/src/**.inl",
 		"%{prj.location}/src/**.cpp",
 		"%{prj.name}/vendor/stb/**.h",
 		"%{prj.name}/vendor/stb/**.cpp",
@@ -123,6 +125,8 @@ project "Sandbox"
 	files
 	{
 		"%{prj.location}/src/**.h",
+		"%{prj.location}/src/**.hpp",
+		"%{prj.location}/src/**.inl",
 		"%{prj.location}/src/**.cpp",
 		"%{prj.location}/**.vert",
 		"%{prj.location}/**.frag",

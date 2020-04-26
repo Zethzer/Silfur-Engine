@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef SFPCH_H
-#define SFPCH_H
+#ifndef __SFPCH_HPP__
+#define __SFPCH_HPP__
 
 #include <iostream>
 #include <stdint.h>
@@ -19,4 +19,4 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#endif // SFPCH_H
+#endif // __SFPCH_HPP__
