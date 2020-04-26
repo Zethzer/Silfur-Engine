@@ -1,13 +1,13 @@
 #pragma once
 
-#ifndef VULKAN_INSTANCE_H
-#define VULKAN_INSTANCE_H
+#ifndef __SILFUR_GRAPHICS_VULKAN_INSTANCE_HPP__
+#define __SILFUR_GRAPHICS_VULKAN_INSTANCE_HPP__
 
-#include "core/Window.h"
+#include "core/Window.hpp"
 
 #include <vulkan/vulkan.h>
 
-// #TODO (Zeth) : Handle physical device needs
+// #TODO-Zeth : Handle physical device needs
 
 namespace Silfur
 {
@@ -43,4 +43,4 @@ namespace Silfur
 
 #include "graphics/vulkan/Instance.inl"
 
-#endif // VULKAN_INSTANCE_H
+#endif // __SILFUR_GRAPHICS_VULKAN_INSTANCE_HPP__

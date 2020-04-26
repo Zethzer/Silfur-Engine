@@ -1,102 +1,19 @@
-#include "sfpch.h"
-#include "Instance.h"
+#include "sfpch.hpp"
+#include "Instance.hpp"
 
-#include "utility/log/Log.h"
-#include "graphics/vulkan/ValidationLayers.h"
+#include "utility/log/Log.hpp"
+#include "graphics/vulkan/utils/ValidationLayers.hpp"
+#include "graphics/vulkan/utils/Debug.hpp"
 
-// #TODO (Zeth) : Check api version available on the computer, fallback on version 1.0
-// #TODO (Zeth) : Replace exception by logging (fatal level) + std::exit
-// #TODO (Zeth) : Replace std::cout and std::cerr by logging (std::cout = information | std::cerr = warning/error)
-// #TODO (Zeth) : Create necessary enum class for replace enum C style of Vulkan API for Instance class
+// #TODO-Zeth : Check api version available on the computer, fallback on version 1.0
+// #TODO-Zeth : Replace exception by logging (fatal level) + std::exit
+// #TODO-Zeth : Replace std::cout and std::cerr by logging (std::cout = information | std::cerr = warning/error)
+// #TODO-Zeth : Create necessary enum class for replace enum C style of Vulkan API for Instance class
 
 namespace Silfur
 {
     namespace Vk
     {
-        VkResult CreateDebugUtilsMessengerEXT(VkInstance p_instance,
-            const VkDebugUtilsMessengerCreateInfoEXT* p_pCreateInfo,
-            const VkAllocationCallbacks* p_pAllocator,
-            VkDebugUtilsMessengerEXT* p_pDebugMessenger)
-        {
-            auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(p_instance, "vkCreateDebugUtilsMessengerEXT");
-            if (func != nullptr)
-            {
-                return func(p_instance, p_pCreateInfo, p_pAllocator, p_pDebugMessenger);
-            }
-            else
-            {
-                return VK_ERROR_EXTENSION_NOT_PRESENT;
-            }
-        }
-
-        void DestroyDebugUtilsMessengerEXT(VkInstance p_instance,
-            VkDebugUtilsMessengerEXT p_debugMessenger,
-            const VkAllocationCallbacks* p_pAllocator)
-        {
-            auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(p_instance, "vkDestroyDebugUtilsMessengerEXT");
-            if (func != nullptr)
-            {
-                func(p_instance, p_debugMessenger, p_pAllocator);
-            }
-        }
-
-        static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-            VkDebugUtilsMessageSeverityFlagBitsEXT p_MessageSeverity,
-            VkDebugUtilsMessageTypeFlagsEXT p_MessageType,
-            const VkDebugUtilsMessengerCallbackDataEXT* p_pCallbackData,
-            void* p_pUserData)
-        {
-            std::cerr << "Validation layer: " << p_pCallbackData->pMessage << std::endl;
-
-            return VK_FALSE;
-        }
-
-        void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo)
-        {
-            p_createInfo = {};
-            p_createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-            p_createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-                | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-                | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-            p_createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-                | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-                | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-            p_createInfo.pfnUserCallback = debugCallback;
-            p_createInfo.pUserData = nullptr; // Optional
-        }
-
-        bool checkValidationLayerSupport()
-        {
-            uint32_t layerCount;
-            vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-            std::vector<VkLayerProperties> availableLayers(layerCount);
-            vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-            for (const char* layerName : validationLayers)
-            {
-                bool layerFound = false;
-
-                for (const auto& layerProperties : availableLayers)
-                {
-                    if (strcmp(layerName, layerProperties.layerName) == 0)
-                    {
-                        layerFound = true;
-                        break;
-                    }
-                }
-
-                if (!layerFound)
-                {
-                    return false;
-                }
-            }
-
-            std::cout << "Validation layers enabled." << std::endl;
-
-            return true;
-        }
-
         std::vector<const char*> getRequiredExtensions()
         {
             uint32_t glfwExtensionCount = 0;
@@ -223,7 +140,7 @@ namespace Silfur
         {
             VkSurfaceKHR surface;
 
-            if (glfwCreateWindowSurface(m_Instance, p_window.WinHandle, nullptr, &surface) != VK_SUCCESS)
+            if (glfwCreateWindowSurface(m_Instance, p_window, nullptr, &surface) != VK_SUCCESS)
             {
                 SF_CORE_FATAL(Vulkan, 25, "Failed to create window surface!");
                 std::exit(EXIT_FAILURE);

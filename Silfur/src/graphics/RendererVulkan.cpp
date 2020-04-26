@@ -1,7 +1,7 @@
-#include "sfpch.h"
-#include "RendererVulkan.h"
+#include "sfpch.hpp"
+#include "RendererVulkan.hpp"
 
-#include "graphics/vulkan/ValidationLayers.h"
+#include "graphics/vulkan/utils/ValidationLayers.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -17,7 +17,7 @@
 #include <set>
 #include <chrono>
 
-// #TODO (Zeth) : This is temporary
+// #TODO-Zeth : This is temporary
 const std::string MODEL_PATH = "models/chalet.obj";
 const std::string TEXTURE_PATH = "textures/chalet.jpg";
 
@@ -285,7 +285,7 @@ namespace Silfur
 
     void Renderer::createInstance()
     {
-        // #TODO (Zeth) : Maybe leave the informations of the instance here
+        // #TODO-Zeth : Maybe leave the informations of the instance here
         s_Instance.Create();
         m_Surface = s_Instance.CreateSurface(m_Window);
     }
@@ -533,7 +533,7 @@ namespace Silfur
         else
         {
             int width, height;
-            glfwGetFramebufferSize(m_Window.WinHandle, &width, &height);
+            glfwGetFramebufferSize(m_Window, &width, &height);
 
             VkExtent2D actualExtent = {
                 static_cast<uint32_t>(width),
@@ -615,10 +615,10 @@ namespace Silfur
     {
         // Handling minimization of the window
         int width = 0, height = 0;
-        glfwGetFramebufferSize(m_Window.WinHandle, &width, &height);
+        glfwGetFramebufferSize(m_Window, &width, &height);
         while (width == 0 || height == 0)
         {
-            glfwGetFramebufferSize(m_Window.WinHandle, &width, &height);
+            glfwGetFramebufferSize(m_Window, &width, &height);
 
             // Wait until next event : normally the window appear in the foreground
             glfwWaitEvents();
@@ -1712,7 +1712,7 @@ namespace Silfur
         return VK_SAMPLE_COUNT_1_BIT;
     }
 
-    // #TODO (Zeth) : Not really his place - Find a proper place
+    // #TODO-Zeth : Not really his place - Find a proper place
     std::vector<char> Renderer::readFile(const std::string& p_Filename)
     {
         std::ifstream file(p_Filename, std::ios::ate | std::ios::binary);

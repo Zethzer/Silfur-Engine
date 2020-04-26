@@ -1,5 +1,5 @@
-#include "sfpch.h"
-#include "LogChannelsMacros.h"
+#include "sfpch.hpp"
+#include "LogChannelsMacros.hpp"
 
 DEFINE_LOG_CHANNEL(Temp)
 

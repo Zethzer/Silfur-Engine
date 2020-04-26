@@ -1,9 +1,9 @@
 #pragma once
 
-#ifndef LOG_CHANNEL_H
-#define LOG_CHANNEL_H
+#ifndef __SILFUR_UTILITY_LOG_LOG_CHANNEL_HPP__
+#define __SILFUR_UTILITY_LOG_LOG_CHANNEL_HPP__
 
-#include "core/Core.h"
+#include "core/Core.hpp"
 
 #include <string>
 
@@ -23,4 +23,4 @@ struct LogChannel : public LogChannelBase
     explicit LogChannel(const std::string& p_name) : LogChannelBase(p_name) {}
 };
 
-#endif // LOG_CHANNEL_H
+#endif // __SILFUR_UTILITY_LOG_LOG_CHANNEL_HPP__

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef VIDEO_MODE_H
-#define VIDEO_MODE_H
+#ifndef __SILFUR_CORE_VIDEO_MODE_HPP__
+#define __SILFUR_CORE_VIDEO_MODE_HPP__
 
 namespace Silfur
 {
@@ -18,4 +18,4 @@ namespace Silfur
     };
 }
 
-#endif // VIDEO_MODE_H
+#endif // __SILFUR_CORE_VIDEO_MODE_HPP__

@@ -1,10 +1,10 @@
 #pragma once
 
-#ifndef RENDERER_VULKAN_H
-#define RENDERER_VULKAN_H
+#ifndef __SILFUR_GRAPHICS_RENDERER_VULKAN_HPP__
+#define __SILFUR_GRAPHICS_RENDERER_VULKAN_HPP__
 
-#include "core/Window.h"
-#include "graphics/vulkan/Instance.h"
+#include "core/Window.hpp"
+#include "graphics/vulkan/Instance.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -262,4 +262,4 @@ namespace std
     };
 }
 
-#endif // RENDERER_VULKAN_H
+#endif // __SILFUR_GRAPHICS_RENDERER_VULKAN_HPP__

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef CORE_H
-#define CORE_H
+#ifndef __SILFUR_CORE_CORE_HPP__
+#define __SILFUR_CORE_CORE_HPP__
 
 /* -------- PLATFORM DETECTION -------- */
 #ifdef _WIN32
@@ -64,4 +64,4 @@ namespace Silfur
     }
 }
 
-#endif // CORE_H
+#endif // __SILFUR_CORE_CORE_H__

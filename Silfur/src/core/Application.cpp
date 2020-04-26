@@ -1,5 +1,5 @@
-#include "sfpch.h"
-#include "Application.h"
+#include "sfpch.hpp"
+#include "Application.hpp"
 
 namespace Silfur
 {
@@ -14,7 +14,7 @@ namespace Silfur
         m_Window.reset();
     }
 
-    void Application::CreateRenderWindow(VideoMode p_mode, const wchar_t* p_title)
+    void Application::CreateRenderWindow(VideoMode p_mode, const char* p_title)
     {
         m_Window = CreateScope<Window>(p_mode, p_title);
         m_Renderer = CreateScope<Renderer>(*m_Window);
@@ -23,7 +23,7 @@ namespace Silfur
     bool Application::Run()
     {
         /*
-         * #TODO (Zeth) : Conditional sleep if FPS are too high :
+         * #TODO-Zeth : Conditional sleep if FPS are too high :
          *    - Test with a limit of 1000 FPS
          * Or don't use mailbox presentation mode during
          * development and use FIFO instead

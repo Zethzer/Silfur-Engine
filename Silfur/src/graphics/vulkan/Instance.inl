@@ -1,10 +1,10 @@
 #pragma once
 
-#ifndef VULKAN_INSTANCE_INL
-#define VULKAN_INSTANCE_INL
+#ifndef __SILFUR_GRAPHICS_VULKAN_INSTANCE_INL__
+#define __SILFUR_GRAPHICS_VULKAN_INSTANCE_INL__
 
-#include "graphics/vulkan/Instance.h"
-#include "utility/log/Log.h"
+#include "graphics/vulkan/Instance.hpp"
+#include "utility/log/Log.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -19,4 +19,4 @@ namespace Silfur
     }
 }
 
-#endif // VULKAN_INSTANCE_INL
+#endif // __SILFUR_GRAPHICS_VULKAN_INSTANCE_INL__

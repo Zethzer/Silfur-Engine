@@ -1,5 +1,5 @@
-#include "sfpch.h"
-#include "Log.h"
+#include "sfpch.hpp"
+#include "Log.hpp"
 
 #include <filesystem>
 #include <fstream>

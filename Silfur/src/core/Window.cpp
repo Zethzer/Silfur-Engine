@@ -1,12 +1,12 @@
-#include "sfpch.h"
-#include "Window.h"
+#include "sfpch.hpp"
+#include "Window.hpp"
 
 #include <GLFW/glfw3.h>
 
 namespace Silfur
 {
-    Window::Window(VideoMode p_mode, const wchar_t* p_title) :
-        WinHandle(nullptr),
+    Window::Window(VideoMode p_mode, const char* p_title) :
+        m_WinHandle(nullptr),
         IsClosed(false)
     {
         Create(p_mode, p_title);
@@ -14,13 +14,13 @@ namespace Silfur
 
     Window::~Window()
     {
-        glfwDestroyWindow(WinHandle);
+        glfwDestroyWindow(m_WinHandle);
         glfwTerminate();
     }
 
     void Window::ProcessEvents()
     {
-        if (glfwWindowShouldClose(WinHandle))
+        if (glfwWindowShouldClose(m_WinHandle))
         {
             Shutdown();
         }
@@ -28,14 +28,14 @@ namespace Silfur
         glfwPollEvents();
     }
 
-    void Window::Create(VideoMode p_mode, const wchar_t* p_title)
+    void Window::Create(VideoMode p_mode, const char* p_title)
     {
         glfwInit();
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-        WinHandle = glfwCreateWindow(p_mode.Width, p_mode.Height, "Learning Vulkan", nullptr, nullptr);
-        glfwSetWindowUserPointer(WinHandle, this);
+        m_WinHandle = glfwCreateWindow(p_mode.Width, p_mode.Height, p_title, nullptr, nullptr);
+        glfwSetWindowUserPointer(m_WinHandle, this);
     }
 
     void Window::Shutdown()

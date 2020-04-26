@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef LOG_MACROS_H
-#define LOG_MACROS_H
+#ifndef __SILFUR_UTILITY_LOG_LOG_MACROS_HPP__
+#define __SILFUR_UTILITY_LOG_LOG_MACROS_HPP__
 
 #include <string>
 
@@ -23,7 +23,7 @@
     #if SF_LOG_LEVEL >= 7
         #define SF_LOG_LEVEL SF_LOG_LEVEL_TRACE
     #endif
-#endif
+#endif // SF_LOG_LEVEL
 
 #define __PATTERN_LOG__ std::string("[") + (strrchr("\\" __FILE__, '\\') + 1) + "::" + std::to_string(__LINE__) + "::" + __func__ + "] "
 
@@ -63,4 +63,4 @@
     #define SF_FATAL(p_channelName, p_FatalCode,...)
 #endif
 
-#endif // LOG_MACROS_H
+#endif // __SILFUR_UTILITY_LOG_LOG_MACROS_HPP__

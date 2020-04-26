@@ -1,10 +1,10 @@
 #pragma once
 
-#ifndef LOG_CHANNEL_MACROS_H
-#define LOG_CHANNEL_MACROS_H
+#ifndef ____SILFUR_UTILITY_LOG_LOG_CHANNEL_MACROS_HPP__
+#define ____SILFUR_UTILITY_LOG_LOG_CHANNEL_MACROS_HPP__
 
-#include "core/Core.h"
-#include "LogChannel.h"
+#include "core/Core.hpp"
+#include "LogChannel.hpp"
 
 #define DECLARE_LOG_CHANNEL_EXTERN(p_channelName) \
     extern struct LogChannel##p_channelName : public LogChannel \
@@ -47,4 +47,4 @@ DECLARE_LOG_CHANNEL_EXTERN(Material)
 DECLARE_LOG_CHANNEL_EXTERN(Font)
 DECLARE_LOG_CHANNEL_EXTERN(Image)
 
-#endif // LOG_CHANNEL_MACROS_H
+#endif // __SILFUR_UTILITY_LOG_LOG_CHANNEL_MACROS_HPP__

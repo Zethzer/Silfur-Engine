@@ -1,15 +1,15 @@
 #pragma once
 
-#ifndef LOG_H
-#define LOG_H
+#ifndef __SILFUR_UTILITY_LOG_LOG_HPP__
+#define __SILFUR_UTILITY_LOG_LOG_HPP__
 
-#include "core/Core.h"
+#include "core/Core.hpp"
 #ifdef SF_CORE
-    #include "LogCoreMacros.h"
+    #include "LogCoreMacros.hpp"
 #else
-    #include "LogMacros.h"
+    #include "LogMacros.hpp"
 #endif
-#include "LogChannelsMacros.h"
+#include "LogChannelsMacros.hpp"
 
 #include "spdlog/spdlog.h"
 
@@ -29,4 +29,4 @@ namespace Silfur
     };
 }
 
-#endif // LOG_H
+#endif // __SILFUR_UTILITY_LOG_LOG_HPP__

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef VALIDATION_LAYERS_H
-#define VALIDATION_LAYERS_H
+#ifndef __SILFUR_GRAPHICS_VULKAN_UTILS_VALIDATION_LAYERS_HPP__
+#define __SILFUR_GRAPHICS_VULKAN_UTILS_VALIDATION_LAYERS_HPP__
 
 #include <array>
 
@@ -18,7 +18,11 @@ namespace Silfur
         constexpr std::array<const char*, 1> validationLayers = {
             "VK_LAYER_KHRONOS_validation"
         };
+
+        inline bool checkValidationLayerSupport();
     }
 }
 
-#endif // VALIDATION_LAYERS_H
+#include "graphics/vulkan/utils/ValidationLayers.inl"
+
+#endif // __SILFUR_GRAPHICS_VULKAN_UTILS_VALIDATION_LAYERS_HPP__

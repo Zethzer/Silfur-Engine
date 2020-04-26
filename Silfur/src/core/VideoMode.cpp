@@ -1,5 +1,5 @@
-#include "sfpch.h"
-#include "VideoMode.h"
+#include "sfpch.hpp"
+#include "VideoMode.hpp"
 
 namespace Silfur
 {
