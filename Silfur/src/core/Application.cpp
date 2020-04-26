@@ -17,7 +17,7 @@ namespace Silfur
     void Application::CreateRenderWindow(VideoMode p_mode, const wchar_t* p_title)
     {
         m_Window = CreateScope<Window>(p_mode, p_title);
-        m_Renderer = CreateScope<Renderer>(m_Window->WinHandle);
+        m_Renderer = CreateScope<Renderer>(*m_Window);
     }
 
     bool Application::Run()

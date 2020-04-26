@@ -3,6 +3,9 @@
 #ifndef RENDERER_VULKAN_H
 #define RENDERER_VULKAN_H
 
+#include "core/Window.h"
+#include "graphics/vulkan/Instance.h"
+
 #include <vulkan/vulkan.h>
 
 #define GLM_FORCE_RADIANS
@@ -100,23 +103,19 @@ namespace Silfur
     class Renderer
     {
     public:
-        Renderer(GLFWwindow* p_window);
+        Renderer(const Window& p_window);
         ~Renderer();
 
         void drawFrame();
         void updateUniformBuffer(uint32_t p_CurrentImage);
 
     private:
-        void setupDebugMessenger();
-
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice p_device);
 
         void createInstance();
         void selectPhysicalDevice();
         bool isDeviceSuitable(VkPhysicalDevice p_device);
         void createLogicalDevice();
-
-        void createSurface();
 
         void createSwapChain();
         void createImageViews();
@@ -181,14 +180,13 @@ namespace Silfur
     private:
         int m_MaxFramesInFlight = 3; // Triple buffering
 
-        GLFWwindow* m_OSWindow;
+        Window m_Window;
 
         std::vector<Vertex> m_Vertices {};
         std::vector<uint32_t> m_Indices {};
 
         // Vulkan resources
-        VkInstance m_Instance {};
-        VkDebugUtilsMessengerEXT m_DebugMessenger {};
+        static Vk::Instance s_Instance;
         VkSurfaceKHR m_Surface {};
         VkPhysicalDevice m_PhysicalDevice {};
         VkDevice m_Device {};

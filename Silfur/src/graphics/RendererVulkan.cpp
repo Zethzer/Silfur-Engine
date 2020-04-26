@@ -1,6 +1,8 @@
 #include "sfpch.h"
 #include "RendererVulkan.h"
 
+#include "graphics/vulkan/ValidationLayers.h"
+
 #include <GLFW/glfw3.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -38,86 +40,11 @@ const std::vector<uint16_t> indices = {
 
 namespace Silfur
 {
-    ///////////////
-    //// Debug ////
-    ///////////////
+    Vk::Instance Renderer::s_Instance;
 
-    #ifdef _DEBUG
-    constexpr bool enableValidationLayers = true;
-    #else
-    constexpr bool enableValidationLayers = false;
-    #endif // _DEBUG
-
-    VkResult CreateDebugUtilsMessengerEXT(VkInstance p_instance,
-        const VkDebugUtilsMessengerCreateInfoEXT* p_pCreateInfo,
-        const VkAllocationCallbacks* p_pAllocator,
-        VkDebugUtilsMessengerEXT* p_pDebugMessenger)
-    {
-        auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(p_instance, "vkCreateDebugUtilsMessengerEXT");
-        if (func != nullptr)
-        {
-            return func(p_instance, p_pCreateInfo, p_pAllocator, p_pDebugMessenger);
-        }
-        else
-        {
-            return VK_ERROR_EXTENSION_NOT_PRESENT;
-        }
-    }
-
-    void DestroyDebugUtilsMessengerEXT(VkInstance p_instance,
-        VkDebugUtilsMessengerEXT p_debugMessenger,
-        const VkAllocationCallbacks* p_pAllocator)
-    {
-        auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(p_instance, "vkDestroyDebugUtilsMessengerEXT");
-        if (func != nullptr)
-        {
-            func(p_instance, p_debugMessenger, p_pAllocator);
-        }
-    }
-
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-        VkDebugUtilsMessageSeverityFlagBitsEXT p_MessageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT p_MessageType,
-        const VkDebugUtilsMessengerCallbackDataEXT* p_pCallbackData,
-        void* p_pUserData)
-    {
-        std::cerr << "Validation layer: " << p_pCallbackData->pMessage << std::endl;
-
-        return VK_FALSE;
-    }
-
-    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo)
-    {
-        p_createInfo = {};
-        p_createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        p_createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-        p_createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-            | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        p_createInfo.pfnUserCallback = debugCallback;
-        p_createInfo.pUserData = nullptr; // Optional
-    }
-
-    void Renderer::setupDebugMessenger()
-    {
-        if (!enableValidationLayers) return;
-
-        VkDebugUtilsMessengerCreateInfoEXT createInfo;
-        populateDebugMessengerCreateInfo(createInfo);
-
-        if (CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to set up debug messenger!");
-        }
-    }
-
-    Renderer::Renderer(GLFWwindow* p_window) : m_OSWindow(p_window)
+    Renderer::Renderer(const Window& p_window) : m_Window(p_window)
     {
         createInstance();
-        setupDebugMessenger();
-        createSurface();
         selectPhysicalDevice();
         createLogicalDevice();
         createSwapChain();
@@ -172,13 +99,8 @@ namespace Silfur
         vkDestroyPipelineLayout(m_Device, m_PipelineLayout, nullptr);
         vkDestroyDevice(m_Device, nullptr);
 
-        if (enableValidationLayers)
-        {
-            DestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
-        }
-
-        vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
-        vkDestroyInstance(m_Instance, nullptr);
+        vkDestroySurfaceKHR(s_Instance, m_Surface, nullptr);
+        s_Instance.Destroy();
     }
 
     ///////////////////////////////////////////////
@@ -287,44 +209,30 @@ namespace Silfur
         vkUnmapMemory(m_Device, m_UniformBuffersMemory[p_CurrentImage]);
     }
 
-    ///////////////////////////
-    //// Validation layers ////
-    ///////////////////////////
+    ////////////////////
+    //// Extensions ////
+    ////////////////////
 
-    constexpr std::array<const char*, 1> validationLayers = {
-        "VK_LAYER_KHRONOS_validation"
+    constexpr std::array<const char*, 1> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    bool checkValidationLayerSupport()
+    bool checkDeviceExtensionsSupport(VkPhysicalDevice p_Device)
     {
-        uint32_t layerCount;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+        uint32_t extensionCount;
+        vkEnumerateDeviceExtensionProperties(p_Device, nullptr, &extensionCount, nullptr);
 
-        std::vector<VkLayerProperties> availableLayers(layerCount);
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(p_Device, nullptr, &extensionCount, availableExtensions.data());
 
-        for (const char* layerName : validationLayers)
+        std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+        for (const auto& extension : availableExtensions)
         {
-            bool layerFound = false;
-
-            for (const auto& layerProperties : availableLayers)
-            {
-                if (strcmp(layerName, layerProperties.layerName) == 0)
-                {
-                    layerFound = true;
-                    break;
-                }
-            }
-
-            if (!layerFound)
-            {
-                return false;
-            }
+            requiredExtensions.erase(extension.extensionName);
         }
 
-        std::cout << "Validation layers enabled." << std::endl;
-
-        return true;
+        return requiredExtensions.empty();
     }
 
     //////////////////////
@@ -371,143 +279,15 @@ namespace Silfur
         return indices;
     }
 
-    ////////////////////
-    //// Extensions ////
-    ////////////////////
-
-    constexpr std::array<const char*, 1> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    };
-
-    bool checkDeviceExtensionsSupport(VkPhysicalDevice p_Device)
-    {
-        uint32_t extensionCount;
-        vkEnumerateDeviceExtensionProperties(p_Device, nullptr, &extensionCount, nullptr);
-
-        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(p_Device, nullptr, &extensionCount, availableExtensions.data());
-
-        std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
-
-        for (const auto& extension : availableExtensions)
-        {
-            requiredExtensions.erase(extension.extensionName);
-        }
-
-        return requiredExtensions.empty();
-    }
-
-    std::vector<const char*> getRequiredExtensions()
-    {
-        uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions;
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-        if (enableValidationLayers)
-        {
-            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-        }
-
-        return extensions;
-    }
-
-    bool checkRequiredExtensions(const std::vector<VkExtensionProperties>& p_VkExtensionsAvailable, const std::vector<const char*> p_RequiredExtensions)
-    {
-        for (const char* extensionName : p_RequiredExtensions)
-        {
-            bool extensionFound = false;
-
-            for (const auto& vkExtension : p_VkExtensionsAvailable)
-            {
-                if (strcmp(extensionName, vkExtension.extensionName) == 0)
-                {
-                    extensionFound = true;
-                    break;
-                }
-            }
-
-            if (!extensionFound)
-            {
-                return false;
-            }
-        }
-
-        std::cout << "Extensions requirements fulfilled." << std::endl;
-
-        return true;
-    }
-
     /////////////////////////////////////////////////////
     //// Instance - Physical device - Logical device ////
     /////////////////////////////////////////////////////
 
     void Renderer::createInstance()
     {
-        if (enableValidationLayers && !checkValidationLayerSupport())
-        {
-            throw std::runtime_error("Validation layers requested but not available!");
-        }
-
-        VkApplicationInfo appInfo = {};
-        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "Hello Triangle";
-        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.pEngineName = "No Engine";
-        appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_2;
-
-        VkInstanceCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        createInfo.pApplicationInfo = &appInfo;
-
-        uint32_t vkExtensionCount = 0;
-        vkEnumerateInstanceExtensionProperties(nullptr, &vkExtensionCount, nullptr);
-        std::vector<VkExtensionProperties> vkExtensions(vkExtensionCount);
-        vkEnumerateInstanceExtensionProperties(nullptr, &vkExtensionCount, vkExtensions.data());
-
-        std::cout << "Vulkan available extensions:" << std::endl;
-        for (const auto& extension : vkExtensions)
-        {
-            std::cout << "\t" << extension.extensionName << std::endl;
-        }
-
-        auto extensions = getRequiredExtensions();
-
-        std::cout << "Required extensions:" << std::endl;
-        for (const char* extensionName : extensions)
-        {
-            std::cout << "\t" << extensionName << std::endl;
-        }
-
-        if (!checkRequiredExtensions(vkExtensions, extensions))
-        {
-            throw std::runtime_error("Missing an extension.");
-        }
-
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-        createInfo.ppEnabledExtensionNames = extensions.data();
-
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-        if (enableValidationLayers)
-        {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-            createInfo.ppEnabledLayerNames = validationLayers.data();
-
-            populateDebugMessengerCreateInfo(debugCreateInfo);
-            createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
-        }
-        else
-        {
-            createInfo.enabledLayerCount = 0;
-            createInfo.pNext = nullptr;
-        }
-
-        if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to create instance!");
-        }
+        // #TODO (Zeth) : Maybe leave the informations of the instance here
+        s_Instance.Create();
+        m_Surface = s_Instance.CreateSurface(m_Window);
     }
 
     bool Renderer::isDeviceSuitable(VkPhysicalDevice p_Device)
@@ -536,7 +316,7 @@ namespace Silfur
     void Renderer::selectPhysicalDevice()
     {
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(s_Instance, &deviceCount, nullptr);
 
         if (deviceCount == 0)
         {
@@ -544,7 +324,7 @@ namespace Silfur
         }
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
-        vkEnumeratePhysicalDevices(m_Instance, &deviceCount, devices.data());
+        vkEnumeratePhysicalDevices(s_Instance, &deviceCount, devices.data());
 
         for (const auto& device : devices)
         {
@@ -596,10 +376,10 @@ namespace Silfur
         createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-        if (enableValidationLayers)
+        if (Vk::enableValidationLayers)
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-            createInfo.ppEnabledLayerNames = validationLayers.data();
+            createInfo.enabledLayerCount = static_cast<uint32_t>(Vk::validationLayers.size());
+            createInfo.ppEnabledLayerNames = Vk::validationLayers.data();
         }
         else
         {
@@ -614,18 +394,6 @@ namespace Silfur
         vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
         vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &m_PresentQueue);
         vkGetDeviceQueue(m_Device, indices.transferFamily.value(), 0, &m_TransferQueue);
-    }
-
-    /////////////////
-    //// Surface ////
-    /////////////////
-
-    void Renderer::createSurface()
-    {
-        if (glfwCreateWindowSurface(m_Instance, m_OSWindow, nullptr, &m_Surface) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to create window surface!");
-        }
     }
 
     ///////////////////
@@ -765,7 +533,7 @@ namespace Silfur
         else
         {
             int width, height;
-            glfwGetFramebufferSize(m_OSWindow, &width, &height);
+            glfwGetFramebufferSize(m_Window.WinHandle, &width, &height);
 
             VkExtent2D actualExtent = {
                 static_cast<uint32_t>(width),
@@ -847,10 +615,10 @@ namespace Silfur
     {
         // Handling minimization of the window
         int width = 0, height = 0;
-        glfwGetFramebufferSize(m_OSWindow, &width, &height);
+        glfwGetFramebufferSize(m_Window.WinHandle, &width, &height);
         while (width == 0 || height == 0)
         {
-            glfwGetFramebufferSize(m_OSWindow, &width, &height);
+            glfwGetFramebufferSize(m_Window.WinHandle, &width, &height);
 
             // Wait until next event : normally the window appear in the foreground
             glfwWaitEvents();
