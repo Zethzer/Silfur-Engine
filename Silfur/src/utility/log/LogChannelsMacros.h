@@ -20,9 +20,11 @@
         LogChannel##p_channelName() : LogChannel(#p_channelName) {} \
     } p_channelName;
 
+DECLARE_LOG_CHANNEL_EXTERN(Temp)
+
 DECLARE_LOG_CHANNEL_EXTERN(Win32)
 
-DECLARE_LOG_CHANNEL_EXTERN(Temp)
+DECLARE_LOG_CHANNEL_EXTERN(Vulkan)
 
 DECLARE_LOG_CHANNEL_EXTERN(Core)
 DECLARE_LOG_CHANNEL_EXTERN(Assert)

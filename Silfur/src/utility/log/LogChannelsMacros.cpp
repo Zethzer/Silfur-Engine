@@ -1,9 +1,11 @@
 #include "sfpch.h"
 #include "LogChannelsMacros.h"
 
+DEFINE_LOG_CHANNEL(Temp)
+
 DEFINE_LOG_CHANNEL(Win32)
 
-DEFINE_LOG_CHANNEL(Temp)
+DEFINE_LOG_CHANNEL(Vulkan)
 
 DEFINE_LOG_CHANNEL(Core)
 DEFINE_LOG_CHANNEL(Assert)
