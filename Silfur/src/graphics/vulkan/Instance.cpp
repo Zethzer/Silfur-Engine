@@ -9,9 +9,8 @@
 
 #include <sstream>
 
-// #TODO-Zeth : Check api version available on the computer, fallback on version 1.0
-// #TODO-Zeth : Replace exception by logging (fatal level) + std::exit
 // #TODO-Zeth : Create necessary enum class for replace enum C style of Vulkan API for Instance class
+// #TODO-Zeth : Think about parameters for create the instance
 
 namespace Silfur
 {
@@ -63,7 +62,8 @@ namespace Silfur
         {
             if (enableValidationLayers && !checkValidationLayerSupport())
             {
-                throw std::runtime_error("Validation layers requested but not available!");
+                SF_CORE_FATAL(Vulkan, 20, "Validation layers requested but not available!");
+                std::exit(EXIT_FAILURE);
             }
 
             VkApplicationInfo appInfo = {};
@@ -73,7 +73,19 @@ namespace Silfur
             appInfo.pEngineName = "Silfur Engine";
             appInfo.engineVersion = VK_MAKE_VERSION(0, 1, 0);
 
-            appInfo.apiVersion = VK_API_VERSION_1_2;
+            // #NOTE : vkEnumerateInstanceVersion function exists since Vulkan 1.1
+            auto func = (PFN_vkEnumerateInstanceVersion) vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion");
+            if (func != nullptr)
+            {
+                uint32_t supportedApiVersion;
+                vkEnumerateInstanceVersion(&supportedApiVersion);
+
+                appInfo.apiVersion = supportedApiVersion;
+            }
+            else
+            {
+                appInfo.apiVersion = VK_API_VERSION_1_0;
+            }
 
             VkInstanceCreateInfo createInfo = {};
             createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -105,7 +117,8 @@ namespace Silfur
 
             if (!checkRequiredExtensions(vkExtensions, extensions))
             {
-                throw std::runtime_error("Missing an extension.");
+                SF_CORE_FATAL(Vulkan, 21, "Missing an extension.");
+                std::exit(EXIT_FAILURE);
             }
 
             createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
@@ -128,7 +141,8 @@ namespace Silfur
 
             if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
             {
-                throw std::runtime_error("Failed to create instance!");
+                SF_CORE_FATAL(Vulkan, 22, "Failed to create instance!");
+                std::exit(EXIT_FAILURE);
             }
 
             setupDebugMessenger();
@@ -150,7 +164,7 @@ namespace Silfur
 
             if (glfwCreateWindowSurface(m_Instance, p_window, nullptr, &surface) != VK_SUCCESS)
             {
-                SF_CORE_FATAL(Vulkan, 25, "Failed to create window surface!");
+                SF_CORE_FATAL(Vulkan, 24, "Failed to create window surface!");
                 std::exit(EXIT_FAILURE);
             }
 
@@ -166,7 +180,8 @@ namespace Silfur
 
             if (CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
             {
-                throw std::runtime_error("Failed to set up debug messenger!");
+                SF_CORE_FATAL(Vulkan, 23, "Failed to set up debug messenger!");
+                std::exit(EXIT_FAILURE);
             }
         }
     }
