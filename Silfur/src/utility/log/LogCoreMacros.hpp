@@ -25,40 +25,41 @@
     #endif
 #endif // SF_CORE_LOG_LEVEL
 
-#define __PATTERN_LOG__ std::string("[") + ::Silfur::Log::GetLogger()->name() + "] [" + (strrchr("\\" __FILE__, '\\') + 1) + "::" + std::to_string(__LINE__) + "::" + __func__ + "] "
+#define _LOGGER_NAME__ std::string("[") + ::Silfur::Log::GetLogger()->name() + "] "
+#define _FILE_FUNC__ std::string("[") + (strrchr("\\" __FILE__, '\\') + 1) + "::" + std::to_string(__LINE__) + "::" + __func__ + "] "
 
 #if SF_CORE_LOG_LEVEL >= SF_CORE_LOG_LEVEL_TRACE
-    #define SF_CORE_TRACE(p_channelName, ...)   ::Silfur::Log::GetLogger()->trace(__PATTERN_LOG__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
+    #define SF_CORE_TRACE(p_channelName, ...)   ::Silfur::Log::GetLogger()->trace(_LOGGER_NAME__ + _FILE_FUNC__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
 #else
     #define SF_CORE_TRACE(p_channelName, ...)
 #endif
 
 #if SF_CORE_LOG_LEVEL >= SF_CORE_LOG_LEVEL_DEBUG
-    #define SF_CORE_DEBUG(p_channelName, ...)   ::Silfur::Log::GetLogger()->debug(__PATTERN_LOG__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
+    #define SF_CORE_DEBUG(p_channelName, ...)   ::Silfur::Log::GetLogger()->debug(_LOGGER_NAME__ + _FILE_FUNC__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
 #else
     #define SF_CORE_DEBUG(p_channelName, ...)
 #endif
 
 #if SF_CORE_LOG_LEVEL >= SF_CORE_LOG_LEVEL_INFO
-    #define SF_CORE_INFO(p_channelName, ...)    ::Silfur::Log::GetLogger()->info(__PATTERN_LOG__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
+    #define SF_CORE_INFO(p_channelName, ...)    ::Silfur::Log::GetLogger()->info(_LOGGER_NAME__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
 #else
     #define SF_CORE_INFO(p_channelName, ...)
 #endif
 
 #if SF_CORE_LOG_LEVEL >= SF_CORE_LOG_LEVEL_WARNING
-    #define SF_CORE_WARNING(p_channelName, ...)  ::Silfur::Log::GetLogger()->warn(__PATTERN_LOG__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
+    #define SF_CORE_WARNING(p_channelName, ...)  ::Silfur::Log::GetLogger()->warn(_LOGGER_NAME__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
 #else
     #define SF_CORE_WARNING(p_channelName, ...)
 #endif
 
 #if SF_CORE_LOG_LEVEL >= SF_CORE_LOG_LEVEL_ERROR
-    #define SF_CORE_ERROR(p_channelName, ...)    ::Silfur::Log::GetLogger()->error(__PATTERN_LOG__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
+    #define SF_CORE_ERROR(p_channelName, ...)    ::Silfur::Log::GetLogger()->error(_LOGGER_NAME__ + "[" + p_channelName.getChannelName() + "] " + fmt::format(__VA_ARGS__))
 #else
     #define SF_CORE_ERROR(p_channelName, ...)
 #endif
 
 #if SF_CORE_LOG_LEVEL >= SF_CORE_LOG_LEVEL_FATAL
-    #define SF_CORE_FATAL(p_channelName, p_FatalCode,...)   ::Silfur::Log::GetLogger()->critical(__PATTERN_LOG__ + "[" + p_channelName.getChannelName() + "] " + "[" + #p_FatalCode + "] " + fmt::format(__VA_ARGS__))
+    #define SF_CORE_FATAL(p_channelName, p_FatalCode,...)   ::Silfur::Log::GetLogger()->critical(_LOGGER_NAME__ + _FILE_FUNC__ + "[" + p_channelName.getChannelName() + "] " + "[" + #p_FatalCode + "] " + fmt::format(__VA_ARGS__))
 #else
     #define SF_CORE_FATAL(p_channelName, p_FatalCode,...)
 #endif
