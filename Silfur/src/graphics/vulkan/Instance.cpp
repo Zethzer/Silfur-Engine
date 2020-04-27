@@ -5,9 +5,12 @@
 #include "graphics/vulkan/utils/ValidationLayers.hpp"
 #include "graphics/vulkan/utils/Debug.hpp"
 
+#include <GLFW/glfw3.h>
+
+#include <sstream>
+
 // #TODO-Zeth : Check api version available on the computer, fallback on version 1.0
 // #TODO-Zeth : Replace exception by logging (fatal level) + std::exit
-// #TODO-Zeth : Replace std::cout and std::cerr by logging (std::cout = information | std::cerr = warning/error)
 // #TODO-Zeth : Create necessary enum class for replace enum C style of Vulkan API for Instance class
 
 namespace Silfur
@@ -51,7 +54,7 @@ namespace Silfur
                 }
             }
 
-            std::cout << "Extensions requirements fulfilled." << std::endl;
+            SF_CORE_INFO(Vulkan, "Extensions requirements fulfilled.");
 
             return true;
         }
@@ -81,19 +84,24 @@ namespace Silfur
             std::vector<VkExtensionProperties> vkExtensions(vkExtensionCount);
             vkEnumerateInstanceExtensionProperties(nullptr, &vkExtensionCount, vkExtensions.data());
 
-            std::cout << "Vulkan available extensions:" << std::endl;
+            std::stringstream msg;
+            msg << "Vulkan available extensions:\n";
             for (const auto& extension : vkExtensions)
             {
-                std::cout << "\t" << extension.extensionName << std::endl;
+                msg << "\t" << extension.extensionName << "\n";
             }
+            SF_CORE_INFO(Vulkan, msg.str());
 
             auto extensions = getRequiredExtensions();
 
-            std::cout << "Required extensions:" << std::endl;
+            msg.str("");
+            msg.clear();
+            msg << "Required extensions:\n";
             for (const char* extensionName : extensions)
             {
-                std::cout << "\t" << extensionName << std::endl;
+                msg << "\t" << extensionName << "\n";
             }
+            SF_CORE_INFO(Vulkan, msg.str());
 
             if (!checkRequiredExtensions(vkExtensions, extensions))
             {
