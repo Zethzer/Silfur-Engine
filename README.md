@@ -12,11 +12,11 @@ The game engine is under active development. You can follow the progress of the 
 
 ## Prerequisites
 
-* Install Vulkan SDK (v1.2.131.2) before compiling the project : [Download](https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true)
-  * Tested only on Windows.
+* On Windows:
+  * Install Vulkan SDK (v1.2.131.2) before compiling the project : [Download](https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true)
 
 ## Compile the project
 
 * On Windows:
   * `git clone --recursive https://github.com/Zethzer/Silfur-Engine.git`
-  * Launch `scripts\Win-GenProjects.bat` for generate the `.sln` file
+  * Launch `scripts\Win-GenProjects.bat` for generate the `.sln` file and compile shaders to spir-v format.
