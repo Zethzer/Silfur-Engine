@@ -93,6 +93,17 @@ project "Silfur"
 			"call CompileShaders.bat",
 			"popd"
 		}
+		
+	filter "action:vs2019"
+		disablewarnings
+		{
+			"6323", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6323?view=vs-2019
+			"6385", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6385?view=vs-2019
+			"6387", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6387?view=vs-2019
+			"26812", -- https://docs.microsoft.com/en-US/cpp/code-quality/c26812?view=vs-2019
+			"26495", -- https://docs.microsoft.com/en-US/cpp/code-quality/c26495?view=vs-2019
+			"26451" -- https://docs.microsoft.com/en-US/cpp/code-quality/c26451?view=vs-2019
+		}
 
 	filter "configurations:Debug"
 		defines "SF_DEBUG"
