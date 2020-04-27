@@ -41,11 +41,7 @@ namespace Silfur
                 }
             }
 
-            #ifdef SF_CORE
-                SF_CORE_INFO(Vulkan, "Validation layers enabled.");
-            #else
-                SF_INFO(Vulkan, "Validation layers enabled.");
-            #endif // SF_CORE
+            SF_CORE_INFO(Vulkan, "Validation layers enabled.");
 
             return true;
         }
