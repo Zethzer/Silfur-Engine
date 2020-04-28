@@ -1,3 +1,15 @@
+include "scripts/FindVulkan.lua"
+
+checkVulkanDynamicLibWin32()
+
+IncludeDir = {}
+IncludeDir["GLFW"] = "Silfur/vendor/GLFW/include"
+IncludeDir["glm"] = "Silfur/vendor/glm"
+IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
+IncludeDir["stb"] = "Silfur/vendor/stb"
+IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
+IncludeDir["tinyobjloader"] = "Silfur/vendor/tinyobjloader"
+
 workspace "Silfur Engine"
 	architecture "x86_64"
 	characterset "Default"
@@ -20,21 +32,37 @@ workspace "Silfur Engine"
 		"**.spv"
 	}
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
--- Include directories relative to root folder (solution directory)
-IncludeDir = {}
-IncludeDir["GLFW"] = "Silfur/vendor/GLFW/include"
-IncludeDir["vulkan"] = "$(VULKAN_SDK)/include" -- TODO : Check Linux compatibility
-IncludeDir["glm"] = "Silfur/vendor/glm"
-IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
-IncludeDir["stb"] = "Silfur/vendor/stb"
-IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
-IncludeDir["tinyobjloader"] = "Silfur/vendor/tinyobjloader"
+	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 group "Dependencies"
 	include "Silfur/vendor/GLFW"
-	
+group ""
+
+group "Tools"
+	project "CompileShaders"
+		location "tools"
+		kind "Utility"
+		files
+		{
+			"%{prj.location}/../**.vert",
+			"%{prj.location}/../**.frag",
+			"%{prj.location}/../**.tesc",
+			"%{prj.location}/../**.tese",
+			"%{prj.location}/../**.geom",
+			"%{prj.location}/../**.comp"
+		}
+		
+		local vulkanPath = GetVulkanPath()
+		local glslCompiler = ""
+		local buildoutputcommand = "%{file.directory}/%{file.name}.spv"
+		if (VULKAN_SDK_FOUND) then
+			glslCompiler = vulkanPath .. '/bin/glslangValidator'
+		end
+		
+		filter "files:**/*"
+			buildmessage "Compiling %{file.name}..."
+			buildcommands(glslCompiler .. ' -V -o "%{file.directory}%{file.name}.spv" "%{file.relpath}"')
+			buildoutputs (buildoutputcommand:gsub("\\", "/"))
 group ""
 
 project "Silfur"
@@ -52,7 +80,6 @@ project "Silfur"
 
 	files
 	{
-		"%{prj.location}/src/**.h",
 		"%{prj.location}/src/**.hpp",
 		"%{prj.location}/src/**.inl",
 		"%{prj.location}/src/**.cpp",
@@ -76,23 +103,18 @@ project "Silfur"
 	{
 		"%{prj.name}/src",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.portableSnippets}",
 		"%{IncludeDir.tinyobjloader}"
 	}
+	
+	includeVulkanSDKWin32()
 
 	filter "system:windows"
 		systemversion "latest"
 		defines "_WIN32"
-		prebuildcommands
-		{
-			"pushd ..\\scripts",
-			"call CompileShaders.bat",
-			"popd"
-		}
 		
 	filter "action:vs2019"
 		disablewarnings
@@ -135,7 +157,6 @@ project "Sandbox"
 
 	files
 	{
-		"%{prj.location}/src/**.h",
 		"%{prj.location}/src/**.hpp",
 		"%{prj.location}/src/**.inl",
 		"%{prj.location}/src/**.cpp",
@@ -150,7 +171,6 @@ project "Sandbox"
 	includedirs
 	{
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.stb}",
@@ -158,22 +178,20 @@ project "Sandbox"
 		"%{IncludeDir.tinyobjloader}",
 		"Silfur/src"
 	}
+	
+	includeVulkanSDKWin32()
 
 	links
 	{
 		"Silfur",
 		"GLFW",
-		"$(VULKAN_SDK)/lib/vulkan-1.lib" -- TODO : Check Linux compatibility
+		"CompileShaders"
 	}
+	
+	linkVulkanStaticWin32()
 
 	filter "system:windows"
 		systemversion "latest"
-		prebuildcommands
-		{
-			"pushd ..\\..\\scripts",
-			"call CompileShaders.bat",
-			"popd"
-		}
 		
 	filter "configurations:Debug"
 		kind "ConsoleApp"
