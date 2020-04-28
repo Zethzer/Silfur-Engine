@@ -4,6 +4,7 @@
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+**/obj/*
 
 # Binaries
 **/bin/
