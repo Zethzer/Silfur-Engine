@@ -54,7 +54,6 @@ group "Tools"
 		
 		local vulkanPath = GetVulkanPath()
 		local glslCompiler = ""
-		local buildoutputcommand = "%{file.directory}/%{file.name}.spv"
 		if (VULKAN_SDK_FOUND) then
 			glslCompiler = vulkanPath .. '/bin/glslangValidator'
 		end
@@ -62,7 +61,7 @@ group "Tools"
 		filter "files:**/*"
 			buildmessage "Compiling %{file.name}..."
 			buildcommands(glslCompiler .. ' -V -o "%{file.directory}%{file.name}.spv" "%{file.relpath}"')
-			buildoutputs (buildoutputcommand:gsub("\\", "/"))
+			buildoutputs "%{file.directory}/%{file.name}.spv"
 group ""
 
 project "Silfur"
