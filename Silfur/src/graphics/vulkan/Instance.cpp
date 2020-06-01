@@ -4,6 +4,7 @@
 #include "utility/log/Log.hpp"
 #include "graphics/vulkan/utils/ValidationLayers.hpp"
 #include "graphics/vulkan/utils/Debug.hpp"
+#include "graphics/vulkan/utils/Extensions.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -16,49 +17,7 @@ namespace Silfur
 {
     namespace Vk
     {
-        std::vector<const char*> getRequiredExtensions()
-        {
-            uint32_t glfwExtensionCount = 0;
-            const char** glfwExtensions;
-            glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-            std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-            if (enableValidationLayers)
-            {
-                extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-            }
-
-            return extensions;
-        }
-
-        bool checkRequiredExtensions(const std::vector<VkExtensionProperties>& p_VkExtensionsAvailable, const std::vector<const char*> p_RequiredExtensions)
-        {
-            for (const char* extensionName : p_RequiredExtensions)
-            {
-                bool extensionFound = false;
-
-                for (const auto& vkExtension : p_VkExtensionsAvailable)
-                {
-                    if (strcmp(extensionName, vkExtension.extensionName) == 0)
-                    {
-                        extensionFound = true;
-                        break;
-                    }
-                }
-
-                if (!extensionFound)
-                {
-                    return false;
-                }
-            }
-
-            SF_CORE_INFO(Vulkan, "Extensions requirements fulfilled.");
-
-            return true;
-        }
-
-        void Instance::Create()
+        void Instance::Create(const std::string& p_appName, const Version& p_appVersion)
         {
             if (enableValidationLayers && !checkValidationLayerSupport())
             {
