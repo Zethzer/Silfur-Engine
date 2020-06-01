@@ -27,8 +27,8 @@ namespace Silfur
 
             VkApplicationInfo appInfo = {};
             appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-            appInfo.pApplicationName = "Hello Triangle";
-            appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+            appInfo.pApplicationName = p_appName.c_str();
+            appInfo.applicationVersion = VK_MAKE_VERSION(p_appVersion.major, p_appVersion.minor, p_appVersion.patch);
             appInfo.pEngineName = "Silfur Engine";
             appInfo.engineVersion = VK_MAKE_VERSION(0, 1, 0);
 
@@ -46,63 +46,19 @@ namespace Silfur
                 appInfo.apiVersion = VK_API_VERSION_1_0;
             }
 
-            VkInstanceCreateInfo createInfo = {};
-            createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-            createInfo.pApplicationInfo = &appInfo;
-
-            uint32_t vkExtensionCount = 0;
-            vkEnumerateInstanceExtensionProperties(nullptr, &vkExtensionCount, nullptr);
-            std::vector<VkExtensionProperties> vkExtensions(vkExtensionCount);
-            vkEnumerateInstanceExtensionProperties(nullptr, &vkExtensionCount, vkExtensions.data());
-
-            std::stringstream msg;
-            msg << "Vulkan available extensions:\n";
-            for (const auto& extension : vkExtensions)
-            {
-                msg << "\t" << extension.extensionName << "\n";
-            }
-            SF_CORE_INFO(Vulkan, msg.str());
-
-            auto extensions = getRequiredExtensions();
-
-            msg.str("");
-            msg.clear();
-            msg << "Required extensions:\n";
-            for (const char* extensionName : extensions)
-            {
-                msg << "\t" << extensionName << "\n";
-            }
-            SF_CORE_INFO(Vulkan, msg.str());
-
-            if (!checkRequiredExtensions(vkExtensions, extensions))
-            {
-                SF_CORE_FATAL(Vulkan, 21, "Missing an extension.");
-                std::exit(EXIT_FAILURE);
-            }
-
-            createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-            createInfo.ppEnabledExtensionNames = extensions.data();
-
             VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-            if (enableValidationLayers)
-            {
-                createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-                createInfo.ppEnabledLayerNames = validationLayers.data();
-
-                populateDebugMessengerCreateInfo(debugCreateInfo);
-                createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
-            }
-            else
-            {
-                createInfo.enabledLayerCount = 0;
-                createInfo.pNext = nullptr;
-            }
+            auto requiredExtensions = getRequiredExtensions();
+            VkInstanceCreateInfo createInfo = createVkInstanceCreateInfo(appInfo, requiredExtensions, debugCreateInfo);
 
             if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
             {
                 SF_CORE_FATAL(Vulkan, 22, "Failed to create instance!");
                 std::exit(EXIT_FAILURE);
             }
+
+            SF_CORE_INFO(Vulkan, "Create vulkan instance for application: {}, version {}.{}.{}", appInfo.pApplicationName,
+                VK_VERSION_MAJOR(appInfo.applicationVersion), VK_VERSION_MINOR(appInfo.applicationVersion),
+                VK_VERSION_PATCH(appInfo.applicationVersion));
 
             setupDebugMessenger();
         }
@@ -128,6 +84,64 @@ namespace Silfur
             }
 
             return surface;
+        }
+
+        VkInstanceCreateInfo Instance::createVkInstanceCreateInfo(const VkApplicationInfo& p_appInfo,
+            const std::vector<const char*>& p_requiredExtensions,
+            VkDebugUtilsMessengerCreateInfoEXT& p_debugCreateInfo)
+        {
+            VkInstanceCreateInfo createInfo;
+            createInfo = {};
+            createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+            createInfo.pApplicationInfo = &p_appInfo;
+
+            uint32_t vkExtensionCount = 0;
+            vkEnumerateInstanceExtensionProperties(nullptr, &vkExtensionCount, nullptr);
+            std::vector<VkExtensionProperties> vkExtensions(vkExtensionCount);
+            vkEnumerateInstanceExtensionProperties(nullptr, &vkExtensionCount, vkExtensions.data());
+
+            std::stringstream msg;
+            msg << "Vulkan available extensions:\n";
+            for (const auto& extension : vkExtensions)
+            {
+                msg << "\t" << extension.extensionName << "\n";
+            }
+            SF_CORE_INFO(Vulkan, msg.str());
+
+            msg.str("");
+            msg.clear();
+            msg << "Required extensions:\n";
+            for (const char* extensionName : p_requiredExtensions)
+            {
+                msg << "\t" << extensionName << "\n";
+            }
+            SF_CORE_INFO(Vulkan, msg.str());
+
+            if (!checkRequiredExtensions(vkExtensions, p_requiredExtensions))
+            {
+                SF_CORE_FATAL(Vulkan, 21, "Missing an extension.");
+                std::exit(EXIT_FAILURE);
+            }
+
+            createInfo.enabledExtensionCount = static_cast<uint32_t>(p_requiredExtensions.size());
+            createInfo.ppEnabledExtensionNames = p_requiredExtensions.data();
+
+            
+            if (enableValidationLayers)
+            {
+                createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+                createInfo.ppEnabledLayerNames = validationLayers.data();
+
+                populateDebugMessengerCreateInfo(p_debugCreateInfo);
+                createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &p_debugCreateInfo;
+            }
+            else
+            {
+                createInfo.enabledLayerCount = 0;
+                createInfo.pNext = nullptr;
+            }
+
+            return createInfo;
         }
 
         void Instance::setupDebugMessenger()

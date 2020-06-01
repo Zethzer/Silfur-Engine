@@ -103,7 +103,8 @@ namespace Silfur
     class Renderer
     {
     public:
-        Renderer(const Window& p_window);
+        Renderer(const Window& p_window, const std::string& p_appName,
+            const Version& p_appVersion);
         ~Renderer();
 
         void drawFrame();
@@ -112,7 +113,7 @@ namespace Silfur
     private:
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice p_device);
 
-        void createInstance();
+        void createInstance(const std::string& p_appName, const Version& p_appVersion);
         void selectPhysicalDevice();
         bool isDeviceSuitable(VkPhysicalDevice p_device);
         void createLogicalDevice();

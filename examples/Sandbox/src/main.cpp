@@ -6,7 +6,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 int main(int argc, char** argv)
 #endif
 {
-    Silfur::Application app;
+    Silfur::Application app("Hello Sandbox", {0, 1, 0});
     
     app.CreateRenderWindow({ 800, 600 }, u8"Sandbox");
 

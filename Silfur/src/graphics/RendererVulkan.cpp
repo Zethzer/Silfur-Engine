@@ -42,9 +42,10 @@ namespace Silfur
 {
     Vk::Instance Renderer::s_Instance;
 
-    Renderer::Renderer(const Window& p_window) : m_Window(p_window)
+    Renderer::Renderer(const Window& p_window, const std::string& p_appName,
+        const Version& p_appVersion) : m_Window(p_window)
     {
-        createInstance();
+        createInstance(p_appName, p_appVersion);
         selectPhysicalDevice();
         createLogicalDevice();
         createSwapChain();
@@ -283,10 +284,10 @@ namespace Silfur
     //// Instance - Physical device - Logical device ////
     /////////////////////////////////////////////////////
 
-    void Renderer::createInstance()
+    void Renderer::createInstance(const std::string& p_appName, const Version& p_appVersion)
     {
         // #TODO-Zeth : Maybe leave the informations of the instance here
-        s_Instance.Create();
+        s_Instance.Create(p_appName, p_appVersion);
         m_Surface = s_Instance.CreateSurface(m_Window);
     }
 

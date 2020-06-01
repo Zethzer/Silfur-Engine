@@ -3,9 +3,18 @@
 
 namespace Silfur
 {
-    Application::Application()
+    Application::Application() :
+        m_AppName("Hello Silfur"),
+        m_AppVersion({1, 0, 0})
     {
-        Log::Init();
+        Create();
+    }
+
+    Application::Application(std::string p_appName, Version p_appVersion) :
+        m_AppName(std::move(p_appName)),
+        m_AppVersion(std::move(p_appVersion))
+    {
+        Create();
     }
 
     Application::~Application()
@@ -14,10 +23,15 @@ namespace Silfur
         m_Window.reset();
     }
 
+    void Application::Create()
+    {
+        Log::Init();
+    }
+
     void Application::CreateRenderWindow(VideoMode p_mode, const char* p_title)
     {
         m_Window = CreateScope<Window>(p_mode, p_title);
-        m_Renderer = CreateScope<Renderer>(*m_Window);
+        m_Renderer = CreateScope<Renderer>(*m_Window, m_AppName, m_AppVersion);
     }
 
     bool Application::Run()

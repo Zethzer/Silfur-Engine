@@ -7,6 +7,9 @@
 
 #include <vulkan/vulkan.h>
 
+#include <vector>
+#include <string>
+
 // #TODO-Zeth : Handle physical device needs
 
 namespace Silfur
@@ -22,7 +25,7 @@ namespace Silfur
             Instance(const Instance&) = delete;
             Instance(Instance&&) = delete;
 
-            void Create();
+            void Create(const std::string& p_appName, const Version& p_appVersion);
             void Destroy();
 
             VkSurfaceKHR CreateSurface(const Window& p_window);
@@ -32,6 +35,9 @@ namespace Silfur
 
             inline operator VkInstance() const noexcept;
         private:
+            VkInstanceCreateInfo createVkInstanceCreateInfo(const VkApplicationInfo& p_appInfo,
+                const std::vector<const char*>& p_requiredExtensions,
+                VkDebugUtilsMessengerCreateInfoEXT& p_debugCreateInfo);
             void setupDebugMessenger();
 
         private:

@@ -46,7 +46,15 @@
 #include <memory>
 namespace Silfur
 {
-    // TODO (Zeth) : Work on references system
+    // #TODO-Zeth Define engine version in ini file
+    struct Version
+    {
+        uint32_t major;
+        uint32_t minor;
+        uint32_t patch;
+    };
+
+    // #TODO-Zeth Work on references system
     template<typename T>
     using Scope = std::unique_ptr<T>;
     template<typename T, typename ... Args>
