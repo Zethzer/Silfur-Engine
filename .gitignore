@@ -6,6 +6,9 @@
 *.vcxproj.user
 **/obj/*
 
+# CLion files
+.idea/
+
 # Binaries
 **/bin/
 !/vendor/bin
