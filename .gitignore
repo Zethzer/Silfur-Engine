@@ -8,7 +8,6 @@
 
 # CLion files
 .idea/
-cmake-build-debug/
 
 # Binaries
 **/bin/
@@ -18,7 +17,4 @@ cmake-build-debug/
 bin-int/
 
 # Compiled SPIR-V shaders
-*.spv 
-
-#Examples files
-examples/Sandbox/logs/
+*.spv
