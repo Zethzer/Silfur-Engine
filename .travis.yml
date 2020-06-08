@@ -19,6 +19,9 @@ jobs:
         - CMAKE_ENV="CodeBlocks - MinGW Makefiles"
         - BADGE=windows
 
+git:
+  depth: 2
+
 before_install:
   - |-
     case $TRAVIS_OS_NAME in
@@ -33,7 +36,7 @@ before_install:
         export msys2+=" -msys2 -c "\"\$@"\" --"
         $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain
         ## Install more MSYS2 packages from https://packages.msys2.org/base here
-        taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
+#        taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
         export PATH=/C/tools/msys64/mingw64/bin:$PATH
         export MAKE=mingw32-make  # so that Autotools can find it
         ;;
