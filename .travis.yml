@@ -12,12 +12,12 @@ jobs:
         - BADGE=windows
 
     - name: "Windows GCC"
-        os: windows
-        env:
-          - C_COMPILER=gcc
-          - CXX_COMPILER=g++
-          - CMAKE_ENV=CodeBlocks - MinGW Makefiles
-          - BADGE=windows
+      os: windows
+      env:
+        - C_COMPILER=gcc
+        - CXX_COMPILER=g++
+        - CMAKE_ENV=CodeBlocks - MinGW Makefiles
+        - BADGE=windows
 
 before_install:
   - |-
