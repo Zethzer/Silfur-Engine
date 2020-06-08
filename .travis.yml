@@ -22,7 +22,7 @@ jobs:
 git:
   depth: 2
 
-before_install:
+before_script:
   - |-
     case $TRAVIS_OS_NAME in
       windows)
@@ -39,6 +39,9 @@ before_install:
         taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
         export PATH=/C/tools/msys64/mingw64/bin:$PATH
         export MAKE=mingw32-make  # so that Autotools can find it
+        curl -L --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true
+        powershell ./VulkanSDK.exe /S
+        export PATH=/C/VulkanSDK/1.2.131.2:$PATH
         ;;
     esac
 
@@ -55,16 +58,6 @@ cache:
   directories:
     - $HOME/AppData/Local/Temp/chocolatey
     - /C/tools/msys64
-
-before_script:
-  - |-
-    case $TRAVIS_OS_NAME in
-      windows)
-        curl -L --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true
-        powershell ./VulkanSDK.exe /S
-        export PATH=/C/VulkanSDK/1.2.131.2:$PATH
-        ;;
-    esac
 
 script:
   - |-
