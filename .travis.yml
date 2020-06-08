@@ -22,7 +22,7 @@ jobs:
 git:
   depth: 2
 
-before_script:
+before_install:
   - |-
     case $TRAVIS_OS_NAME in
       windows)
@@ -39,10 +39,32 @@ before_script:
         taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
         export PATH=/C/tools/msys64/mingw64/bin:$PATH
         export MAKE=mingw32-make  # so that Autotools can find it
+        ;;
+    esac
+
+install:
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
         curl -L --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true
         powershell ./VulkanSDK.exe /S
+        echo "Vulkan SDK Install"
         export PATH=/C/VulkanSDK/1.2.131.2:$PATH
+        echo "Install complete"
         ;;
+    esac
+
+script:
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
+      echo "Start script"
+      mkdir build && cd build &&
+      cmake -G "${CMAKE_ENV}" -A x64 -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+      -DCMAKE_BUILD_TYPE=Debug .. &&
+      cmake --build . -j 4 &&
+      pwd &&
+      ;;
     esac
 
 before_cache:
@@ -58,15 +80,3 @@ cache:
   directories:
     - $HOME/AppData/Local/Temp/chocolatey
     - /C/tools/msys64
-
-script:
-  - |-
-    case $TRAVIS_OS_NAME in
-      windows)
-      mkdir build && cd build &&
-      cmake -G "${CMAKE_ENV}" -A x64 -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-      -DCMAKE_BUILD_TYPE=Debug .. &&
-      cmake --build . -j 4 &&
-      pwd &&
-      ;;
-    esac
