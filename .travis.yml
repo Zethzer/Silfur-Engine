@@ -75,3 +75,12 @@ cache:
   directories:
     - $HOME/AppData/Local/Temp/chocolatey
     - /C/tools/msys64
+
+after_success:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $WEBHOOK_DISCORD_URL
+after_failure:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $WEBHOOK_DISCORD_URL
