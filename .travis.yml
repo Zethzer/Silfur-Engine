@@ -47,10 +47,8 @@ before_script:
     case $TRAVIS_OS_NAME in
       windows)
         curl -L --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true
-        echo "LOL"
         pwd && ls
-        ./VulkanSDK.exe /S
-        echo "PROUT"
+        travis_wait ./VulkanSDK.exe /S
         export PATH=/C/VulkanSDK/1.2.131.2:$PATH
         ;;
     esac
