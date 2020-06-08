@@ -8,7 +8,7 @@ jobs:
       env:
         - C_COMPILER=cl
         - CXX_COMPILER=cl
-        - CMAKE_ENV=Visual Studio 15 2017
+        - CMAKE_ENV="Visual Studio 15 2017"
         - BADGE=windows
 
     - name: "Windows GCC"
@@ -16,7 +16,7 @@ jobs:
       env:
         - C_COMPILER=gcc
         - CXX_COMPILER=g++
-        - CMAKE_ENV=CodeBlocks - MinGW Makefiles
+        - CMAKE_ENV="CodeBlocks - MinGW Makefiles"
         - BADGE=windows
 
 before_install:
