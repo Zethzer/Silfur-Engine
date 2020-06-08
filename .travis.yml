@@ -38,6 +38,8 @@ before_install:
         export PATH=/C/tools/msys64/mingw64/bin:$PATH
         export MAKE=mingw32-make  # so that Autotools can find it
         choco upgrade cmake
+        choco install vulkan-sdk
+        export PATH=/C/VulkanSDK/1.2.135.0:$PATH
         ;;
     esac
 
@@ -45,12 +47,12 @@ install:
   - |-
     case $TRAVIS_OS_NAME in
       windows)
-        curl -L --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true
-        powershell ./VulkanSDK.exe /S
-        ls
-        export PATH=/C/VulkanSDK/1.2.131.2:$PATH
-        echo "ls on C"
-        ls /c
+        #curl -L --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.2.131.2/windows/VulkanSDK-1.2.131.2-Installer.exe?Human=true
+        #powershell ./VulkanSDK.exe /S
+        #ls
+        #export PATH=/C/VulkanSDK/1.2.131.2:$PATH
+        #echo "ls on C"
+        #ls /c
         ;;
     esac
 
