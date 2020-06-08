@@ -31,8 +31,6 @@ if (NOT VULKAN_SDK_ROOT)
 
         set(VULKAN_SDK_INCLUDE "${Vulkan_INCLUDE_DIRS}")
         set(VULKAN_SDK_LIB "${Vulkan_LIBRARIES}")
-
-        set(GLSLC_EXECUTABLE glslc)
     endif ()
 endif ()
 
@@ -53,8 +51,6 @@ if (NOT VULKAN_FOUND)
             set(VULKAN_SDK_INCLUDE "${VULKAN_SDK_ROOT}/Include")
             set(VULKAN_SDK_LIB "${VULKAN_SDK_ROOT}/Lib/vulkan-1.lib")
         endif ()
-
-        find_program(GLSLC_EXECUTABLE glslc HINTS "${VULKAN_SDK_ROOT}/bin")
 
         if (EXISTS "${VULKAN_SDK_INCLUDE}/vulkan/vulkan.h" AND EXISTS "${VULKAN_SDK_LIB}")
             set(VULKAN_FOUND ON)
