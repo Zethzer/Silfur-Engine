@@ -1,6 +1,10 @@
 language: cpp
 os: windows
 
+env:
+  global:
+    - VULKAN_VERSION=1.2.135.0
+
 jobs:
   include:
     - name: "Windows MSVC"
@@ -41,7 +45,8 @@ before_install:
         export MAKE=mingw32-make  # so that Autotools can find it
         choco upgrade cmake
         choco install vulkan-sdk
-        export PATH=/C/VulkanSDK/1.2.135.0:$PATH
+        export PATH=/C/VulkanSDK/${VULKAN_VERSION}:$PATH
+        export VK_SDK_PATH=/C/VulkanSDK/${VULKAN_VERSION}
         ;;
     esac
 
