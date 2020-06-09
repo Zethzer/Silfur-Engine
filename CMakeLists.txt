@@ -17,7 +17,7 @@ endif()
 # in the CMakeLists.txt of your target. Don't forget to replace MyTarget
 
 # Find glslc executable from Vulkan SDK
-find_program(GLSLC_EXECUTABLE glslc HINTS "$ENV{VK_SDK_PATH}/bin")
+find_program(GLSLC_EXECUTABLE glslc HINTS "$ENV{VULKAN_SDK}/bin")
 if (GLSLC_EXECUTABLE)
     message(STATUS "  - GLSLC executable: ${GLSLC_EXECUTABLE}")
 else ()

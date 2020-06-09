@@ -40,7 +40,7 @@ if (NOT VULKAN_FOUND)
 
     if (NOT VULKAN_SDK_ROOT AND WIN32)
         # If under Windows with the path not manually set, try to locate it from the environment variable
-        set(VULKAN_SDK_ROOT "$ENV{VK_SDK_PATH}")
+        set(VULKAN_SDK_ROOT "$ENV{VULKAN_SDK}")
     endif ()
 
     if (VULKAN_SDK_ROOT)
