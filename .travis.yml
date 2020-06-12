@@ -1,0 +1,84 @@
+language: cpp
+os: windows
+
+env:
+  global:
+    - VULKAN_VERSION=1.2.135.0
+
+jobs:
+  include:
+    - name: "Windows MSVC"
+      os: windows
+      env:
+        - C_COMPILER=cl
+        - CXX_COMPILER=cl
+        - CMAKE_ENV="Visual Studio 15 2017"
+        - PLATFORM_SPEC="-A x64"
+
+    - name: "Windows GCC"
+      os: windows
+      env:
+        - C_COMPILER=gcc
+        - CXX_COMPILER=g++
+        - CMAKE_ENV="MinGW Makefiles"
+        - PLATFORM_SPEC=""
+
+git:
+  depth: 2
+
+before_install:
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        [[ ! -f C:/tools/msys64/msys2_shell.cmd ]] && rm -rf C:/tools/msys64
+        choco uninstall -y mingw
+        choco upgrade --no-progress -y msys2
+        export msys2='cmd //C RefreshEnv.cmd '
+        export msys2+='& set MSYS=winsymlinks:nativestrict '
+        export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
+        export mingw64="$msys2 -mingw64 -full-path -here -c "\"\$@"\" --"
+        export msys2+=" -msys2 -c "\"\$@"\" --"
+        $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain
+        ## Install more MSYS2 packages from https://packages.msys2.org/base here
+        taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
+        export PATH=/C/tools/msys64/mingw64/bin:$PATH
+        export MAKE=mingw32-make  # so that Autotools can find it
+        choco upgrade cmake
+        choco install vulkan-sdk
+        export PATH=/C/VulkanSDK/${VULKAN_VERSION}:$PATH
+        ;;
+    esac
+
+script:
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        mkdir build && cd build
+        cmake -G "${CMAKE_ENV}" ${PLATFORM_SPEC} -DCMAKE_C_COMPILER=${C_COMPILER} -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+        DCMAKE_BUILD_TYPE=Debug ..
+        cmake --build . -j 4
+        ;;
+    esac
+
+before_cache:
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        # https://unix.stackexchange.com/a/137322/107554
+        $msys2 pacman --sync --clean --noconfirm
+        ;;
+    esac
+
+cache:
+  directories:
+    - $HOME/AppData/Local/Temp/chocolatey
+    - /C/tools/msys64
+
+after_success:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $WEBHOOK_DISCORD_URL
+after_failure:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $WEBHOOK_DISCORD_URL

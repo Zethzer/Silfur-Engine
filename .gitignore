@@ -6,6 +6,9 @@
 *.vcxproj.user
 **/obj/*
 
+# CLion files
+.idea/
+
 # Binaries
 **/bin/
 !/vendor/bin
@@ -14,7 +17,4 @@
 bin-int/
 
 # Compiled SPIR-V shaders
-*.spv 
-
-#Examples files
-examples/Sandbox/logs/
+*.spv
