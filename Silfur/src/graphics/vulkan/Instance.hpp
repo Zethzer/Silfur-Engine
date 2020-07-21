@@ -35,12 +35,13 @@ namespace Silfur
 
             inline operator VkInstance() const noexcept;
 
-            inline std::vector<const char*> getRequiredExtensions();
-            inline bool checkRequiredExtensions(const std::vector<VkExtensionProperties>& p_vkExtensionsAvailable, const std::vector<const char*>& p_requiredExtensions);
         private:
             VkInstanceCreateInfo createVkInstanceCreateInfo(const VkApplicationInfo& p_appInfo,
                 const std::vector<const char*>& p_requiredExtensions,
                 VkDebugUtilsMessengerCreateInfoEXT& p_debugCreateInfo);
+
+            std::vector<const char*> getRequiredExtensions();
+            bool checkRequiredExtensions(const std::vector<VkExtensionProperties>& p_vkExtensionsAvailable, const std::vector<const char*>& p_requiredExtensions);
 
             void setupDebugMessenger();
 
