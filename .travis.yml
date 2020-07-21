@@ -44,7 +44,7 @@ before_install:
         export PATH=/C/tools/msys64/mingw64/bin:$PATH
         export MAKE=mingw32-make  # so that Autotools can find it
         choco upgrade cmake
-        choco install vulkan-sdk
+        choco install vulkan-sdk --version=1.2.135.0
         export PATH=/C/VulkanSDK/${VULKAN_VERSION}:$PATH
         ;;
     esac
