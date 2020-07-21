@@ -31,6 +31,6 @@ namespace Silfur
     }
 }
 
-#include "graphics/vulkan/utils/Debug.inl"
+#include "Debug.inl"
 
 #endif // __SILFUR_GRAPHICS_VULKAN_UTILS_DEBUG_HPP__

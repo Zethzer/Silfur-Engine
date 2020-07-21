@@ -1,7 +1,7 @@
 #include "sfpch.hpp"
 #include "RendererVulkan.hpp"
 
-#include "graphics/vulkan/utils/ValidationLayers.hpp"
+#include "graphics/vulkan/debug/ValidationLayers.hpp"
 
 #include <GLFW/glfw3.h>
 

@@ -4,7 +4,7 @@
 #define __SILFUR_CORE_WINDOW_HPP__
 
 #include "core/Core.hpp"
-#include "core/VideoMode.hpp"
+#include "VideoMode.hpp"
 
 struct GLFWwindow;
 
@@ -37,6 +37,6 @@ namespace Silfur
     };
 }
 
-#include "core/Window.inl"
+#include "Window.inl"
 
 #endif // __SILFUR_CORE_WINDOW_HPP__

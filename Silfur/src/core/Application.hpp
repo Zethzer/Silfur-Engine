@@ -5,8 +5,12 @@
 
 #include "utility/log/Log.hpp"
 #include "core/Core.hpp"
-#include "core/Window.hpp"
+#include "core/window/Window.hpp"
 #include "graphics/RendererVulkan.hpp"
+
+#ifdef CreateWindow
+    #undef CreateWindow
+#endif
 
 namespace Silfur
 {
@@ -17,7 +21,7 @@ namespace Silfur
         Application(std::string p_appName, Version p_appVersion);
         ~Application();
 
-        void CreateRenderWindow(VideoMode p_mode, const char* p_title);
+        void CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow);
         bool Run();
 
         void* GetSystemWindowHandle();

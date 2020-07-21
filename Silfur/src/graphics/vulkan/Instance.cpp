@@ -2,9 +2,8 @@
 #include "Instance.hpp"
 
 #include "utility/log/Log.hpp"
-#include "graphics/vulkan/utils/ValidationLayers.hpp"
-#include "graphics/vulkan/utils/Debug.hpp"
-#include "graphics/vulkan/utils/Extensions.hpp"
+#include "graphics/vulkan/debug/ValidationLayers.hpp"
+#include "graphics/vulkan/debug/Debug.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -19,7 +18,7 @@ namespace Silfur
     {
         void Instance::Create(const std::string& p_appName, const Version& p_appVersion)
         {
-            if (enableValidationLayers && !checkValidationLayerSupport())
+            if (!checkValidationLayerSupport() && enableValidationLayers)
             {
                 SF_CORE_FATAL(Vulkan, 20, "Validation layers requested but not available!");
                 std::exit(EXIT_FAILURE);

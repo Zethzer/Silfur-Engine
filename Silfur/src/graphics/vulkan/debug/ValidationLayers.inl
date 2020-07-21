@@ -3,7 +3,7 @@
 #ifndef __SILFUR_GRAPHICS_VULKAN_UTILS_VALIDATION_LAYERS_INL__
 #define __SILFUR_GRAPHICS_VULKAN_UTILS_VALIDATION_LAYERS_INL__
 
-#include "graphics/vulkan/utils/ValidationLayers.hpp"
+#include "ValidationLayers.hpp"
 #include "utility/log/Log.hpp"
 
 #include <vulkan/vulkan.h>

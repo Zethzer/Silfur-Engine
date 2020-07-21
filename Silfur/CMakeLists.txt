@@ -10,7 +10,10 @@ add_library(${PROJECT_NAME} ${SRC_FILES})
 ### Compile definitions and features ###
 target_compile_definitions(${PROJECT_NAME} PUBLIC SF_CORE)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    message(STATUS "Debug configuration")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC SF_DEBUG)
+endif()
 ### Precompiled headers ###
 target_precompile_headers(${PROJECT_NAME} PUBLIC "src/sfpch.hpp")
 

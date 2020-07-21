@@ -28,19 +28,27 @@ namespace Silfur
         Log::Init();
     }
 
-    void Application::CreateRenderWindow(VideoMode p_mode, const char* p_title)
+    void Application::CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow)
     {
         m_Window = CreateScope<Window>(p_mode, p_title);
-        m_Renderer = CreateScope<Renderer>(*m_Window, m_AppName, m_AppVersion);
+
+        /*
+         * TODO This is the main renderer which is create for the moment. Refactor this code
+         *  for just create useful things for a render window
+         */
+        if (p_isRenderWindow)
+        {
+            m_Renderer = CreateScope<Renderer>(*m_Window, m_AppName, m_AppVersion);
+        }
     }
 
     bool Application::Run()
     {
         /*
-         * #TODO-Zeth : Conditional sleep if FPS are too high :
+         * TODO Conditional sleep if FPS are too high :
          *    - Test with a limit of 1000 FPS
-         * Or don't use mailbox presentation mode during
-         * development and use FIFO instead
+         *  Or don't use mailbox presentation mode during
+         *  development and use FIFO instead
          */
         m_Window->ProcessEvents();
 

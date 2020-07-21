@@ -9,7 +9,7 @@ namespace Silfur
 {
     namespace Vk
     {
-        #ifdef _DEBUG
+        #ifdef SF_DEBUG
             constexpr bool enableValidationLayers = true;
         #else
             constexpr bool enableValidationLayers = false;
@@ -23,6 +23,6 @@ namespace Silfur
     }
 }
 
-#include "graphics/vulkan/utils/ValidationLayers.inl"
+#include "ValidationLayers.inl"
 
 #endif // __SILFUR_GRAPHICS_VULKAN_UTILS_VALIDATION_LAYERS_HPP__

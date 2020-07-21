@@ -7,8 +7,8 @@ int main(int argc, char** argv)
 #endif
 {
     Silfur::Application app("Hello Sandbox", {0, 1, 0});
-    
-    app.CreateRenderWindow({ 800, 600 }, u8"Sandbox");
+
+    app.CreateWindow({800, 600}, u8"Main Window", true);
 
     while (app.Run())
     {}

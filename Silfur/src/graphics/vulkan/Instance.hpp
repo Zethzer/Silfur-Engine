@@ -3,7 +3,7 @@
 #ifndef __SILFUR_GRAPHICS_VULKAN_INSTANCE_HPP__
 #define __SILFUR_GRAPHICS_VULKAN_INSTANCE_HPP__
 
-#include "core/Window.hpp"
+#include "core/window/Window.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -34,10 +34,14 @@ namespace Silfur
             Instance& operator=(Instance&&) = delete;
 
             inline operator VkInstance() const noexcept;
+
+            inline std::vector<const char*> getRequiredExtensions();
+            inline bool checkRequiredExtensions(const std::vector<VkExtensionProperties>& p_vkExtensionsAvailable, const std::vector<const char*>& p_requiredExtensions);
         private:
             VkInstanceCreateInfo createVkInstanceCreateInfo(const VkApplicationInfo& p_appInfo,
                 const std::vector<const char*>& p_requiredExtensions,
                 VkDebugUtilsMessengerCreateInfoEXT& p_debugCreateInfo);
+
             void setupDebugMessenger();
 
         private:

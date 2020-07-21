@@ -3,7 +3,7 @@
 #ifndef __SILFUR_GRAPHICS_RENDERER_VULKAN_HPP__
 #define __SILFUR_GRAPHICS_RENDERER_VULKAN_HPP__
 
-#include "core/Window.hpp"
+#include "core/window/Window.hpp"
 #include "graphics/vulkan/Instance.hpp"
 
 #include <vulkan/vulkan.h>
