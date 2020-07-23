@@ -70,7 +70,6 @@ if (VULKAN_FOUND)
     message(STATUS "  - Library: ${VULKAN_SDK_LIB}")
 
     # Including & linking the Vulkan SDK
-
     target_include_directories(${PROJECT_NAME} PUBLIC "${VULKAN_SDK_INCLUDE}")
     target_link_libraries(${PROJECT_NAME} PUBLIC "${VULKAN_SDK_LIB}")
 endif()

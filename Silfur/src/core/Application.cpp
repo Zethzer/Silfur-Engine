@@ -1,6 +1,8 @@
 #include "sfpch.hpp"
 #include "Application.hpp"
 
+#include "events/EventManager.hpp"
+
 namespace Silfur
 {
     Application::Application() :
@@ -54,16 +56,11 @@ namespace Silfur
 
         m_Renderer->drawFrame();
 
-        if (m_Window->IsClosed)
-        {
-            return false;
-        }
-
-        return true;
+        return !m_Window->IsClosed;
     }
 
     void* Application::GetSystemWindowHandle()
     {
-        return nullptr;
+        return m_Window->WindowSystemHandle();
     }
 }

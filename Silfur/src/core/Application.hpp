@@ -8,6 +8,7 @@
 #include "core/window/Window.hpp"
 #include "graphics/RendererVulkan.hpp"
 
+// Because of spdlog
 #ifdef CreateWindow
     #undef CreateWindow
 #endif
@@ -21,7 +22,7 @@ namespace Silfur
         Application(std::string p_appName, Version p_appVersion);
         ~Application();
 
-        void CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow);
+        void CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow = true);
         bool Run();
 
         void* GetSystemWindowHandle();

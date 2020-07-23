@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef __SILFUR_CORE_WINDOW_INL__
-#define __SILFUR_CORE_WINDOW_INL__
+#ifndef __SILFUR_CORE_WINDOW_WINDOW_INL__
+#define __SILFUR_CORE_WINDOW_WINDOW_INL__
 
 namespace Silfur
 {
@@ -16,4 +16,4 @@ namespace Silfur
     }
 }
 
-#endif // __SILFUR_CORE_WINDOW_INL__
+#endif // __SILFUR_CORE_WINDOW_WINDOW_INL__
