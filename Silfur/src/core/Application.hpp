@@ -15,6 +15,8 @@
 
 namespace Silfur
 {
+    class Event;
+
     class Application
     {
     public:
@@ -26,6 +28,10 @@ namespace Silfur
         bool Run();
 
         void* GetSystemWindowHandle();
+
+
+        // TEST
+        void PrintMessage(Event p_Event);
 
     private:
         void Create();

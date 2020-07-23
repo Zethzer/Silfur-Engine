@@ -28,6 +28,10 @@ namespace Silfur
     void Application::Create()
     {
         Log::Init();
+        EventManager::Init();
+
+        // TEST
+        EventManager::AddListener<KeyPressedEvent>(SF_BIND_FN(Application::PrintMessage));
     }
 
     void Application::CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow)
@@ -62,5 +66,10 @@ namespace Silfur
     void* Application::GetSystemWindowHandle()
     {
         return m_Window->WindowSystemHandle();
+    }
+
+    void Application::PrintMessage(Event p_event)
+    {
+        SF_CORE_DEBUG(Temp, "Event name: {}", p_event.GetName());
     }
 }
