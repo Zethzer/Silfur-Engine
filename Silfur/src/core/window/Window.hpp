@@ -18,14 +18,14 @@ namespace Silfur
     {
     public:
         Window() = delete;
-        Window(VideoMode p_mode, const char* p_title, const EventManager& p_EventManager);
+        Window(VideoMode p_mode, const char* p_title);
         ~Window();
 
         void ProcessEvents();
 
         inline operator GLFWwindow*() const noexcept;
         inline GLFWwindow* WindowHandle() const noexcept;
-        inline void* WindowSystemHandle() const noexcept;
+        void* WindowSystemHandle() const noexcept;
 
     private:
         void Create(VideoMode p_mode, const char* p_title);
