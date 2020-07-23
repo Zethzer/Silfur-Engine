@@ -16,8 +16,7 @@
 
 namespace Silfur
 {
-    Window::Window(VideoMode p_mode, const char* p_title,
-            const EventManager& p_eventManager) :
+    Window::Window(VideoMode p_mode, const char* p_title) :
         m_WinHandle(nullptr),
         IsClosed(false)
     {
@@ -38,6 +37,7 @@ namespace Silfur
         }
 
         glfwPollEvents();
+        EventManager::Dispatch();
     }
 
     void Window::Create(VideoMode p_mode, const char* p_title)
@@ -59,19 +59,19 @@ namespace Silfur
                 case GLFW_PRESS:
                 {
                     KeyPressedEvent event(static_cast<KeyCode>(p_key), 0);
-                    // Add the event to the manager
+                    EventManager::PushEvent(CreateScope<KeyPressedEvent>(event));
                     break;
                 }
                 case GLFW_RELEASE:
                 {
                     KeyReleasedEvent event(static_cast<KeyCode>(p_key));
-                    // Add the event to the manager
+                    EventManager::PushEvent(CreateScope<KeyReleasedEvent>(event));
                     break;
                 }
                 case GLFW_REPEAT:
                 {
                     KeyPressedEvent event(static_cast<KeyCode>(p_key), 1);
-                    // Add the event to the manager
+                    EventManager::PushEvent(CreateScope<KeyPressedEvent>(event));
                     break;
                 }
                 default:
@@ -84,7 +84,7 @@ namespace Silfur
             Window& win = *(Window*)glfwGetWindowUserPointer(p_window);
 
             KeyTypedEvent event(static_cast<KeyCode>(p_keycode));
-            // Add the event to the manager
+            EventManager::PushEvent(CreateScope<KeyTypedEvent>(event));
         });
     }
 
