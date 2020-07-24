@@ -12,11 +12,6 @@
 
 #define SF_BIND_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
-/*
- * TODO Buffering the events in s_Events and dispatch on a frame
- * Question : How bind the necessary function before the dispatch ?
- */
-
 namespace Silfur
 {
     class EventManager
@@ -55,7 +50,7 @@ namespace Silfur
 
     private:
         static std::vector<Scope<Event>> s_Events;
-        static std::unordered_map<EventType, std::function<void(Event)>> s_Listeners;
+        static std::unordered_map<EventType, std::function<void(const Scope<Event>&)>> s_Listeners;
     };
 }
 

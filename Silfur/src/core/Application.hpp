@@ -31,7 +31,7 @@ namespace Silfur
 
 
         // TEST
-        void PrintMessage(Event p_Event);
+        void PrintMessage(const Scope<Event>& p_Event);
 
     private:
         void Create();

@@ -4,7 +4,7 @@
 namespace Silfur
 {
     std::vector<Scope<Event>> EventManager::s_Events;
-    std::unordered_map<EventType, std::function<void(Event)>> EventManager::s_Listeners;
+    std::unordered_map<EventType, std::function<void(const Scope<Event>&)>> EventManager::s_Listeners;
 
     void EventManager::Init()
     {
@@ -19,7 +19,6 @@ namespace Silfur
 
     void EventManager::Dispatch()
     {
-        // TODO Informations loss : Object slicing because of void(Event), maybe void(Scope<Event>) or void(Event*) ?
         /* TODO Handle the end of events
          * Dispatch is called at every frame so :
          * - Check if the event have to be handled already : add a property in Event
@@ -29,10 +28,10 @@ namespace Silfur
         for (const auto& event : s_Events)
         {
             EventType evtType = event->GetEventType();
-            std::function<void(Event)> func = s_Listeners[evtType];
+            std::function<void(const Scope<Event>&)> func = s_Listeners[evtType];
             if (func)
             {
-                func(*event);
+                func(event);
             }
         }
     }

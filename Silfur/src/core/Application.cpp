@@ -68,8 +68,8 @@ namespace Silfur
         return m_Window->WindowSystemHandle();
     }
 
-    void Application::PrintMessage(Event p_event)
+    void Application::PrintMessage(const Scope<Event>& p_event)
     {
-        SF_CORE_DEBUG(Temp, "Event name: {}", p_event.GetName());
+        SF_CORE_DEBUG(Temp, "Event name: {}", p_event->GetName());
     }
 }
