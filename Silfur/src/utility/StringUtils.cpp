@@ -1,3 +1,4 @@
+#include "sfpch.hpp"
 #include "StringUtils.hpp"
 
 #include "log/Log.hpp"

@@ -4,7 +4,7 @@
 #define __SILFUR_CORE_EVENTS_KEY_EVENT_HPP__
 
 #include "Event.hpp"
-#include "core/KeyCodes.hpp"
+#include "core/Input/KeyCodes.hpp"
 #include "utility/StringUtils.hpp"
 
 namespace Silfur
