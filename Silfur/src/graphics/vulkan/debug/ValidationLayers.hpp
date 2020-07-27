@@ -9,7 +9,7 @@ namespace Silfur
 {
     namespace Vk
     {
-        #ifdef SF_DEBUG
+        #ifdef SF_CONFIG_DEBUG
             constexpr bool enableValidationLayers = true;
         #else
             constexpr bool enableValidationLayers = false;

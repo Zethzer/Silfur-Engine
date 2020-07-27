@@ -16,7 +16,7 @@
 
 /* -------- ASSERTS -------- */
 #include "debug-trap.h"
-#ifdef SF_DEBUG
+#ifdef SF_CONFIG_DEBUG
     #define SF_ENABLE_ASSERTS
 #endif
 

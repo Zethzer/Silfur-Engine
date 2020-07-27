@@ -61,13 +61,13 @@ namespace Silfur
             l_logFile.close();
 
             // Create sinks
-#ifndef SF_NDEBUG
+#ifdef SF_CONFIG_DEBUG
             auto l_console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 #endif
             auto l_fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(l_logFileFullPath);
 
             // Create and configure the logger
-#ifdef SF_NDEBUG
+#ifndef SF_CONFIG_DEBUG
             s_logger = std::make_shared<spdlog::logger>("SF_LOGGER", l_fileSink);
 #else
             s_logger = std::make_shared<spdlog::logger>("SF_LOGGER",

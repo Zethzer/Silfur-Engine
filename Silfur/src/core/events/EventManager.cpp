@@ -19,12 +19,6 @@ namespace Silfur
 
     void EventManager::Dispatch()
     {
-        /* TODO Handle the end of events
-         * Dispatch is called at every frame so :
-         * - Check if the event have to be handled already : add a property in Event
-         *  NB : The place in this container is limited. Don't forget to handle that case
-         *  - Maybe pop the events once their handle on the frame N+1 ? => Handle on Frame N and delete on Frame N+1
-         */
         for (const auto& event : s_Events)
         {
             EventType evtType = event->GetEventType();
