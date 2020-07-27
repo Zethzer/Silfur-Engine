@@ -27,6 +27,12 @@ namespace Silfur
 
     void Application::Create()
     {
+#if defined(SF_DEBUG) && defined(_WIN32)
+        // Source : https://stackoverflow.com/questions/2492077/output-unicode-strings-in-windows-console-app
+        // These functions are defined in Windows.h include with spdlog.h in Log.hpp
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+#endif
         Log::Init();
         EventManager::Init();
 
