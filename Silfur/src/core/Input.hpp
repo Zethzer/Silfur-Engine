@@ -3,7 +3,7 @@
 #ifndef __SILFUR_CORE_INPUT_HPP__
 #define __SILFUR_CORE_INPUT_HPP__
 
-#include "Core.hpp"
+#include "Base.hpp"
 #include "KeyCodes.hpp"
 #include "MouseCodes.hpp"
 

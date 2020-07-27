@@ -3,7 +3,7 @@
 #ifndef __SILFUR_UTILITY_LOG_LOG_HPP__
 #define __SILFUR_UTILITY_LOG_LOG_HPP__
 
-#include "core/Core.hpp"
+#include "core/Base.hpp"
 #ifdef SF_CORE
     #include "LogCoreMacros.hpp"
 #else

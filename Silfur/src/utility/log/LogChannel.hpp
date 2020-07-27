@@ -3,7 +3,7 @@
 #ifndef __SILFUR_UTILITY_LOG_LOG_CHANNEL_HPP__
 #define __SILFUR_UTILITY_LOG_LOG_CHANNEL_HPP__
 
-#include "core/Core.hpp"
+#include "core/Base.hpp"
 
 #include <string>
 

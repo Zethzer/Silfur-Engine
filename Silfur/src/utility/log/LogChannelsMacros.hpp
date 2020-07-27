@@ -3,7 +3,7 @@
 #ifndef ____SILFUR_UTILITY_LOG_LOG_CHANNEL_MACROS_HPP__
 #define ____SILFUR_UTILITY_LOG_LOG_CHANNEL_MACROS_HPP__
 
-#include "core/Core.hpp"
+#include "core/Base.hpp"
 #include "LogChannel.hpp"
 
 #define DECLARE_LOG_CHANNEL_EXTERN(p_channelName) \

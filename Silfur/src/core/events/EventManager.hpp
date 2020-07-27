@@ -3,7 +3,7 @@
 #ifndef __SILFUR_CORE_EVENTS_EVENT_MANAGER_HPP__
 #define __SILFUR_CORE_EVENTS_EVENT_MANAGER_HPP__
 
-#include "core/Core.hpp"
+#include "core/Base.hpp"
 #include "Event.hpp"
 #include "KeyEvent.hpp"
 

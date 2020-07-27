@@ -3,7 +3,7 @@
 #ifndef __SILFUR_CORE_WINDOW_WINDOW_HPP__
 #define __SILFUR_CORE_WINDOW_WINDOW_HPP__
 
-#include "core/Core.hpp"
+#include "core/Base.hpp"
 #include "VideoMode.hpp"
 
 struct GLFWwindow;
