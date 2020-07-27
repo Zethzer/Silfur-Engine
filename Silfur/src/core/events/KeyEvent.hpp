@@ -70,9 +70,7 @@ namespace Silfur
 
         std::string ToString() const override
         {
-            std::stringstream ss;
-            ss << "KeyTypedEvent: Key code: " << m_KeyCode << " | Text: " << ToUtf8(m_CodePoint);
-            return ss.str();
+            return ToUtf8(m_CodePoint);
         }
 
         EVENT_CLASS_TYPE(KeyTyped)
