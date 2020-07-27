@@ -10,7 +10,14 @@ int main(int argc, char** argv)
     app.CreateWindow({800, 600}, u8"Main Window");
 
     while (app.Run())
-    {}
+    {
+        // For input polling, the keyboard is consider in US layout : QWERTY
+        // Example : SF_KEY_Q is physical Q key on QWERTY keyboard and physical A key on AZERTY keyboard
+        if (Silfur::Input::IsKeyPressed(SF_KEY_ESCAPE))
+        {
+            app.Shutdown();
+        }
+    }
 
     return EXIT_SUCCESS;
 }
