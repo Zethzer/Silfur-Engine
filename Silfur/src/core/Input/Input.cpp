@@ -13,6 +13,11 @@ namespace Silfur
         GLFWwindow* win = Application::Get().GetWindow().WindowHandle();
         int state = glfwGetKey(win, static_cast<int>(p_key));
 
-        return state == GLFW_PRESS || state == GLFW_REPEAT;
+        return state == GLFW_PRESS;
+    }
+
+    const char* Input::GetKeyName(KeyCode p_key)
+    {
+        return glfwGetKeyName(static_cast<int>(p_key), glfwGetKeyScancode(static_cast<int>(p_key)));
     }
 }

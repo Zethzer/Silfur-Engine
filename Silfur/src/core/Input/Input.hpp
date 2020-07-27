@@ -15,6 +15,7 @@ namespace Silfur
     {
     public:
         static bool IsKeyPressed(KeyCode p_key);
+        static const char* GetKeyName(KeyCode p_key);
 
         static bool IsMouseButtonPressed(MouseCode p_button);
         static std::pair<float, float> GetMousePosition();
