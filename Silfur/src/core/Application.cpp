@@ -31,7 +31,7 @@ namespace Silfur
         EventManager::Init();
 
         // TEST
-        EventManager::AddListener<KeyPressedEvent>(SF_BIND_FN(Application::PrintMessage));
+        EventManager::AddListener<KeyTypedEvent>(SF_BIND_FN(Application::PrintMessage));
     }
 
     void Application::CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow)
@@ -70,6 +70,6 @@ namespace Silfur
 
     void Application::PrintMessage(const Scope<Event>& p_event)
     {
-        SF_CORE_DEBUG(Temp, "Event name: {}", p_event->GetName());
+        SF_CORE_DEBUG(Temp, "Event name: {} | {}", p_event->GetName(), p_event->ToString());
     }
 }
