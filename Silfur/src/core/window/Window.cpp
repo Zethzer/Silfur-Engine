@@ -79,11 +79,11 @@ namespace Silfur
             }
         });
 
-        glfwSetCharCallback(m_WinHandle, [](GLFWwindow* p_window, unsigned int p_keycode)
+        glfwSetCharCallback(m_WinHandle, [](GLFWwindow* p_window, unsigned int p_codePoint)
         {
             Window& win = *(Window*)glfwGetWindowUserPointer(p_window);
 
-            KeyTypedEvent event(static_cast<KeyCode>(p_keycode));
+            KeyTypedEvent event(p_codePoint);
             EventManager::PushEvent(CreateScope<KeyTypedEvent>(event));
         });
     }

@@ -23,6 +23,7 @@ namespace Silfur
 
         inline virtual EventType GetEventType() const { return EventType::None; };
         inline virtual const char* GetName() const { return "None"; };
+        virtual std::string ToString() const { return GetName(); };
     };
 }
 

@@ -4,7 +4,8 @@
 #define __SILFUR_CORE_EVENTS_KEY_EVENT_HPP__
 
 #include "Event.hpp"
-#include "core/Input.hpp"
+#include "core/KeyCodes.hpp"
+#include "utility/StringUtils.hpp"
 
 namespace Silfur
 {
@@ -24,20 +25,21 @@ namespace Silfur
     class KeyPressedEvent : public KeyEvent
     {
     public:
-        KeyPressedEvent(KeyCode p_keyCode, int p_repeatCount)
+        explicit KeyPressedEvent(KeyCode p_keyCode, int p_repeatCount)
             : KeyEvent(p_keyCode), m_RepeatCount(p_repeatCount)
         {}
 
         inline int GetRepeatCount() { return m_RepeatCount; }
 
-        std::string ToString() const
+        std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << " repeats)\n";
+            ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << ")";
             return ss.str();
         }
 
         EVENT_CLASS_TYPE(KeyPressed)
+
     private:
         int m_RepeatCount;
     };
@@ -49,10 +51,10 @@ namespace Silfur
                 : KeyEvent(p_keyCode)
         {}
 
-        std::string ToString() const
+        std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "KeyReleasedEvent: " << m_KeyCode << "\n";
+            ss << "KeyReleasedEvent: " << m_KeyCode;
             return ss.str();
         }
 
@@ -62,18 +64,21 @@ namespace Silfur
     class KeyTypedEvent : public KeyEvent
     {
     public:
-        explicit KeyTypedEvent(KeyCode p_keyCode)
-                : KeyEvent(p_keyCode)
+        explicit KeyTypedEvent(unsigned int p_codePoint)
+                : KeyEvent(static_cast<KeyCode>(p_codePoint)), m_CodePoint(p_codePoint)
         {}
 
-        std::string ToString() const
+        std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "KeyTypedEvent: " << m_KeyCode << "\n";
+            ss << "KeyTypedEvent: Key code: " << m_KeyCode << " | Text: " << ToUtf8(m_CodePoint);
             return ss.str();
         }
 
         EVENT_CLASS_TYPE(KeyTyped)
+
+    private:
+        unsigned int m_CodePoint;
     };
 }
 
