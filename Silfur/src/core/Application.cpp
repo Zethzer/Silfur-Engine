@@ -5,6 +5,8 @@
 
 namespace Silfur
 {
+    Application* Application::s_Instance = nullptr;
+
     Application::Application() :
         m_AppName("Hello Silfur"),
         m_AppVersion({1, 0, 0})
@@ -12,9 +14,9 @@ namespace Silfur
         Create();
     }
 
-    Application::Application(std::string p_appName, Version p_appVersion) :
+    Application::Application(std::string p_appName, const Version& p_appVersion) :
         m_AppName(std::move(p_appName)),
-        m_AppVersion(std::move(p_appVersion))
+        m_AppVersion(p_appVersion)
     {
         Create();
     }
@@ -29,15 +31,13 @@ namespace Silfur
     {
 #if defined(SF_DEBUG) && defined(_WIN32)
         // Source : https://stackoverflow.com/questions/2492077/output-unicode-strings-in-windows-console-app
-        // These functions are defined in Windows.h include with spdlog.h in Log.hpp
+        // These functions are defined in Windows.h include with spdlog.h
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);
 #endif
         Log::Init();
         EventManager::Init();
-
-        // TEST
-        EventManager::AddListener<KeyTypedEvent>(SF_BIND_FN(Application::PrintMessage));
+        s_Instance = this;
     }
 
     void Application::CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow)
@@ -69,13 +69,13 @@ namespace Silfur
         return !m_Window->IsClosed;
     }
 
+    void Application::Shutdown()
+    {
+        m_Window->Shutdown();
+    }
+
     void* Application::GetSystemWindowHandle()
     {
         return m_Window->WindowSystemHandle();
-    }
-
-    void Application::PrintMessage(const Scope<Event>& p_event)
-    {
-        SF_CORE_DEBUG(Temp, "Event name: {} | {}", p_event->GetName(), p_event->ToString());
     }
 }

@@ -12,7 +12,6 @@ namespace Silfur
 {
     class Window;
     using WindowPtr = Scope<Window>;
-    class EventManager;
 
     class Window
     {
@@ -22,6 +21,7 @@ namespace Silfur
         ~Window();
 
         void ProcessEvents();
+        void Shutdown();
 
         inline operator GLFWwindow*() const noexcept;
         inline GLFWwindow* WindowHandle() const noexcept;
@@ -29,7 +29,6 @@ namespace Silfur
 
     private:
         void Create(VideoMode p_mode, const char* p_title);
-        void Shutdown();
 
     public:
         bool IsClosed = false;

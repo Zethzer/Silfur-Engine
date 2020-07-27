@@ -21,22 +21,23 @@ namespace Silfur
     {
     public:
         Application();
-        Application(std::string p_appName, Version p_appVersion);
+        Application(std::string p_appName, const Version& p_appVersion);
         ~Application();
 
         void CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow = true);
         bool Run();
+        void Shutdown();
 
+        static Application& Get() { return *s_Instance; }
+        inline Window& GetWindow() const { return *m_Window; }
         void* GetSystemWindowHandle();
-
-
-        // TEST
-        void PrintMessage(const Scope<Event>& p_Event);
 
     private:
         void Create();
 
     private:
+        static Application* s_Instance;
+
         WindowPtr m_Window = nullptr;
         Scope<Renderer> m_Renderer = nullptr;
         std::string m_AppName {};
