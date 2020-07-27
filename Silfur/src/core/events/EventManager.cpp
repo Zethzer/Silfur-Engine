@@ -34,5 +34,7 @@ namespace Silfur
                 func(event);
             }
         }
+
+        s_Events.clear();
     }
 }

@@ -3,6 +3,7 @@
 #ifndef __SILFUR_CORE_EVENTS_EVENT_MANAGER_HPP__
 #define __SILFUR_CORE_EVENTS_EVENT_MANAGER_HPP__
 
+#include "core/Core.hpp"
 #include "Event.hpp"
 #include "KeyEvent.hpp"
 
@@ -10,7 +11,8 @@
 #include <unordered_map>
 #include <functional>
 
-#define SF_BIND_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+#define SF_BIND_FN(fn) [this](auto&&... args) -> decltype(auto) \
+{ return this->fn(std::forward<decltype(args)>(args)...); }
 
 namespace Silfur
 {
