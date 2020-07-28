@@ -12,17 +12,13 @@ int main(int argc, char** argv)
 
     while (app.Run())
     {
-        // For input polling, the keyboard is consider in US layout : QWERTY
-        // Example : SF_KEY_Q is physical Q key on QWERTY keyboard and physical A key on AZERTY keyboard
-        if (Silfur::Input::IsKeyPressed(SF_KEY_ESCAPE))
+        if (Silfur::Input::IsKeyPressed(Silfur::VKey::Escape))
         {
             app.Shutdown();
         }
-        // Physical key A on QWERTY keyboard
-        else if (Silfur::Input::IsKeyPressed(SF_KEY_A))
+        else if (Silfur::Input::IsKeyPressed(Silfur::VKey::A))
         {
-            // Will display : 'q' on AZERTY keyboard and 'a' on QWERTY keyboard
-            SF_TRACE(Temp, "Key: {}", Silfur::Input::GetKeyName(SF_KEY_A));
+            SF_TRACE(Temp, "Key: {}", Silfur::Input::GetKeyName(Silfur::VKey::A));
         }
     }
 
