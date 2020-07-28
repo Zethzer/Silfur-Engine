@@ -7,7 +7,7 @@
 #include "utility/log/LogChannelsMacros.hpp"
 
 #include "core/Application.hpp"
-#include "core/Input/Input.hpp"
-#include "core/Input/KeyCodes.hpp"
+#include "core/input/Input.hpp"
+#include "core/input/Keyboard.hpp"
 
 #endif // __SILFUR_HPP__

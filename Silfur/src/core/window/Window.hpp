@@ -6,7 +6,9 @@
 #include "core/Base.hpp"
 #include "VideoMode.hpp"
 
-struct GLFWwindow;
+#include <SDL2/SDL_events.h>
+
+struct SDL_Window;
 
 namespace Silfur
 {
@@ -23,18 +25,19 @@ namespace Silfur
         void ProcessEvents();
         void Shutdown();
 
-        inline operator GLFWwindow*() const noexcept;
-        inline GLFWwindow* WindowHandle() const noexcept;
+        inline operator SDL_Window*() const noexcept;
+        inline SDL_Window* WindowHandle() const noexcept;
         void* WindowSystemHandle() const noexcept;
 
     private:
         void Create(VideoMode p_mode, const char* p_title);
+        int static SDLCALL HandleEvent(void* p_userdata, SDL_Event* p_event);
 
     public:
         bool IsClosed = false;
 
     private:
-        GLFWwindow* m_WinHandle {};
+        SDL_Window* m_WinHandle {};
     };
 }
 

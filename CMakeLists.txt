@@ -20,12 +20,12 @@ endif()
 find_program(GLSLC_EXECUTABLE glslc HINTS "$ENV{VULKAN_SDK}/bin")
 if (GLSLC_EXECUTABLE)
     message(STATUS "  - GLSLC executable: ${GLSLC_EXECUTABLE}")
-else ()
+else()
     # GLSLC executable not found, send a warning
 
     set(GLSLC_EXECUTABLE "" CACHE PATH "Path to your GLSLC executable")
     message(WARNING "Warning: GLSLC executable not found. To compile shaders into SPIR-V, please specify its path manually.")
-endif ()
+endif()
 
 # Shaders compilation
 if (GLSLC_EXECUTABLE)
@@ -70,8 +70,8 @@ if (GLSLC_EXECUTABLE)
         )
 
         set (SHADERS_COMP ${SHADERS_COMP} ${SHADER_OUTPUT_PATH})
-    endforeach ()
+    endforeach()
 
     # Create custom target for shaders
     add_custom_target(CompileShaders ALL DEPENDS ${SHADERS_COMP})
-endif ()
+endif()

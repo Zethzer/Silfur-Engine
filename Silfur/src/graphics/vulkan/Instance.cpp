@@ -6,18 +6,18 @@
 #include "graphics/vulkan/debug/Debug.hpp"
 
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
+#include <SDL2/SDL_vulkan.h>
 
 #include <sstream>
 
-// #TODO-Zeth : Create necessary enum class for replace enum C style of Vulkan API for Instance class
-// #TODO-Zeth : Think about parameters for create the instance
+// #TODO Create necessary enum class for replace enum C style of Vulkan API for Instance class
+// #TODO Think about parameters for create the instance
 
 namespace Silfur
 {
     namespace Vk
     {
-        void Instance::Create(const std::string& p_appName, const Version& p_appVersion)
+        void Instance::Create(const std::string& p_appName, const Version& p_appVersion, const Window& p_window)
         {
             if (!checkValidationLayerSupport() && enableValidationLayers)
             {
@@ -47,7 +47,7 @@ namespace Silfur
             }
 
             VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-            auto requiredExtensions = getRequiredExtensions();
+            auto requiredExtensions = getRequiredExtensions(p_window);
             VkInstanceCreateInfo createInfo = createVkInstanceCreateInfo(appInfo, requiredExtensions, debugCreateInfo);
 
             if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
@@ -77,7 +77,7 @@ namespace Silfur
         {
             VkSurfaceKHR surface;
 
-            if (glfwCreateWindowSurface(m_Instance, p_window, nullptr, &surface) != VK_SUCCESS)
+            if (SDL_Vulkan_CreateSurface(p_window, m_Instance, &surface) != SDL_TRUE)
             {
                 SF_CORE_FATAL(Vulkan, 24, "Failed to create window surface!");
                 std::exit(EXIT_FAILURE);
@@ -144,13 +144,16 @@ namespace Silfur
             return createInfo;
         }
 
-        std::vector<const char*> Instance::getRequiredExtensions()
+        std::vector<const char*> Instance::getRequiredExtensions(const Window& p_window)
         {
-            uint32_t glfwExtensionCount = 0;
-            const char** glfwExtensions;
-            glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+            uint32_t SDLExtensionsCount;
+            SDL_Vulkan_GetInstanceExtensions(nullptr, &SDLExtensionsCount, nullptr);
 
-            std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+            const char **SDLExtensions = static_cast<const char**>(malloc(sizeof(const char *) * SDLExtensionsCount));
+
+            SDL_Vulkan_GetInstanceExtensions(nullptr, &SDLExtensionsCount, SDLExtensions);
+
+            std::vector<const char*> extensions(SDLExtensions, SDLExtensions + SDLExtensionsCount);
 
             if (enableValidationLayers)
             {

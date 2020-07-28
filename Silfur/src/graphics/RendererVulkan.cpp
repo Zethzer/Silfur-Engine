@@ -3,7 +3,8 @@
 
 #include "graphics/vulkan/debug/ValidationLayers.hpp"
 
-#include <GLFW/glfw3.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_vulkan.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -286,8 +287,8 @@ namespace Silfur
 
     void Renderer::createInstance(const std::string& p_appName, const Version& p_appVersion)
     {
-        // #TODO-Zeth : Maybe leave the informations of the instance here
-        s_Instance.Create(p_appName, p_appVersion);
+        // #TODO Maybe leave the informations of the instance here
+        s_Instance.Create(p_appName, p_appVersion, m_Window);
         m_Surface = s_Instance.CreateSurface(m_Window);
     }
 
@@ -534,7 +535,7 @@ namespace Silfur
         else
         {
             int width, height;
-            glfwGetFramebufferSize(m_Window, &width, &height);
+            SDL_Vulkan_GetDrawableSize(m_Window, &width, &height);
 
             VkExtent2D actualExtent = {
                 static_cast<uint32_t>(width),
@@ -616,13 +617,13 @@ namespace Silfur
     {
         // Handling minimization of the window
         int width = 0, height = 0;
-        glfwGetFramebufferSize(m_Window, &width, &height);
+        SDL_Vulkan_GetDrawableSize(m_Window, &width, &height);
         while (width == 0 || height == 0)
         {
-            glfwGetFramebufferSize(m_Window, &width, &height);
+            SDL_Vulkan_GetDrawableSize(m_Window, &width, &height);
 
             // Wait until next event : normally the window appear in the foreground
-            glfwWaitEvents();
+            SDL_WaitEvent(nullptr);
         }
 
         // Wait for GPU to finish execute commands

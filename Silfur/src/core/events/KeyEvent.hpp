@@ -4,68 +4,78 @@
 #define __SILFUR_CORE_EVENTS_KEY_EVENT_HPP__
 
 #include "Event.hpp"
-#include "core/Input/KeyCodes.hpp"
+#include "core/input/Keyboard.hpp"
 #include "utility/StringUtils.hpp"
 
 namespace Silfur
 {
+    typedef struct KeyInfo
+    {
+        VKey vKey;
+        ScanCode scancode;
+        bool alt;
+        bool shift;
+        bool control;
+        bool repeated;
+        bool system;
+    } KeyInfo;
+
     class KeyEvent : public Event
     {
     public:
-        inline KeyCode GetKeyCode() const { return m_KeyCode; }
+        inline VKey GetKeyCode() const { return m_KeyInfo.vKey; }
 
     protected:
-        explicit KeyEvent(KeyCode p_keyCode)
-            : m_KeyCode(p_keyCode)
+        explicit KeyEvent(KeyInfo p_keyInfo)
+            : m_KeyInfo(p_keyInfo)
         {}
 
-        KeyCode m_KeyCode;
+        KeyInfo m_KeyInfo;
     };
 
     class KeyPressedEvent : public KeyEvent
     {
     public:
-        explicit KeyPressedEvent(KeyCode p_keyCode, int p_repeatCount)
-            : KeyEvent(p_keyCode), m_RepeatCount(p_repeatCount)
+        explicit KeyPressedEvent(KeyInfo p_keyInfo)
+            : KeyEvent(p_keyInfo)
         {}
 
-        inline int GetRepeatCount() { return m_RepeatCount; }
+        inline int IsRepeated() { return m_KeyInfo.repeated; }
 
         std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << ")";
+            ss << "KeyPressedEvent: Key: " << m_KeyInfo.vKey << " | Scancode: "
+                << m_KeyInfo.scancode << " (" << m_KeyInfo.repeated << ")";
             return ss.str();
         }
 
         EVENT_CLASS_TYPE(KeyPressed)
-
-    private:
-        int m_RepeatCount;
     };
 
     class KeyReleasedEvent : public KeyEvent
     {
     public:
-        explicit KeyReleasedEvent(KeyCode p_keyCode)
-                : KeyEvent(p_keyCode)
+        explicit KeyReleasedEvent(KeyInfo p_keyInfo)
+                : KeyEvent(p_keyInfo)
         {}
 
         std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "KeyReleasedEvent: " << m_KeyCode;
+            ss << "KeyPressedEvent: Key: " << m_KeyInfo.vKey << " | Scancode: "
+               << m_KeyInfo.scancode;
             return ss.str();
         }
 
         EVENT_CLASS_TYPE(KeyReleased)
     };
 
-    class KeyTypedEvent : public KeyEvent
+    /*class KeyTypedEvent : public KeyEvent
     {
     public:
         explicit KeyTypedEvent(unsigned int p_codePoint)
-                : KeyEvent(static_cast<KeyCode>(p_codePoint)), m_CodePoint(p_codePoint)
+                : KeyEvent(static_cast<VKey>(p_codePoint)), m_CodePoint(p_codePoint)
         {}
 
         std::string ToString() const override
@@ -77,7 +87,7 @@ namespace Silfur
 
     private:
         unsigned int m_CodePoint;
-    };
+    };*/
 }
 
 #endif // __SILFUR_CORE_EVENTS_KEY_EVENT_HPP__

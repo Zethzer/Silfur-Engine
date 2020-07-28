@@ -14,13 +14,34 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
     message(STATUS "Debug configuration")
     target_compile_definitions(${PROJECT_NAME} PUBLIC SF_CONFIG_DEBUG)
 endif()
+
 ### Precompiled headers ###
 target_precompile_headers(${PROJECT_NAME} PUBLIC "src/sfpch.hpp")
 
 ### Dependencies ###
-# GLFW
-add_subdirectory(vendor/GLFW)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw "${GLFW_LIBRARIES}")
+# SDL2
+if (WIN32)
+    # Configure manually on Windows
+    set(SDL2_PATH "${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL2")
+
+    target_include_directories(${PROJECT_NAME} PUBLIC "${SDL2_PATH}/include")
+
+    target_link_directories(${PROJECT_NAME} PUBLIC "${SDL2_PATH}/lib")
+
+    if(MINGW)
+        # MINGW SDL2 Dependencies in SHARED - Not use for the moment
+        # set(SDL2_EXTRA_LINK_FLAGS "-lmingw32 -lSDL2main -lSDL2 -mwindows")
+
+        # MINGW SDL2 dependencies in STATIC
+        set(SDL2_EXTRA_LINK_FLAGS_STATIC "-lmingw32 -lSDL2main -lSDL2 -mwindows  -Wl,--no-undefined -Wl,--dynamicbase
+        -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32
+        -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc")
+
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_EXTRA_LINK_FLAGS_STATIC})
+    else(MSVC)
+        target_link_libraries(${PROJECT_NAME} PRIVATE SDL2main SDL2)
+    endif()
+endif()
 
 # Vulkan SDK
 if (NOT VULKAN_SDK_ROOT)
@@ -34,8 +55,8 @@ if (NOT VULKAN_SDK_ROOT)
 
         set(VULKAN_SDK_INCLUDE "${Vulkan_INCLUDE_DIRS}")
         set(VULKAN_SDK_LIB "${Vulkan_LIBRARIES}")
-    endif ()
-endif ()
+    endif()
+endif()
 
 if (NOT VULKAN_FOUND)
     # If not found automatically by find_package(), try another way
@@ -44,7 +65,7 @@ if (NOT VULKAN_FOUND)
     if (NOT VULKAN_SDK_ROOT AND WIN32)
         # If under Windows with the path not manually set, try to locate it from the environment variable
         set(VULKAN_SDK_ROOT "$ENV{VULKAN_SDK}")
-    endif ()
+    endif()
 
     if (VULKAN_SDK_ROOT)
         # SDK path has been defined
@@ -53,19 +74,19 @@ if (NOT VULKAN_FOUND)
             string(REPLACE "\\" "/" VULKAN_SDK_ROOT ${VULKAN_SDK_ROOT})
             set(VULKAN_SDK_INCLUDE "${VULKAN_SDK_ROOT}/Include")
             set(VULKAN_SDK_LIB "${VULKAN_SDK_ROOT}/Lib/vulkan-1.lib")
-        endif ()
+        endif()
 
         if (EXISTS "${VULKAN_SDK_INCLUDE}/vulkan/vulkan.h" AND EXISTS "${VULKAN_SDK_LIB}")
             set(VULKAN_FOUND ON)
-        endif ()
-    endif ()
-endif ()
+        endif()
+    endif()
+endif()
 
 if (VULKAN_FOUND)
     message(STATUS "Vulkan configuration :")
     if (VULKAN_SDK_ROOT)
         message(STATUS "  - Root path: ${VULKAN_SDK_ROOT}")
-    endif ()
+    endif()
     message(STATUS "  - Include: ${VULKAN_SDK_INCLUDE}")
     message(STATUS "  - Library: ${VULKAN_SDK_LIB}")
 
@@ -82,6 +103,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC "src")
 target_include_directories(${PROJECT_NAME} PUBLIC "vendor/portable-snippets")
 target_include_directories(${PROJECT_NAME} PUBLIC "vendor/spdlog/include")
 target_include_directories(${PROJECT_NAME} PUBLIC "vendor/glm")
-target_include_directories(${PROJECT_NAME} PRIVATE "vendor/GLFW/include")
 target_include_directories(${PROJECT_NAME} PRIVATE "vendor/stb")
 target_include_directories(${PROJECT_NAME} PRIVATE "vendor/tinyobjloader")

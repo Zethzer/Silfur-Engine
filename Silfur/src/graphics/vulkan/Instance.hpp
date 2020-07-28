@@ -25,7 +25,7 @@ namespace Silfur
             Instance(const Instance&) = delete;
             Instance(Instance&&) = delete;
 
-            void Create(const std::string& p_appName, const Version& p_appVersion);
+            void Create(const std::string& p_appName, const Version& p_appVersion, const Window& p_window);
             void Destroy();
 
             VkSurfaceKHR CreateSurface(const Window& p_window);
@@ -40,7 +40,7 @@ namespace Silfur
                 const std::vector<const char*>& p_requiredExtensions,
                 VkDebugUtilsMessengerCreateInfoEXT& p_debugCreateInfo);
 
-            std::vector<const char*> getRequiredExtensions();
+            std::vector<const char*> getRequiredExtensions(const Window& p_window);
             bool checkRequiredExtensions(const std::vector<VkExtensionProperties>& p_vkExtensionsAvailable, const std::vector<const char*>& p_requiredExtensions);
 
             void setupDebugMessenger();

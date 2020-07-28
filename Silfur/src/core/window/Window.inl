@@ -5,12 +5,12 @@
 
 namespace Silfur
 {
-    inline GLFWwindow* Window::WindowHandle() const noexcept
+    inline SDL_Window* Window::WindowHandle() const noexcept
     {
         return m_WinHandle;
     }
 
-    inline Window::operator GLFWwindow*() const noexcept
+    inline Window::operator SDL_Window*() const noexcept
     {
         return m_WinHandle;
     }
