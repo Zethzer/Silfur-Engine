@@ -1,5 +1,4 @@
 #include <Silfur.hpp>
-#include <iostream>
 
 #if defined(_WIN32) && defined(_MSC_VER) && defined(_NDEBUG)
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
