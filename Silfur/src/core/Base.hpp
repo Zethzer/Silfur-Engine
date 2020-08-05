@@ -43,6 +43,21 @@
     #define FORCENOINLINE
 #endif
 
+/* -------- C API CALL -------- */
+/* Uses the C calling convention */
+#ifndef CAPICALL
+    #if (defined(__WIN32__) || defined(__WINRT__)) && !defined(__GNUC__)
+        #define CAPICALL __cdecl
+    #elif defined(__OS2__) || defined(__EMX__)
+        #define CAPICALL _System
+        # if defined (__GNUC__) && !defined(_System)
+            #  define _System /* for old EMX/GCC compat.  */
+        # endif
+    #else
+        #define CAPICALL
+    #endif
+#endif
+
 #include <memory>
 namespace Silfur
 {

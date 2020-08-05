@@ -3,12 +3,12 @@
 #ifndef __SILFUR_CORE_APPLICATION_HPP__
 #define __SILFUR_CORE_APPLICATION_HPP__
 
-#include "utility/log/Log.hpp"
 #include "Base.hpp"
+#include "utility/log/Log.hpp"
 #include "window/Window.hpp"
 #include "graphics/RendererVulkan.hpp"
 
-// Because of spdlog in Log.hpp
+// Because of <spdlog/logger.h> in Log.hpp
 #ifdef CreateWindow
     #undef CreateWindow
 #endif

@@ -11,7 +11,7 @@
 #endif
 #include "LogChannelsMacros.hpp"
 
-#include "spdlog/spdlog.h"
+#include <spdlog/logger.h>
 
 namespace Silfur
 {

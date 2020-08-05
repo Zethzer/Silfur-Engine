@@ -6,9 +6,8 @@
 #include "core/Base.hpp"
 #include "VideoMode.hpp"
 
-#include <SDL2/SDL_events.h>
-
 struct SDL_Window;
+union SDL_Event;
 
 namespace Silfur
 {
@@ -31,7 +30,7 @@ namespace Silfur
 
     private:
         void Create(VideoMode p_mode, const char* p_title);
-        int static SDLCALL HandleEvent(void* p_userdata, SDL_Event* p_event);
+        int static CAPICALL HandleEvent(void* p_userdata, SDL_Event* p_event);
 
     public:
         bool IsClosed = false;
