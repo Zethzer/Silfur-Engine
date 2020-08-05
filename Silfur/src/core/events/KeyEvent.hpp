@@ -5,7 +5,6 @@
 
 #include "Event.hpp"
 #include "core/input/Keyboard.hpp"
-#include "utility/StringUtils.hpp"
 
 namespace Silfur
 {
@@ -23,7 +22,7 @@ namespace Silfur
     class KeyEvent : public Event
     {
     public:
-        inline VKey GetKeyCode() const { return m_KeyInfo.vKey; }
+        inline KeyInfo GetInfos() const { return m_KeyInfo; }
 
     protected:
         explicit KeyEvent(KeyInfo p_keyInfo)
@@ -70,24 +69,6 @@ namespace Silfur
 
         EVENT_CLASS_TYPE(KeyReleased)
     };
-
-    /*class KeyTypedEvent : public KeyEvent
-    {
-    public:
-        explicit KeyTypedEvent(unsigned int p_codePoint)
-                : KeyEvent(static_cast<VKey>(p_codePoint)), m_CodePoint(p_codePoint)
-        {}
-
-        std::string ToString() const override
-        {
-            return ToUtf8(m_CodePoint);
-        }
-
-        EVENT_CLASS_TYPE(KeyTyped)
-
-    private:
-        unsigned int m_CodePoint;
-    };*/
 }
 
 #endif // __SILFUR_CORE_EVENTS_KEY_EVENT_HPP__

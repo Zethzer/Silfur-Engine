@@ -3,14 +3,10 @@
 #ifndef __SILFUR_CORE_EVENTS_EVENT_HPP__
 #define __SILFUR_CORE_EVENTS_EVENT_HPP__
 
+#include "EventType.hpp"
+
 namespace Silfur
 {
-    enum class EventType
-    {
-        None = 0,
-        KeyPressed, KeyReleased, KeyTyped
-    };
-
 #define EVENT_CLASS_TYPE(type)  static EventType GetStaticType() { return EventType::type; }\
                                 virtual EventType GetEventType() const override { return GetStaticType(); }\
                                 virtual const char* GetName() const override { return #type; }
