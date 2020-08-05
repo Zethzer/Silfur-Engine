@@ -1,15 +1,17 @@
 #include "sfpch.hpp"
 #include "EventManager.hpp"
 
+#include "Event.hpp"
+
 namespace Silfur
 {
     std::vector<Scope<Event>> EventManager::s_Events;
-    std::unordered_map<EventType, std::function<void(const Scope<Event>&)>> EventManager::s_Listeners;
+    std::unordered_map<EventType, std::list<std::function<void(const Scope<Event>&)>>> EventManager::s_Listeners;
 
     void EventManager::Init()
     {
         s_Events.reserve(10000);
-        s_Listeners.reserve(10000);
+        s_Listeners.reserve(20);
     }
 
     void EventManager::PushEvent(Scope<Event> p_event)
@@ -22,10 +24,12 @@ namespace Silfur
         for (const auto& event : s_Events)
         {
             EventType evtType = event->GetEventType();
-            std::function<void(const Scope<Event>&)> func = s_Listeners[evtType];
-            if (func)
+            for (const auto& func : s_Listeners[evtType])
             {
-                func(event);
+                if (func)
+                {
+                    func(event);
+                }
             }
         }
 
