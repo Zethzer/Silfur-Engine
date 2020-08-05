@@ -10,7 +10,7 @@ add_library(${PROJECT_NAME} ${SRC_FILES})
 ### Compile definitions and features ###
 target_compile_definitions(${PROJECT_NAME} PRIVATE SF_CORE)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-if (CMAKE_BUILD_TYPE MATCHES "Debug")
+if (CMAKE_BUILD_TYPE MATCHES "Debug" OR CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
     message(STATUS "Debug configuration")
     target_compile_definitions(${PROJECT_NAME} PUBLIC SF_CONFIG_DEBUG)
 endif()
@@ -29,11 +29,16 @@ if (WIN32)
     target_link_directories(${PROJECT_NAME} PUBLIC "${SDL2_PATH}/lib")
 
     if(MINGW)
+        if (CMAKE_BUILD_TYPE MATCHES "Debug" OR CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
+            set(SDL2_MODE "-mconsole")
+        elseif(CMAKE_BUILD_TYPE MATCHES "Release")
+            set(SDL2_MODE "-mwindows")
+        endif()
         # MINGW SDL2 Dependencies in SHARED - Not use for the moment
-        # set(SDL2_EXTRA_LINK_FLAGS "-lmingw32 -lSDL2main -lSDL2 -mwindows")
+        # set(SDL2_EXTRA_LINK_FLAGS "-lmingw32 -lSDL2main -lSDL2 ${SDL2_MODE}")
 
         # MINGW SDL2 dependencies in STATIC
-        set(SDL2_EXTRA_LINK_FLAGS_STATIC "-lmingw32 -lSDL2main -lSDL2 -mwindows  -Wl,--no-undefined -Wl,--dynamicbase
+        set(SDL2_EXTRA_LINK_FLAGS_STATIC "-lmingw32 -lSDL2main -lSDL2 ${SDL2_MODE} -Wl,--no-undefined -Wl,--dynamicbase
         -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32
         -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc")
 
