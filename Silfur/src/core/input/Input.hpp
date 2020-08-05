@@ -5,12 +5,14 @@
 
 #include "core/Base.hpp"
 #include "Keyboard.hpp"
-#include "MouseCodes.hpp"
+#include "Mouse.hpp"
 
 #include <utility>
 
 namespace Silfur
 {
+    class Window;
+
     class Input
     {
     public:
@@ -21,10 +23,11 @@ namespace Silfur
         static ScanCode ToScanCode(VKey p_key);
         static VKey ToVirtualKey(ScanCode p_scancode);
 
-        /*static bool IsMouseButtonPressed(MouseCode p_button);
-        static std::pair<float, float> GetMousePosition();
-        static float GetMouseX();
-        static float GetMouseY();*/
+        static bool IsMouseButtonPressed(MouseButton p_button);
+        static std::pair<int, int> GetMousePosition();
+        static std::pair<int, int> GetMousePositionRelativeToFocusWindow();
+        static std::pair<int, int> GetMouseRelativePosition();
+        static bool SetRelativeMouseMode(bool p_enabled);
     };
 }
 

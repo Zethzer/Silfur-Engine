@@ -4,9 +4,11 @@
 #include "utility/log/Log.hpp"
 #include "core/events/EventManager.hpp"
 #include "core/events/KeyEvent.hpp"
+#include "core/events/MouseEvent.hpp"
 #include "core/input/Helper.hpp"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_syswm.h>
 
 namespace Silfur
@@ -75,7 +77,7 @@ namespace Silfur
         #endif
     }
 
-    int SDLCALL Window::HandleEvent(void *p_userdata, SDL_Event *p_event)
+    int CAPICALL Window::HandleEvent(void* p_userdata, SDL_Event* p_event)
     {
         auto window = static_cast<Window*>(p_userdata);
 
@@ -118,6 +120,48 @@ namespace Silfur
 
                 KeyReleasedEvent event(keyInfo);
                 EventManager::PushEvent(CreateScope<KeyReleasedEvent>(event));
+            }
+                break;
+
+            case SDL_MOUSEBUTTONDOWN: {
+                MouseButtonDownInfo info;
+                info.button = SDLHelper::FromSDL(p_event->button.button);
+                info.x = p_event->button.x;
+                info.y = p_event->button.y;
+
+                MouseButtonDownEvent event(info);
+                EventManager::PushEvent(CreateScope<MouseButtonDownEvent>(event));
+            }
+                break;
+            case SDL_MOUSEBUTTONUP: {
+                MouseButtonUpInfo info;
+                info.button = SDLHelper::FromSDL(p_event->button.button);
+                info.x = p_event->button.x;
+                info.y = p_event->button.y;
+
+                MouseButtonUpEvent event(info);
+                EventManager::PushEvent(CreateScope<MouseButtonUpEvent>(event));
+            }
+                break;
+            case SDL_MOUSEMOTION: {
+                MouseMotionInfo info;
+                info.x = p_event->motion.x;
+                info.y = p_event->motion.y;
+                info.xRelative = p_event->motion.xrel;
+                info.yRelative = p_event->motion.yrel;
+
+                MouseMotionEvent event(info);
+                EventManager::PushEvent(CreateScope<MouseMotionEvent>(event));
+            }
+                break;
+            case SDL_MOUSEWHEEL: {
+                MouseWheelInfo info;
+                info.x = p_event->wheel.x;
+                info.y = p_event->wheel.y;
+                info.direction = p_event->wheel.direction;
+
+                MouseWheelEvent event(info);
+                EventManager::PushEvent(CreateScope<MouseWheelEvent>(event));
             }
                 break;
             default:

@@ -1,6 +1,8 @@
 #include "sfpch.hpp"
 #include "Helper.hpp"
 
+#include "utility/log/Log.hpp"
+
 namespace Silfur
 {
     SDL_Scancode SfScanCodeToSDLScanCode[static_cast<std::size_t>(ScanCode::Max) + 1] = {
@@ -515,6 +517,21 @@ namespace Silfur
             case SDL_SCANCODE_RGUI:         return ScanCode::RightSuper;
             case SDL_SCANCODE_APPLICATION:  return ScanCode::Menu;
             default:                        return ScanCode::Undefined;
+        }
+    }
+
+    MouseButton SDLHelper::FromSDL(uint8_t p_sdlButton)
+    {
+        switch(p_sdlButton)
+        {
+            case SDL_BUTTON_LEFT:   return MouseButton::Left;
+            case SDL_BUTTON_RIGHT:  return MouseButton::Right;
+            case SDL_BUTTON_MIDDLE: return MouseButton::Middle;
+            case SDL_BUTTON_X1:     return MouseButton::X1;
+            case SDL_BUTTON_X2:     return MouseButton::X2;
+            default:
+                SF_CORE_INFO(Input, "Unknow mouse button.");
+                return MouseButton::Left;
         }
     }
 
