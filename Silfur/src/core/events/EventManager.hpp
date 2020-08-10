@@ -66,7 +66,7 @@ namespace Silfur
 
     private:
         static std::vector<Scope<Event>> s_Events;
-        static std::unordered_map<EventType, std::list<std::function<void(const Scope<Event>&)>>> s_Listeners;
+        static std::unordered_map<EventType, std::list<std::function<void(Event&)>>> s_Listeners;
     };
 }
 

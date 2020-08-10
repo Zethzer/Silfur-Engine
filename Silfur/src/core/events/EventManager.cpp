@@ -6,7 +6,7 @@
 namespace Silfur
 {
     std::vector<Scope<Event>> EventManager::s_Events;
-    std::unordered_map<EventType, std::list<std::function<void(const Scope<Event>&)>>> EventManager::s_Listeners;
+    std::unordered_map<EventType, std::list<std::function<void(Event&)>>> EventManager::s_Listeners;
 
     void EventManager::Init()
     {
@@ -28,7 +28,7 @@ namespace Silfur
             {
                 if (func)
                 {
-                    func(event);
+                    func(*event);
                 }
             }
         }

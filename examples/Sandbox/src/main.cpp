@@ -1,9 +1,9 @@
 #include <Silfur.hpp>
 
 // Listener for example of binding function in global scope
-void PrintMouseWheelInfos(const Silfur::Scope<Silfur::Event>& p_event)
+void PrintMouseWheelInfos(Silfur::Event& p_event)
 {
-    SF_TRACE(Temp, "Mouse wheel event informations: {}", p_event->ToString());
+    SF_TRACE(Temp, "Mouse wheel event informations: {}", p_event.ToString());
 }
 
 // Class example
@@ -18,12 +18,12 @@ public:
     };
     ~Game() = default;
 
-    void PrintMouseButtonDownInfos(const Silfur::Scope<Silfur::Event>& p_event)
+    void PrintMouseButtonDownInfos(Silfur::Event& p_event)
     {
-        SF_TRACE(Temp, "Mouse button down event informations: {}", p_event->ToString());
+        SF_TRACE(Temp, "Mouse button down event informations: {}", p_event.ToString());
     }
 
-    void PrintMessageOnMouseButtonDown(const Silfur::Scope<Silfur::Event>& p_event)
+    void PrintMessageOnMouseButtonDown(Silfur::Event& p_event)
     {
         SF_TRACE(Temp, "Message on mouse button down!");
     }
