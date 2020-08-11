@@ -3,6 +3,7 @@
 
 #include "utility/log/Log.hpp"
 #include "core/events/EventManager.hpp"
+#include "core/events/WindowEvent.hpp"
 #include "core/events/KeyEvent.hpp"
 #include "core/events/MouseEvent.hpp"
 #include "core/input/Helper.hpp"
@@ -18,6 +19,7 @@ namespace Silfur
         IsClosed(false)
     {
         Create(p_mode, p_title);
+        EventManager::AddListener<WindowCloseEvent>(SF_BIND_MEMBER_FN(OnWindowClose));
     }
 
     Window::~Window()
@@ -44,10 +46,10 @@ namespace Silfur
                                    SDL_WINDOWPOS_UNDEFINED,
                                    p_mode.Width,
                                    p_mode.Height,
-                                   SDL_WINDOW_SHOWN | SDL_WINDOW_VULKAN);
+                                   SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
         if(!m_WinHandle)
         {
-            SF_CORE_FATAL(Window_l, 11, "Faild to create the window: {}", SDL_GetError());
+            SF_CORE_FATAL(Window_l, 11, "Failed to create the window: {}", SDL_GetError());
         }
 
         // Set handle callback for SDL
@@ -79,16 +81,64 @@ namespace Silfur
 
     int CAPICALL Window::HandleEvent(void* p_userdata, SDL_Event* p_event)
     {
-        auto window = static_cast<Window*>(p_userdata);
+        //auto window = static_cast<Window*>(p_userdata);
 
         switch(p_event->type)
         {
             case SDL_WINDOWEVENT:
                 switch(p_event->window.event)
                 {
-                    case SDL_WINDOWEVENT_CLOSE:
-                        window->Shutdown();
+                    case SDL_WINDOWEVENT_CLOSE: {
+                        WindowCloseEvent event;
+                        EventManager::PushEvent(CreateScope<WindowCloseEvent>(event));
+                    }
                         break;
+                    case SDL_WINDOWEVENT_MOVED: {
+                        WindowEventInfo windowEventInfo;
+                        windowEventInfo.x = p_event->window.data1;
+                        windowEventInfo.y = p_event->window.data2;
+
+                        WindowMovedEvent event(windowEventInfo);
+                        EventManager::PushEvent(CreateScope<WindowMovedEvent>(event));
+                    }
+                        break;
+                    case SDL_WINDOWEVENT_SIZE_CHANGED: {
+                        WindowEventInfo windowEventInfo;
+                        windowEventInfo.width = p_event->window.data1;
+                        windowEventInfo.height = p_event->window.data2;
+
+                        WindowSizeChangedEvent event(windowEventInfo);
+                        EventManager::PushEvent(CreateScope<WindowSizeChangedEvent>(event));
+                    }
+                        break;
+                    case SDL_WINDOWEVENT_RESIZED: {
+                        WindowEventInfo windowEventInfo;
+                        windowEventInfo.width = p_event->window.data1;
+                        windowEventInfo.height = p_event->window.data2;
+
+                        WindowResizedEvent event(windowEventInfo);
+                        EventManager::PushEvent(CreateScope<WindowResizedEvent>(event));
+                    }
+                        break;
+                    case SDL_WINDOWEVENT_ENTER: {
+                        WindowEnterEvent event;
+                        EventManager::PushEvent(CreateScope<WindowEnterEvent>(event));
+                    }
+                        break;
+                    case SDL_WINDOWEVENT_LEAVE: {
+                        WindowLeaveEvent event;
+                        EventManager::PushEvent(CreateScope<WindowLeaveEvent>(event));
+                    }
+                        break;
+                    case SDL_WINDOWEVENT_FOCUS_GAINED: {
+                        WindowFocusGainedEvent event;
+                        EventManager::PushEvent(CreateScope<WindowFocusGainedEvent>(event));
+                    }
+                        break;
+                    case SDL_WINDOWEVENT_FOCUS_LOST: {
+                        WindowFocusLostEvent event;
+                        EventManager::PushEvent(CreateScope<WindowFocusLostEvent>(event));
+                    }
                     default:
                         break;
                 }
@@ -169,5 +219,10 @@ namespace Silfur
         }
 
         return 0;
+    }
+
+    void Window::OnWindowClose(Event &p_event)
+    {
+        Shutdown();
     }
 }

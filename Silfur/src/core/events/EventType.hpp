@@ -9,7 +9,9 @@ namespace Silfur
     {
         None = 0,
         KeyPressed, KeyReleased,
-        MouseButtonDown, MouseButtonUp, MouseMotion, MouseWheel
+        MouseButtonDown, MouseButtonUp, MouseMotion, MouseWheel,
+        WindowClose, WindowMoved, WindowSizeChanged, WindowResized,
+        WindowEnter, WindowLeave, WindowFocusGained, WindowFocusLost
     };
 }
 
