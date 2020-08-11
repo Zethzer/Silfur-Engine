@@ -178,6 +178,7 @@ namespace Silfur
 
         void loadModel();
 
+        void OnWindowResized(Event& p_event);
     private:
         int m_MaxFramesInFlight = 3; // Triple buffering
 
@@ -185,6 +186,8 @@ namespace Silfur
 
         std::vector<Vertex> m_Vertices {};
         std::vector<uint32_t> m_Indices {};
+
+        bool m_FramebufferResized = false;
 
         // Vulkan resources
         static Vk::Instance s_Instance;

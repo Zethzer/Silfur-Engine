@@ -2,6 +2,8 @@
 #include "RendererVulkan.hpp"
 
 #include "graphics/vulkan/debug/ValidationLayers.hpp"
+#include "core/events/EventManager.hpp"
+#include "core/events/WindowEvent.hpp"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_vulkan.h>
@@ -69,6 +71,8 @@ namespace Silfur
         createDescriptorSets();
         createCommandBuffers();
         CreateSyncObjects();
+
+        EventManager::AddListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
     }
 
     Renderer::~Renderer()
@@ -175,6 +179,7 @@ namespace Silfur
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
         {
+            m_FramebufferResized = false;
             recreateSwapChain();
         }
         else if (result != VK_SUCCESS)
@@ -1778,5 +1783,10 @@ namespace Silfur
                 m_Indices.push_back(uniqueVertices[vertex]);
             }
         }
+    }
+
+    void Renderer::OnWindowResized(Event &p_event)
+    {
+        m_FramebufferResized = true;
     }
 }
