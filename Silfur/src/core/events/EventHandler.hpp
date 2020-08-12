@@ -20,7 +20,9 @@ namespace Silfur
 
     public:
         EventHandler();
-        EventHandler(const EventHandler& p_other);
+
+        EventHandler(const EventHandler&) = delete;
+        EventHandler(EventHandler&&) = delete;
 
         static EventHandler& Get() { return *s_Instance; }
 
@@ -58,6 +60,8 @@ namespace Silfur
 
         void Dispatch();
 
+        EventHandler& operator=(const EventHandler&) = delete;
+        EventHandler& operator=(EventHandler&&) = delete;
     private:
         static EventHandler* s_Instance;
 

@@ -14,7 +14,6 @@ namespace Silfur
 {
     class Event;
     class Window;
-    using WindowPtr = Scope<Window>;
 
     class Window
     {
@@ -22,6 +21,9 @@ namespace Silfur
         Window() = delete;
         Window(VideoMode p_mode, const char* p_title);
         ~Window();
+
+        Window(const Window&) = delete;
+        Window(Window&&) = delete;
 
         void ProcessEvents();
         void Shutdown();
@@ -32,6 +34,8 @@ namespace Silfur
         inline SDL_Window* WindowHandle() const noexcept;
         void* WindowSystemHandle() const noexcept;
 
+        Window& operator=(const Window&) = delete;
+        Window& operator=(Window&&) = delete;
     private:
         void Create(VideoMode p_mode, const char* p_title);
         int static CAPICALL HandleEvent(void* p_userdata, SDL_Event* p_event);
@@ -42,7 +46,7 @@ namespace Silfur
 
     private:
         SDL_Window* m_WinHandle {};
-        EventHandler m_EventHandler {};
+        Scope<EventHandler> m_EventHandler {};
     };
 }
 

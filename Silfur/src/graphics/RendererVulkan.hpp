@@ -107,9 +107,14 @@ namespace Silfur
             const Version& p_appVersion);
         ~Renderer();
 
+        Renderer(const Renderer&) = delete;
+        Renderer(Renderer&&) = delete;
+
         void drawFrame();
         void updateUniformBuffer(uint32_t p_CurrentImage);
 
+        Renderer& operator=(const Renderer&) = delete;
+        Renderer& operator=(Renderer&&) = delete;
     private:
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice p_device);
 
@@ -182,7 +187,7 @@ namespace Silfur
     private:
         int m_MaxFramesInFlight = 3; // Triple buffering
 
-        Window m_Window;
+        const Window& m_Window;
 
         std::vector<Vertex> m_Vertices {};
         std::vector<uint32_t> m_Indices {};
