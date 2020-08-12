@@ -12,11 +12,13 @@ class Game
 public:
     Game(const Silfur::Window& p_window)
     {
-        // Add a listener to an event in a class, MouseButtonDownEvent for example
+        // Add a listener to an event in a class, MouseButtonDownEvent for example. You can use 2 ways :
+        // Way 1 : By using the const reference of the window
         p_window.GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
-        p_window.GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMessageOnMouseButtonDown));
+
+        // Way 2 : If you don't want to pass the reference of the window. The application instance is unique and possess the window
+        Silfur::Application::Get().GetWindow().GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMessageOnMouseButtonDown));
     };
-    ~Game() = default;
 
     void PrintMouseButtonDownInfos(Silfur::Event& p_event)
     {
@@ -36,7 +38,7 @@ int main(int argc, char** argv)
 #endif
 {
     Silfur::Application app("Hello Sandbox", {0, 1, 0});
-    Silfur::Window window = app.CreateWindow({800, 600}, u8"Main Window");
+    Silfur::Window& window = app.CreateWindow({800, 600}, u8"Main Window");
 
     // Add a listener to an event in global scope, MouseWheelEvent for example
     window.GetEventHandler().AddListener<Silfur::MouseWheelEvent>(SF_BIND_FN(PrintMouseWheelInfos));
@@ -49,7 +51,11 @@ int main(int argc, char** argv)
         // Input polling for keyboard and mouse
         if (Silfur::Input::IsKeyPressed(Silfur::VKey::Escape))
         {
-            app.Shutdown();
+            // Just an example of pushing existing event type
+            window.GetEventHandler().PushEvent(Silfur::CreateScope<Silfur::WindowCloseEvent>(Silfur::WindowCloseEvent()));
+
+            // This line does the same thing
+            //app.Shutdown();
         }
         else if (Silfur::Input::IsKeyPressed(Silfur::VKey::A))
         {
