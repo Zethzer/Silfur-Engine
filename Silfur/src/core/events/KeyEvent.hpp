@@ -29,6 +29,11 @@ namespace Silfur
             : m_KeyInfo(p_keyInfo)
         {}
 
+        virtual Scope<Event> Clone() override
+        {
+            return CreateScope<KeyEvent>(*this);
+        }
+
         KeyInfo m_KeyInfo;
     };
 
@@ -49,6 +54,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<KeyPressedEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(KeyPressed)
     };
 
@@ -65,6 +75,11 @@ namespace Silfur
             ss << "KeyPressedEvent: Key: " << m_KeyInfo.vKey << " | Scancode: "
                << m_KeyInfo.scancode;
             return ss.str();
+        }
+
+        Scope<Event> Clone() override
+        {
+            return CreateScope<KeyReleasedEvent>(*this);
         }
 
         EVENT_CLASS_TYPE(KeyReleased)

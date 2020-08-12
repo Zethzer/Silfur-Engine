@@ -5,6 +5,7 @@
 
 #include "core/Base.hpp"
 #include "VideoMode.hpp"
+#include "core/events/EventHandler.hpp"
 
 struct SDL_Window;
 union SDL_Event;
@@ -25,6 +26,8 @@ namespace Silfur
         void ProcessEvents();
         void Shutdown();
 
+        inline EventHandler& GetEventHandler() const { return EventHandler::Get(); }
+
         inline operator SDL_Window*() const noexcept;
         inline SDL_Window* WindowHandle() const noexcept;
         void* WindowSystemHandle() const noexcept;
@@ -39,6 +42,7 @@ namespace Silfur
 
     private:
         SDL_Window* m_WinHandle {};
+        EventHandler m_EventHandler {};
     };
 }
 

@@ -2,7 +2,7 @@
 #include "RendererVulkan.hpp"
 
 #include "graphics/vulkan/debug/ValidationLayers.hpp"
-#include "core/events/EventManager.hpp"
+#include "core/events/EventHandler.hpp"
 #include "core/events/WindowEvent.hpp"
 
 #include <SDL2/SDL_events.h>
@@ -72,7 +72,7 @@ namespace Silfur
         createCommandBuffers();
         CreateSyncObjects();
 
-        EventManager::AddListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
+        m_Window.GetEventHandler().AddListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
     }
 
     Renderer::~Renderer()

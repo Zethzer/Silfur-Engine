@@ -24,7 +24,7 @@ namespace Silfur
         Application(std::string p_appName, const Version& p_appVersion);
         ~Application();
 
-        void CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow = true);
+        Window& CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow = true);
         bool Run();
         void Shutdown();
 

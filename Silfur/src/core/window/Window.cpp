@@ -2,7 +2,6 @@
 #include "Window.hpp"
 
 #include "utility/log/Log.hpp"
-#include "core/events/EventManager.hpp"
 #include "core/events/WindowEvent.hpp"
 #include "core/events/KeyEvent.hpp"
 #include "core/events/MouseEvent.hpp"
@@ -19,7 +18,7 @@ namespace Silfur
         IsClosed(false)
     {
         Create(p_mode, p_title);
-        EventManager::AddListener<WindowCloseEvent>(SF_BIND_MEMBER_FN(OnWindowClose));
+        m_EventHandler.AddListener<WindowCloseEvent>(SF_BIND_MEMBER_FN(OnWindowClose));
     }
 
     Window::~Window()
@@ -32,7 +31,7 @@ namespace Silfur
     void Window::ProcessEvents()
     {
         SDL_PumpEvents();
-        EventManager::Dispatch();
+        m_EventHandler.Dispatch();
     }
 
     void Window::Create(VideoMode p_mode, const char* p_title)
@@ -58,7 +57,8 @@ namespace Silfur
 
     void Window::Shutdown()
     {
-        IsClosed = true;
+        WindowCloseEvent event;
+        m_EventHandler.PushEvent(CreateScope<WindowCloseEvent>(event));
     }
 
     void* Window::WindowSystemHandle() const noexcept
@@ -81,7 +81,7 @@ namespace Silfur
 
     int CAPICALL Window::HandleEvent(void* p_userdata, SDL_Event* p_event)
     {
-        //auto window = static_cast<Window*>(p_userdata);
+        auto window = static_cast<Window*>(p_userdata);
 
         switch(p_event->type)
         {
@@ -90,7 +90,7 @@ namespace Silfur
                 {
                     case SDL_WINDOWEVENT_CLOSE: {
                         WindowCloseEvent event;
-                        EventManager::PushEvent(CreateScope<WindowCloseEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowCloseEvent>(event));
                     }
                         break;
                     case SDL_WINDOWEVENT_MOVED: {
@@ -99,7 +99,7 @@ namespace Silfur
                         windowEventInfo.y = p_event->window.data2;
 
                         WindowMovedEvent event(windowEventInfo);
-                        EventManager::PushEvent(CreateScope<WindowMovedEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowMovedEvent>(event));
                     }
                         break;
                     case SDL_WINDOWEVENT_SIZE_CHANGED: {
@@ -108,7 +108,7 @@ namespace Silfur
                         windowEventInfo.height = p_event->window.data2;
 
                         WindowSizeChangedEvent event(windowEventInfo);
-                        EventManager::PushEvent(CreateScope<WindowSizeChangedEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowSizeChangedEvent>(event));
                     }
                         break;
                     case SDL_WINDOWEVENT_RESIZED: {
@@ -117,27 +117,27 @@ namespace Silfur
                         windowEventInfo.height = p_event->window.data2;
 
                         WindowResizedEvent event(windowEventInfo);
-                        EventManager::PushEvent(CreateScope<WindowResizedEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowResizedEvent>(event));
                     }
                         break;
                     case SDL_WINDOWEVENT_ENTER: {
                         WindowEnterEvent event;
-                        EventManager::PushEvent(CreateScope<WindowEnterEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowEnterEvent>(event));
                     }
                         break;
                     case SDL_WINDOWEVENT_LEAVE: {
                         WindowLeaveEvent event;
-                        EventManager::PushEvent(CreateScope<WindowLeaveEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowLeaveEvent>(event));
                     }
                         break;
                     case SDL_WINDOWEVENT_FOCUS_GAINED: {
                         WindowFocusGainedEvent event;
-                        EventManager::PushEvent(CreateScope<WindowFocusGainedEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowFocusGainedEvent>(event));
                     }
                         break;
                     case SDL_WINDOWEVENT_FOCUS_LOST: {
                         WindowFocusLostEvent event;
-                        EventManager::PushEvent(CreateScope<WindowFocusLostEvent>(event));
+                        window->m_EventHandler.PushEvent(CreateScope<WindowFocusLostEvent>(event));
                     }
                     default:
                         break;
@@ -155,7 +155,7 @@ namespace Silfur
                 keyInfo.system = (p_event->key.keysym.mod & KMOD_GUI) != 0;
 
                 KeyPressedEvent event(keyInfo);
-                EventManager::PushEvent(CreateScope<KeyPressedEvent>(event));
+                window->m_EventHandler.PushEvent(CreateScope<KeyPressedEvent>(event));
             }
                 break;
             case SDL_KEYUP: {
@@ -169,7 +169,7 @@ namespace Silfur
                 keyInfo.system = (p_event->key.keysym.mod & KMOD_GUI) != 0;
 
                 KeyReleasedEvent event(keyInfo);
-                EventManager::PushEvent(CreateScope<KeyReleasedEvent>(event));
+                window->m_EventHandler.PushEvent(CreateScope<KeyReleasedEvent>(event));
             }
                 break;
 
@@ -180,7 +180,7 @@ namespace Silfur
                 info.y = p_event->button.y;
 
                 MouseButtonDownEvent event(info);
-                EventManager::PushEvent(CreateScope<MouseButtonDownEvent>(event));
+                window->m_EventHandler.PushEvent(CreateScope<MouseButtonDownEvent>(event));
             }
                 break;
             case SDL_MOUSEBUTTONUP: {
@@ -190,7 +190,7 @@ namespace Silfur
                 info.y = p_event->button.y;
 
                 MouseButtonUpEvent event(info);
-                EventManager::PushEvent(CreateScope<MouseButtonUpEvent>(event));
+                window->m_EventHandler.PushEvent(CreateScope<MouseButtonUpEvent>(event));
             }
                 break;
             case SDL_MOUSEMOTION: {
@@ -201,7 +201,7 @@ namespace Silfur
                 info.yRelative = p_event->motion.yrel;
 
                 MouseMotionEvent event(info);
-                EventManager::PushEvent(CreateScope<MouseMotionEvent>(event));
+                window->m_EventHandler.PushEvent(CreateScope<MouseMotionEvent>(event));
             }
                 break;
             case SDL_MOUSEWHEEL: {
@@ -211,7 +211,7 @@ namespace Silfur
                 info.direction = p_event->wheel.direction;
 
                 MouseWheelEvent event(info);
-                EventManager::PushEvent(CreateScope<MouseWheelEvent>(event));
+                window->m_EventHandler.PushEvent(CreateScope<MouseWheelEvent>(event));
             }
                 break;
             default:
@@ -223,6 +223,6 @@ namespace Silfur
 
     void Window::OnWindowClose(Event &p_event)
     {
-        Shutdown();
+        IsClosed = true;
     }
 }

@@ -34,6 +34,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowCloseEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(WindowClose)
     };
 
@@ -52,6 +57,11 @@ namespace Silfur
             ss << "WindowMovedEvent. Window moved on: X: " << m_WindowEventInfo.x << " | Y: "
             << m_WindowEventInfo.y;
             return ss.str();
+        }
+
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowMovedEvent>(*this);
         }
 
         EVENT_CLASS_TYPE(WindowMoved)
@@ -76,6 +86,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowSizeChangedEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(WindowSizeChanged)
     private:
         WindowEventInfo m_WindowEventInfo;
@@ -98,6 +113,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowResizedEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(WindowResized)
     private:
         WindowEventInfo m_WindowEventInfo;
@@ -115,6 +135,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowEnterEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(WindowEnter)
     };
 
@@ -128,6 +153,11 @@ namespace Silfur
             std::stringstream ss;
             ss << "WindowLeaveEvent triggered";
             return ss.str();
+        }
+
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowLeaveEvent>(*this);
         }
 
         EVENT_CLASS_TYPE(WindowLeave)
@@ -145,6 +175,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowFocusGainedEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(WindowFocusGained)
     };
 
@@ -158,6 +193,11 @@ namespace Silfur
             std::stringstream ss;
             ss << "WindowFocusLostEvent triggered";
             return ss.str();
+        }
+
+        Scope<Event> Clone() override
+        {
+            return CreateScope<WindowFocusLostEvent>(*this);
         }
 
         EVENT_CLASS_TYPE(WindowFocusLost)

@@ -58,6 +58,13 @@
     #endif
 #endif
 
+/* -------- BIND FUNCTION -------- */
+#define SF_BIND_FN(fn) [](auto&&... args) -> decltype(auto) \
+{ return fn(std::forward<decltype(args)>(args)...); }
+
+#define SF_BIND_MEMBER_FN(fn) [this](auto&&... args) -> decltype(auto) \
+{ return this->fn(std::forward<decltype(args)>(args)...); }
+
 #include <memory>
 namespace Silfur
 {

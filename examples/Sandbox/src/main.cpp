@@ -10,11 +10,11 @@ void PrintMouseWheelInfos(Silfur::Event& p_event)
 class Game
 {
 public:
-    Game()
+    Game(const Silfur::Window& p_window)
     {
         // Add a listener to an event in a class, MouseButtonDownEvent for example
-        Silfur::EventManager::AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
-        Silfur::EventManager::AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMessageOnMouseButtonDown));
+        p_window.GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
+        p_window.GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMessageOnMouseButtonDown));
     };
     ~Game() = default;
 
@@ -36,13 +36,13 @@ int main(int argc, char** argv)
 #endif
 {
     Silfur::Application app("Hello Sandbox", {0, 1, 0});
-    app.CreateWindow({800, 600}, u8"Main Window");
+    Silfur::Window window = app.CreateWindow({800, 600}, u8"Main Window");
 
     // Add a listener to an event in global scope, MouseWheelEvent for example
-    Silfur::EventManager::AddListener<Silfur::MouseWheelEvent>(SF_BIND_FN(PrintMouseWheelInfos));
+    window.GetEventHandler().AddListener<Silfur::MouseWheelEvent>(SF_BIND_FN(PrintMouseWheelInfos));
 
     // Instantiate the class example
-    Game game;
+    Game game(window);
 
     while (app.Run())
     {

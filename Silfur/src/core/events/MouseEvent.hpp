@@ -54,6 +54,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<MouseButtonDownEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(MouseButtonDown)
     private:
         MouseButtonDownInfo m_MouseButtonDownInfo;
@@ -75,6 +80,11 @@ namespace Silfur
                << " | In position: X: " << m_MouseButtonUpInfo.x << " - Y: "
                << m_MouseButtonUpInfo.y;
             return ss.str();
+        }
+
+        Scope<Event> Clone() override
+        {
+            return CreateScope<MouseButtonUpEvent>(*this);
         }
 
         EVENT_CLASS_TYPE(MouseButtonUp)
@@ -100,6 +110,11 @@ namespace Silfur
             return ss.str();
         }
 
+        Scope<Event> Clone() override
+        {
+            return CreateScope<MouseMotionEvent>(*this);
+        }
+
         EVENT_CLASS_TYPE(MouseMotion)
     private:
         MouseMotionInfo m_MouseMotionInfo;
@@ -120,6 +135,11 @@ namespace Silfur
             ss << "MouseWheelEvent: Amount horizontally: " << m_MouseWheelInfo.x << " - Amount vertically: "
                << m_MouseWheelInfo.y << " || Direction: " << m_MouseWheelInfo.direction;
             return ss.str();
+        }
+
+        Scope<Event> Clone() override
+        {
+            return CreateScope<MouseWheelEvent>(*this);
         }
 
         EVENT_CLASS_TYPE(MouseWheel)

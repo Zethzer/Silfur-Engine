@@ -8,7 +8,7 @@
 
 #include "core/Application.hpp"
 
-#include "core/events/EventManager.hpp"
+#include "core/events/WindowEvent.hpp"
 #include "core/events/KeyEvent.hpp"
 #include "core/events/MouseEvent.hpp"
 

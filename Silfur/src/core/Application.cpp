@@ -1,7 +1,7 @@
 #include "sfpch.hpp"
 #include "Application.hpp"
 
-#include "events/EventManager.hpp"
+#include "core/events/EventHandler.hpp"
 
 // See line 43
 #if defined(SF_CONFIG_DEBUG) && defined(_WIN32)
@@ -41,11 +41,10 @@ namespace Silfur
         SetConsoleCP(CP_UTF8);
 #endif
         Log::Init();
-        EventManager::Init();
         s_Instance = this;
     }
 
-    void Application::CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow)
+    Window& Application::CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow)
     {
         m_Window = CreateScope<Window>(p_mode, p_title);
 
@@ -57,6 +56,8 @@ namespace Silfur
         {
             m_Renderer = CreateScope<Renderer>(*m_Window, m_AppName, m_AppVersion);
         }
+
+        return *m_Window;
     }
 
     bool Application::Run()
