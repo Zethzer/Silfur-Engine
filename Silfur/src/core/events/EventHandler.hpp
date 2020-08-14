@@ -24,8 +24,6 @@ namespace Silfur
         EventHandler(const EventHandler&) = delete;
         EventHandler(EventHandler&&) = delete;
 
-        static EventHandler& Get() { return *s_Instance; }
-
         void PushEvent(Scope<Event> p_event);
 
         template<typename EvtT, typename Func>
@@ -63,8 +61,6 @@ namespace Silfur
         EventHandler& operator=(const EventHandler&) = delete;
         EventHandler& operator=(EventHandler&&) = delete;
     private:
-        static EventHandler* s_Instance;
-
         EventsList m_Events {};
         ListenersMap m_Listeners {};
     };
