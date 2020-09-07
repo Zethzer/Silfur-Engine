@@ -10,17 +10,23 @@ configuration:
 - Release
 platform: x64
 clone_depth: 5
+init:
+- cmd: >-
+    appveyor DownloadFile https://vulkan.lunarg.com/sdk/download/1.2.135.0/windows/VulkanSDK-1.2.135.0-Installer.exe?Human=true -FileName VulkanSDK.exe
+
+    .\VulkanSDK.exe /S
+
+    rm -f VulkanSDK.exe
 environment:
   VULKAN_SDK: C:\VulkanSDK\1.2.135.0
 install:
 - cmd: >-
-    appveyor DownloadFile https://vulkan.lunarg.com/sdk/download/1.2.135.0/windows/VulkanSDK-1.2.135.0-Installer.exe?Human=true -FileName VulkanSDK.exe
-    .\VulkanSDK.exe /S
-    rm -f VulkanSDK.exe
-- cmd: >-
     git submodule update --init --recursive
+
     cd scripts
+
     echo | call Win-GenProjects.bat
+
     cd ..
 build:
   parallel: true
