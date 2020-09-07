@@ -18,3 +18,6 @@ bin-int/
 
 # Compiled SPIR-V shaders
 *.spv
+
+# Others
+examples/**/logs

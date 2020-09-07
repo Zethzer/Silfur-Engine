@@ -27,12 +27,12 @@ namespace Silfur
     public:
         WindowCloseEvent() = default;
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowCloseEvent triggered";
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
@@ -51,13 +51,13 @@ namespace Silfur
 
         inline WindowEventInfo GetInfos() const { return m_WindowEventInfo; }
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowMovedEvent. Window moved on: X: " << m_WindowEventInfo.x << " | Y: "
             << m_WindowEventInfo.y;
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
@@ -78,13 +78,13 @@ namespace Silfur
 
         inline WindowEventInfo GetInfos() const { return m_WindowEventInfo; }
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowSizeChangedEvent. Window size change to: Width: " << m_WindowEventInfo.width
             << " | Height: " << m_WindowEventInfo.height;
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
@@ -105,13 +105,13 @@ namespace Silfur
 
         inline WindowEventInfo GetInfos() const { return m_WindowEventInfo; }
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowResizedEvent. Window resize to: Width: " << m_WindowEventInfo.width
             << " | Height: " << m_WindowEventInfo.height;
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
@@ -128,12 +128,12 @@ namespace Silfur
     public:
         WindowEnterEvent() = default;
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowEnterEvent triggered";
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
@@ -148,12 +148,12 @@ namespace Silfur
     public:
         WindowLeaveEvent() = default;
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowLeaveEvent triggered";
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
@@ -168,12 +168,12 @@ namespace Silfur
     public:
         WindowFocusGainedEvent() = default;
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowFocusGainedEvent triggered";
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
@@ -188,12 +188,12 @@ namespace Silfur
     public:
         WindowFocusLostEvent() = default;
 
-        std::string ToString() const override
+        /*std::string ToString() const override
         {
             std::stringstream ss;
             ss << "WindowFocusLostEvent triggered";
             return ss.str();
-        }
+        }*/
 
         Scope<Event> Clone() override
         {
