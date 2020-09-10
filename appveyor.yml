@@ -29,5 +29,6 @@ install:
 
     cd ..
 build:
+  project: Silfur Engine.sln
   parallel: true
   verbosity: minimal
