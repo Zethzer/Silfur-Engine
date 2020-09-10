@@ -13,18 +13,18 @@ namespace Silfur
             const VkAllocationCallbacks* p_pAllocator, VkDebugUtilsMessengerEXT* p_pDebugMessenger);
         inline void DestroyDebugUtilsMessengerEXT(VkInstance p_instance, VkDebugUtilsMessengerEXT p_debugMessenger,
             const VkAllocationCallbacks* p_pAllocator);
-        inline void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo);
-        inline void displayMessage(VkDebugUtilsMessageSeverityFlagBitsEXT p_messageSeverity,
+        inline void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo);
+        inline void DisplayMessage(VkDebugUtilsMessageSeverityFlagBitsEXT p_messageSeverity,
             VkDebugUtilsMessageTypeFlagsEXT p_messageType,
             const char* p_message);
 
-        static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+        static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
             VkDebugUtilsMessageSeverityFlagBitsEXT p_messageSeverity,
             VkDebugUtilsMessageTypeFlagsEXT p_messageType,
             const VkDebugUtilsMessengerCallbackDataEXT* p_pCallbackData,
             void* p_pUserData)
         {
-            displayMessage(p_messageSeverity, p_messageType, p_pCallbackData->pMessage);
+            DisplayMessage(p_messageSeverity, p_messageType, p_pCallbackData->pMessage);
 
             return VK_FALSE;
         }

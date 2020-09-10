@@ -3,7 +3,7 @@
 #ifndef __SILFUR_CORE_EVENTS_KEY_EVENT_HPP__
 #define __SILFUR_CORE_EVENTS_KEY_EVENT_HPP__
 
-#include "Event.hpp"
+#include "EventBase.hpp"
 #include "core/input/Keyboard.hpp"
 
 namespace Silfur
@@ -19,7 +19,7 @@ namespace Silfur
         bool system;
     } KeyInfo;
 
-    class KeyEvent : public Event
+    class KeyEvent : public SystemEvent
     {
     public:
         inline KeyInfo GetInfos() const { return m_KeyInfo; }
@@ -29,9 +29,9 @@ namespace Silfur
             : m_KeyInfo(p_keyInfo)
         {}
 
-        virtual Scope<Event> Clone() override
+        virtual UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<KeyEvent>(*this);
+            return CreateUniqueRef<KeyEvent>(*this);
         }
 
         KeyInfo m_KeyInfo;
@@ -54,12 +54,12 @@ namespace Silfur
             return ss.str();
         }
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<KeyPressedEvent>(*this);
+            return CreateUniqueRef<KeyPressedEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(KeyPressed)
+        EVENT_SYSTEM_CLASS_TYPE(KeyPressed)
     };
 
     class KeyReleasedEvent : public KeyEvent
@@ -77,12 +77,12 @@ namespace Silfur
             return ss.str();
         }
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<KeyReleasedEvent>(*this);
+            return CreateUniqueRef<KeyReleasedEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(KeyReleased)
+        EVENT_SYSTEM_CLASS_TYPE(KeyReleased)
     };
 }
 

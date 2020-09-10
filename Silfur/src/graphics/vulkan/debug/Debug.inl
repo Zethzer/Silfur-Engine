@@ -34,7 +34,7 @@ namespace Silfur
             }
         }
 
-        inline void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo)
+        inline void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo)
         {
             p_createInfo = {};
             p_createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -44,11 +44,11 @@ namespace Silfur
             p_createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
                 | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
                 | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-            p_createInfo.pfnUserCallback = debugCallback;
+            p_createInfo.pfnUserCallback = DebugCallback;
             p_createInfo.pUserData = nullptr;
         }
 
-        inline void displayMessage(VkDebugUtilsMessageSeverityFlagBitsEXT p_messageSeverity,
+        inline void DisplayMessage(VkDebugUtilsMessageSeverityFlagBitsEXT p_messageSeverity,
             VkDebugUtilsMessageTypeFlagsEXT p_messageType, const char* p_message)
         {
             std::stringstream msg;

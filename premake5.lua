@@ -3,12 +3,14 @@ include "scripts/FindVulkan.lua"
 checkVulkanDynamicLibWin32()
 
 IncludeDir = {}
-IncludeDir["SDL2"] = "Silfur/vendor/SDL2/include"
-IncludeDir["glm"] = "Silfur/vendor/glm"
-IncludeDir["spdlog"] = "Silfur/vendor/spdlog/include"
-IncludeDir["stb"] = "Silfur/vendor/stb"
-IncludeDir["portableSnippets"] = "Silfur/vendor/portable-snippets"
-IncludeDir["tinyobjloader"] = "Silfur/vendor/tinyobjloader"
+IncludeDir["SDL2"] = "%{wks.location}/Silfur/vendor/SDL2/include"
+IncludeDir["ImGui"] = "%{wks.location}/Silfur/vendor/imgui"
+IncludeDir["ImgGuiExamples"] = "%{wks.location}/Silfur/vendor/imgui/examples"
+IncludeDir["glm"] = "%{wks.location}/Silfur/vendor/glm"
+IncludeDir["spdlog"] = "%{wks.location}/Silfur/vendor/spdlog/include"
+IncludeDir["stb"] = "%{wks.location}/Silfur/vendor/stb"
+IncludeDir["portableSnippets"] = "%{wks.location}/Silfur/vendor/portable-snippets"
+IncludeDir["tinyobjloader"] = "%{wks.location}/Silfur/vendor/tinyobjloader"
 
 workspace "Silfur Engine"
 	architecture "x86_64"
@@ -34,18 +36,22 @@ workspace "Silfur Engine"
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+group "Dependencies"
+	include "Silfur/vendor/imgui"
+group ""
+
 group "Tools"
 	project "CompileShaders"
 		location "tools"
 		kind "Utility"
 		files
 		{
-			"%{prj.location}/../**.vert",
-			"%{prj.location}/../**.frag",
-			"%{prj.location}/../**.tesc",
-			"%{prj.location}/../**.tese",
-			"%{prj.location}/../**.geom",
-			"%{prj.location}/../**.comp"
+			"%{wks.location}/**.vert",
+			"%{wks.location}/**.frag",
+			"%{wks.location}/**.tesc",
+			"%{wks.location}/**.tese",
+			"%{wks.location}/**.geom",
+			"%{wks.location}/**.comp"
 		}
 		
 		local vulkanPath = GetVulkanPath()
@@ -71,7 +77,7 @@ project "Silfur"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "sfpch.hpp"
-	pchsource "Silfur/src/sfpch.cpp"
+	pchsource "%{wks.location}/Silfur/src/sfpch.cpp"
 
 	files
 	{
@@ -98,6 +104,8 @@ project "Silfur"
 	{
 		"%{prj.name}/src",
 		"%{IncludeDir.SDL2}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.ImgGuiExamples}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.stb}",
@@ -106,19 +114,19 @@ project "Silfur"
 	}
 	
 	includeVulkanSDKWin32()
+	linkVulkanStaticWin32()
 	
 	libdirs
 	{
-		"Silfur/vendor/SDL2/lib"
+		"%{wks.location}/Silfur/vendor/SDL2/lib"
 	}
 	
 	links
 	{
 		"SDL2",
-		"SDL2main"
+		"SDL2main",
+		"ImGui"
 	}
-	
-	linkVulkanStaticWin32()
 
 	filter "system:windows"
 		systemversion "latest"
@@ -184,7 +192,7 @@ project "Sandbox"
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.portableSnippets}",
 		"%{IncludeDir.tinyobjloader}",
-		"Silfur/src"
+		"%{wks.location}/Silfur/src"
 	}
 	
 	includeVulkanSDKWin32()

@@ -5,7 +5,7 @@
 
 namespace Silfur
 {
-    enum class EventType
+    enum class EventSystemType : uint8_t
     {
         None = 0,
         KeyPressed, KeyReleased,

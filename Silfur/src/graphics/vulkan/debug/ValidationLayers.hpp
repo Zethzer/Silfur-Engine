@@ -19,7 +19,7 @@ namespace Silfur
             "VK_LAYER_KHRONOS_validation"
         };
 
-        inline bool checkValidationLayerSupport();
+        inline bool CheckValidationLayerSupport();
     }
 }
 

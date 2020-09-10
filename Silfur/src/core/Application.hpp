@@ -15,7 +15,7 @@
 
 namespace Silfur
 {
-    class Event;
+    class SystemEvent;
 
     class Application
     {
@@ -43,8 +43,8 @@ namespace Silfur
     private:
         static Application* s_Instance;
 
-        Scope<Window> m_Window = nullptr;
-        Scope<Renderer> m_Renderer = nullptr;
+        UniqueRef<Window> m_Window = nullptr;
+        UniqueRef<Renderer> m_Renderer = nullptr;
         std::string m_AppName {};
         Version m_AppVersion {};
     };

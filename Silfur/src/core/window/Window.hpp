@@ -12,7 +12,7 @@ union SDL_Event;
 
 namespace Silfur
 {
-    class Event;
+    class SystemEvent;
     class Window;
 
     class Window
@@ -40,13 +40,13 @@ namespace Silfur
         void Create(VideoMode p_mode, const char* p_title);
         int static CAPICALL HandleEvent(void* p_userdata, SDL_Event* p_event);
 
-        void OnWindowClose(Event& p_event);
+        void OnWindowClose(SystemEvent& p_event);
     public:
         bool IsClosed = false;
 
     private:
         SDL_Window* m_WinHandle {};
-        Scope<EventHandler> m_EventHandler {};
+        UniqueRef<EventHandler> m_EventHandler {};
     };
 }
 

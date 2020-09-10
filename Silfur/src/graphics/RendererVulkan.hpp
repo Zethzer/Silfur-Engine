@@ -116,6 +116,9 @@ namespace Silfur
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) = delete;
     private:
+        void InitializeImGui();
+        void SetupVulkanForImGui();
+
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice p_device);
 
         void createInstance(const std::string& p_appName, const Version& p_appVersion);
@@ -183,7 +186,7 @@ namespace Silfur
 
         void loadModel();
 
-        void OnWindowResized(Event& p_event);
+        void OnWindowResized(SystemEvent& p_event);
     private:
         int m_MaxFramesInFlight = 3; // Triple buffering
 
@@ -193,6 +196,16 @@ namespace Silfur
         std::vector<uint32_t> m_Indices {};
 
         bool m_FramebufferResized = false;
+
+        // #TODO Rework
+        bool m_ShowImGuiDemoWindow = true;
+        bool m_ShowImGuiAnotherWindow = true;
+        // Vulkan for ImGui resources
+        std::vector<VkFramebuffer> m_ImGuiFramebuffers {};
+        VkDescriptorPool m_ImGuiDescriptorPool {};
+        VkRenderPass m_ImGuiRenderPass {};
+        VkCommandPool m_ImGuiCommandPool {};
+        std::vector<VkCommandBuffer> m_ImGuiCommandBuffers;
 
         // Vulkan resources
         static Vk::Instance s_Instance;

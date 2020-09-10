@@ -3,7 +3,7 @@
 #ifndef __SILFUR_CORE_EVENTS_MOUSE_EVENT_HPP__
 #define __SILFUR_CORE_EVENTS_MOUSE_EVENT_HPP__
 
-#include "Event.hpp"
+#include "EventBase.hpp"
 #include "core/input/Mouse.hpp"
 
 namespace Silfur
@@ -37,7 +37,7 @@ namespace Silfur
         uint32_t direction; // Not consistent across all platform. Multiply by -1 do the trick
     } MouseWheelInfo;
 
-    class MouseButtonDownEvent : public Event
+    class MouseButtonDownEvent : public SystemEvent
     {
     public:
         explicit MouseButtonDownEvent(MouseButtonDownInfo p_mouseButtonDownInfo)
@@ -54,17 +54,17 @@ namespace Silfur
             return ss.str();
         }
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<MouseButtonDownEvent>(*this);
+            return CreateUniqueRef<MouseButtonDownEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(MouseButtonDown)
+        EVENT_SYSTEM_CLASS_TYPE(MouseButtonDown)
     private:
         MouseButtonDownInfo m_MouseButtonDownInfo;
     };
 
-    class MouseButtonUpEvent : public Event
+    class MouseButtonUpEvent : public SystemEvent
     {
     public:
         explicit MouseButtonUpEvent(MouseButtonUpInfo p_mouseButtonUpInfo)
@@ -82,17 +82,17 @@ namespace Silfur
             return ss.str();
         }
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<MouseButtonUpEvent>(*this);
+            return CreateUniqueRef<MouseButtonUpEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(MouseButtonUp)
+        EVENT_SYSTEM_CLASS_TYPE(MouseButtonUp)
     private:
         MouseButtonUpInfo m_MouseButtonUpInfo;
     };
 
-    class MouseMotionEvent : public Event
+    class MouseMotionEvent : public SystemEvent
     {
     public:
         explicit MouseMotionEvent(MouseMotionInfo p_mouseMotionInfo)
@@ -110,17 +110,17 @@ namespace Silfur
             return ss.str();
         }
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<MouseMotionEvent>(*this);
+            return CreateUniqueRef<MouseMotionEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(MouseMotion)
+        EVENT_SYSTEM_CLASS_TYPE(MouseMotion)
     private:
         MouseMotionInfo m_MouseMotionInfo;
     };
 
-    class MouseWheelEvent : public Event
+    class MouseWheelEvent : public SystemEvent
     {
     public:
         explicit MouseWheelEvent(MouseWheelInfo p_mouseWheelInfo)
@@ -137,12 +137,12 @@ namespace Silfur
             return ss.str();
         }
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<MouseWheelEvent>(*this);
+            return CreateUniqueRef<MouseWheelEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(MouseWheel)
+        EVENT_SYSTEM_CLASS_TYPE(MouseWheel)
     private:
         MouseWheelInfo m_MouseWheelInfo;
     };

@@ -19,7 +19,7 @@ namespace Silfur
     {
         void Instance::Create(const std::string& p_appName, const Version& p_appVersion, const Window& p_window)
         {
-            if (!checkValidationLayerSupport() && enableValidationLayers)
+            if (!CheckValidationLayerSupport() && enableValidationLayers)
             {
                 SF_CORE_FATAL(Vulkan, 20, "Validation layers requested but not available!");
                 std::exit(EXIT_FAILURE);
@@ -47,8 +47,8 @@ namespace Silfur
             }
 
             VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-            auto requiredExtensions = getRequiredExtensions(p_window);
-            VkInstanceCreateInfo createInfo = createVkInstanceCreateInfo(appInfo, requiredExtensions, debugCreateInfo);
+            auto requiredExtensions = GetRequiredExtensions(p_window);
+            VkInstanceCreateInfo createInfo = CreateVkInstanceCreateInfo(appInfo, requiredExtensions, debugCreateInfo);
 
             if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
             {
@@ -60,7 +60,7 @@ namespace Silfur
                 VK_VERSION_MAJOR(appInfo.applicationVersion), VK_VERSION_MINOR(appInfo.applicationVersion),
                 VK_VERSION_PATCH(appInfo.applicationVersion));
 
-            setupDebugMessenger();
+            SetupDebugMessenger();
         }
 
         void Instance::Destroy()
@@ -86,7 +86,7 @@ namespace Silfur
             return surface;
         }
 
-        VkInstanceCreateInfo Instance::createVkInstanceCreateInfo(const VkApplicationInfo& p_appInfo,
+        VkInstanceCreateInfo Instance::CreateVkInstanceCreateInfo(const VkApplicationInfo& p_appInfo,
             const std::vector<const char*>& p_requiredExtensions,
             VkDebugUtilsMessengerCreateInfoEXT& p_debugCreateInfo)
         {
@@ -117,7 +117,7 @@ namespace Silfur
             }
             SF_CORE_INFO(Vulkan, msg.str());
 
-            if (!checkRequiredExtensions(vkExtensions, p_requiredExtensions))
+            if (!CheckRequiredExtensions(vkExtensions, p_requiredExtensions))
             {
                 SF_CORE_FATAL(Vulkan, 21, "Missing an extension.");
                 std::exit(EXIT_FAILURE);
@@ -132,7 +132,7 @@ namespace Silfur
                 createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
                 createInfo.ppEnabledLayerNames = validationLayers.data();
 
-                populateDebugMessengerCreateInfo(p_debugCreateInfo);
+                PopulateDebugMessengerCreateInfo(p_debugCreateInfo);
                 createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &p_debugCreateInfo;
             }
             else
@@ -144,7 +144,7 @@ namespace Silfur
             return createInfo;
         }
 
-        std::vector<const char*> Instance::getRequiredExtensions(const Window& p_window)
+        std::vector<const char*> Instance::GetRequiredExtensions(const Window& p_window)
         {
             uint32_t SDLExtensionsCount;
             SDL_Vulkan_GetInstanceExtensions(nullptr, &SDLExtensionsCount, nullptr);
@@ -163,7 +163,7 @@ namespace Silfur
             return extensions;
         }
 
-        bool Instance::checkRequiredExtensions(const std::vector<VkExtensionProperties>& p_vkExtensionsAvailable, const std::vector<const char*>& p_requiredExtensions)
+        bool Instance::CheckRequiredExtensions(const std::vector<VkExtensionProperties>& p_vkExtensionsAvailable, const std::vector<const char*>& p_requiredExtensions)
         {
             for (const char* extensionName : p_requiredExtensions)
             {
@@ -189,12 +189,12 @@ namespace Silfur
             return true;
         }
 
-        void Instance::setupDebugMessenger()
+        void Instance::SetupDebugMessenger()
         {
             if (!enableValidationLayers) return;
 
             VkDebugUtilsMessengerCreateInfoEXT createInfo;
-            populateDebugMessengerCreateInfo(createInfo);
+            PopulateDebugMessengerCreateInfo(createInfo);
 
             if (CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
             {

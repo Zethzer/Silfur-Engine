@@ -44,9 +44,9 @@ namespace Silfur
         s_Instance = this;
     }
 
-    Window& Application::CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow)
+    Window& Application::CreateWindow(VideoMode p_mode, const char* p_title, bool p_isRenderWindow)
     {
-        m_Window = CreateScope<Window>(p_mode, p_title);
+        m_Window = CreateUniqueRef<Window>(p_mode, p_title);
 
         /*
          * TODO This is the main renderer which is create for the moment. Refactor this code
@@ -54,7 +54,7 @@ namespace Silfur
          */
         if (p_isRenderWindow)
         {
-            m_Renderer = CreateScope<Renderer>(*m_Window, m_AppName, m_AppVersion);
+            m_Renderer = CreateUniqueRef<Renderer>(*m_Window, m_AppName, m_AppVersion);
         }
 
         return *m_Window;

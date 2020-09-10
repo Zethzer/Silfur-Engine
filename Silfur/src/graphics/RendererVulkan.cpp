@@ -2,11 +2,16 @@
 #include "RendererVulkan.hpp"
 
 #include "graphics/vulkan/debug/ValidationLayers.hpp"
+#include "graphics/vulkan/utils/VkHelpers.hpp"
 #include "core/events/EventHandler.hpp"
 #include "core/events/WindowEvent.hpp"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_vulkan.h>
+
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_impl_vulkan.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -72,7 +77,9 @@ namespace Silfur
         createCommandBuffers();
         CreateSyncObjects();
 
-        m_Window.GetEventHandler().AddListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
+        InitializeImGui();
+
+        m_Window.GetEventHandler().AddSystemListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
     }
 
     Renderer::~Renderer()
@@ -80,8 +87,13 @@ namespace Silfur
         // Wait for GPU finish executing commands
         vkDeviceWaitIdle(m_Device);
 
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
+
         cleanUpSwapChain();
 
+        vkDestroyDescriptorPool(m_Device, m_ImGuiDescriptorPool, nullptr);
         vkDestroySampler(m_Device, m_TextureSampler, nullptr);
         vkDestroyImageView(m_Device, m_TextureImageView, nullptr);
         vkDestroyImage(m_Device, m_TextureImage, nullptr);
@@ -98,6 +110,7 @@ namespace Silfur
             vkDestroyFence(m_Device, m_inFlightFences[i], nullptr);
         }
 
+        vkDestroyCommandPool(m_Device, m_ImGuiCommandPool, nullptr);
         vkDestroyCommandPool(m_Device, m_TransferCommandPool, nullptr);
         vkDestroyCommandPool(m_Device, m_GraphicsCommandPool, nullptr);
         vkDestroyPipeline(m_Device, m_GraphicsPipeline, nullptr);
@@ -109,12 +122,211 @@ namespace Silfur
         s_Instance.Destroy();
     }
 
+    void Renderer::InitializeImGui()
+    {
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        (void) io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+        ImGui::StyleColorsDark();
+
+        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding = 0.0f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
+
+        // Setup Platform/Renderer bindings
+        ImGui_ImplSDL2_InitForVulkan(m_Window);
+
+        SetupVulkanForImGui();
+
+        ImGui_ImplVulkan_InitInfo init_info = {};
+        init_info.Instance = s_Instance;
+        init_info.PhysicalDevice = m_PhysicalDevice;
+        init_info.Device = m_Device;
+        init_info.QueueFamily = findQueueFamilies(m_PhysicalDevice).graphicsFamily.value();
+        init_info.Queue = m_GraphicsQueue;
+        init_info.PipelineCache = VK_NULL_HANDLE;
+        init_info.DescriptorPool = m_ImGuiDescriptorPool;
+        init_info.Allocator = nullptr;
+        init_info.MinImageCount = m_MaxFramesInFlight;
+        init_info.ImageCount = m_MaxFramesInFlight;
+        init_info.CheckVkResultFn = Vk::VkCheckResult;
+        ImGui_ImplVulkan_Init(&init_info, m_ImGuiRenderPass);
+
+        // Load Fonts
+        // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+        // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+        // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+        // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+        // - Read 'docs/FONTS.md' for more instructions and details.
+        // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+        //io.Fonts->AddFontDefault();
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+        //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+        //IM_ASSERT(font != NULL);
+
+        // Upload Fonts
+        {
+            VkCommandBuffer commandBuffer = beginSingleTimeCommands(m_GraphicsCommandPool);
+            ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+            endSingleTimeCommands(m_GraphicsQueue, m_GraphicsCommandPool, commandBuffer);
+            ImGui_ImplVulkan_DestroyFontUploadObjects();
+        }
+
+        // Put it in the recreation of the swapchain too if we change the number of frames in flight during runtime
+        //ImGui_ImplVulkan_SetMinImageCount(m_MaxFramesInFlight);
+    }
+
+    void Renderer::SetupVulkanForImGui()
+    {
+        // Create Render Pass
+        {
+            VkAttachmentDescription attachement = {};
+            attachement.format = m_SwapChainImageFormat;
+            attachement.samples = VK_SAMPLE_COUNT_1_BIT;
+            attachement.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            attachement.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            attachement.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            attachement.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            attachement.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            attachement.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+            VkAttachmentReference colorAttachment = {};
+            colorAttachment.attachment = 0;
+            colorAttachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+            VkSubpassDescription subpass = {};
+            subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+            subpass.colorAttachmentCount = 1;
+            subpass.pColorAttachments = &colorAttachment;
+
+            VkSubpassDependency subpassDependency = {};
+            subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+            subpassDependency.dstSubpass = 0;
+            subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            subpassDependency.srcAccessMask = 0;
+            subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+            VkRenderPassCreateInfo renderPassInfos = {};
+            renderPassInfos.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+            renderPassInfos.attachmentCount = 1;
+            renderPassInfos.pAttachments = &attachement;
+            renderPassInfos.subpassCount = 1;
+            renderPassInfos.pSubpasses = &subpass;
+            renderPassInfos.dependencyCount = 1;
+            renderPassInfos.pDependencies = &subpassDependency;
+            if (vkCreateRenderPass(m_Device, &renderPassInfos, nullptr, &m_ImGuiRenderPass) != VK_SUCCESS)
+            {
+                throw std::runtime_error("Could not create Dear ImGui's render pass");
+            }
+        }
+
+        // Create Descriptor Pool
+        if (m_ImGuiDescriptorPool == VK_NULL_HANDLE)
+        {
+            VkDescriptorPoolSize pool_sizes[] =
+            {
+                { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+                { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+                { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+                { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+                { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+                { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+                { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+                { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+                { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+                { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+                { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+            };
+
+            VkDescriptorPoolCreateInfo pool_info = {};
+            pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+            pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+            pool_info.maxSets = 1000 * IM_ARRAYSIZE(pool_sizes);
+            pool_info.poolSizeCount = (uint32_t) IM_ARRAYSIZE(pool_sizes);
+            pool_info.pPoolSizes = pool_sizes;
+            
+            VkResult err = vkCreateDescriptorPool(m_Device, &pool_info, nullptr, &m_ImGuiDescriptorPool);
+            Vk::VkCheckResult(err);
+        }
+
+        // Framebuffers
+        {
+            m_ImGuiFramebuffers.resize(m_SwapChainImageViews.size());
+
+            VkImageView attachment[1];
+            VkFramebufferCreateInfo info = {};
+            info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            info.renderPass = m_ImGuiRenderPass;
+            info.attachmentCount = 1;
+            info.pAttachments = attachment;
+            info.width = m_SwapChainExtent.width;
+            info.height = m_SwapChainExtent.height;
+            info.layers = 1;
+            for (uint32_t i = 0; i < m_SwapChainImageViews.size(); i++)
+            {
+                attachment[0] = m_SwapChainImageViews[i];
+                VkResult err = vkCreateFramebuffer(m_Device, &info, nullptr, &m_ImGuiFramebuffers[i]);
+                Vk::VkCheckResult(err);
+            }
+        }
+
+        // Command pool and Command Buffers
+        {
+            VkCommandPoolCreateInfo commandPoolInfo = {};
+            commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+            commandPoolInfo.queueFamilyIndex = findQueueFamilies(m_PhysicalDevice).graphicsFamily.value();
+            commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+            VkResult err = vkCreateCommandPool(m_Device, &commandPoolInfo, nullptr, &m_ImGuiCommandPool);
+            Vk::VkCheckResult(err);
+
+            m_ImGuiCommandBuffers.resize(m_SwapChainImageViews.size());
+            VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
+            commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+            commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+            commandBufferAllocateInfo.commandBufferCount = static_cast<uint32_t>(m_ImGuiCommandBuffers.size());
+            commandBufferAllocateInfo.commandPool = m_ImGuiCommandPool;
+
+            err = vkAllocateCommandBuffers(m_Device, &commandBufferAllocateInfo, m_ImGuiCommandBuffers.data());
+        }
+    }
+
     ///////////////////////////////////////////////
     //// Update frame and uniform buffer (ubo) ////
     ///////////////////////////////////////////////
 
     void Renderer::drawFrame()
     {
+        // New frame for ImGui
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplSDL2_NewFrame(m_Window);
+        ImGui::NewFrame();
+
+        if (m_ShowImGuiDemoWindow)
+            ImGui::ShowDemoWindow(&m_ShowImGuiDemoWindow);
+
+        ImGui::Begin("Another Window", &m_ShowImGuiAnotherWindow);
+        ImGui::Text("Hello from another window!");
+        if (ImGui::Button("Close Me"))
+            m_ShowImGuiAnotherWindow = false;
+        ImGui::End();
+
+        ImGui::Render();
+
+        // Render
         vkWaitForFences(m_Device, 1, &m_inFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
@@ -142,6 +354,48 @@ namespace Silfur
 
         updateUniformBuffer(imageIndex);
 
+        // For render ImGui
+        {
+            VkCommandBufferBeginInfo info = {};
+            info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+            info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+            VkResult err = vkBeginCommandBuffer(m_ImGuiCommandBuffers[imageIndex], &info);
+            Vk::VkCheckResult(err);
+        }
+
+        {
+            VkClearValue clearValues = {};
+            clearValues.color = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+            VkRenderPassBeginInfo RenderPassBeginInfo = {};
+            RenderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            RenderPassBeginInfo.renderPass = m_ImGuiRenderPass;
+            RenderPassBeginInfo.framebuffer = m_ImGuiFramebuffers[imageIndex];
+            RenderPassBeginInfo.renderArea.extent.width = m_SwapChainExtent.width;
+            RenderPassBeginInfo.renderArea.extent.height = m_SwapChainExtent.height;
+            RenderPassBeginInfo.clearValueCount = 1;
+            RenderPassBeginInfo.pClearValues = &clearValues;
+            vkCmdBeginRenderPass(m_ImGuiCommandBuffers[imageIndex], &RenderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        }
+
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_ImGuiCommandBuffers[imageIndex]);
+
+        vkCmdEndRenderPass(m_ImGuiCommandBuffers[imageIndex]);
+        VkResult err = vkEndCommandBuffer(m_ImGuiCommandBuffers[imageIndex]);
+        Vk::VkCheckResult(err);
+
+        // ImGui : Update and Render additional Platform Windows
+        ImGuiIO io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+        // End render ImGui
+
+        std::array<VkCommandBuffer, 2> submitCommandBuffers =
+            { m_CommandBuffers[imageIndex], m_ImGuiCommandBuffers[imageIndex] };
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -150,8 +404,8 @@ namespace Silfur
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &m_CommandBuffers[imageIndex];
+        submitInfo.commandBufferCount = static_cast<uint32_t>(submitCommandBuffers.size());
+        submitInfo.pCommandBuffers = submitCommandBuffers.data();
 
         VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphore[m_CurrentFrame] };
         submitInfo.signalSemaphoreCount = 1;
@@ -164,6 +418,7 @@ namespace Silfur
             throw std::runtime_error("Failed to submit draw command buffer!");
         }
 
+        // Present
         VkPresentInfoKHR presentInfo = {};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
         presentInfo.waitSemaphoreCount = 1;
@@ -601,9 +856,18 @@ namespace Silfur
 
         vkDestroyDescriptorPool(m_Device, m_DescriptorPool, nullptr);
 
+        vkFreeCommandBuffers(m_Device, m_ImGuiCommandPool,
+            static_cast<uint32_t>(m_ImGuiCommandBuffers.size()), m_ImGuiCommandBuffers.data());
         vkFreeCommandBuffers(m_Device, m_GraphicsCommandPool,
             static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
+        
+        vkDestroyRenderPass(m_Device, m_ImGuiRenderPass, nullptr);
         vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
+
+        for (auto framebuffer : m_ImGuiFramebuffers)
+        {
+            vkDestroyFramebuffer(m_Device, framebuffer, nullptr);
+        }
 
         for (auto framebuffer : m_SwapChainFramebuffers)
         {
@@ -638,6 +902,7 @@ namespace Silfur
 
         createSwapChain();
         createImageViews();
+        SetupVulkanForImGui();
         createRenderPass();
         createColorResources();
         createDepthResources();
@@ -887,7 +1152,7 @@ namespace Silfur
         colorAttachmentResolveDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachmentResolveDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         colorAttachmentResolveDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachmentResolveDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        colorAttachmentResolveDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         VkAttachmentReference depthAttachmentRef = {};
         depthAttachmentRef.attachment = 1;
@@ -1785,7 +2050,7 @@ namespace Silfur
         }
     }
 
-    void Renderer::OnWindowResized(Event &p_event)
+    void Renderer::OnWindowResized(SystemEvent &p_event)
     {
         m_FramebufferResized = true;
     }

@@ -9,7 +9,7 @@ namespace Silfur
 {
     namespace Vk
     {
-        // #TODO-Zeth : Implement enum class
+        // #TODO : Implement enum class
     }
 }
 

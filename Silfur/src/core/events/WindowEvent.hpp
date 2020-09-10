@@ -3,7 +3,7 @@
 #ifndef __SILFUR_CORE_EVENTS_WINDOW_EVENT_HPP__
 #define __SILFUR_CORE_EVENTS_WINDOW_EVENT_HPP__
 
-#include "Event.hpp"
+#include "EventBase.hpp"
 
 namespace Silfur
 {
@@ -22,7 +22,7 @@ namespace Silfur
         };
     } WindowEventInfo;
 
-    class WindowCloseEvent : public Event
+    class WindowCloseEvent : public SystemEvent
     {
     public:
         WindowCloseEvent() = default;
@@ -34,15 +34,15 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowCloseEvent>(*this);
+            return CreateUniqueRef<WindowCloseEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowClose)
+        EVENT_SYSTEM_CLASS_TYPE(WindowClose)
     };
 
-    class WindowMovedEvent : public Event
+    class WindowMovedEvent : public SystemEvent
     {
     public:
         explicit WindowMovedEvent(WindowEventInfo p_windowEventInfo)
@@ -59,17 +59,17 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowMovedEvent>(*this);
+            return CreateUniqueRef<WindowMovedEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowMoved)
+        EVENT_SYSTEM_CLASS_TYPE(WindowMoved)
     private:
         WindowEventInfo m_WindowEventInfo;
     };
 
-    class WindowSizeChangedEvent : public Event
+    class WindowSizeChangedEvent : public SystemEvent
     {
     public:
         explicit WindowSizeChangedEvent(WindowEventInfo p_windowEventInfo)
@@ -86,17 +86,17 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowSizeChangedEvent>(*this);
+            return CreateUniqueRef<WindowSizeChangedEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowSizeChanged)
+        EVENT_SYSTEM_CLASS_TYPE(WindowSizeChanged)
     private:
         WindowEventInfo m_WindowEventInfo;
     };
 
-    class WindowResizedEvent : public Event
+    class WindowResizedEvent : public SystemEvent
     {
     public:
         explicit WindowResizedEvent(WindowEventInfo p_windowEventInfo)
@@ -113,17 +113,17 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowResizedEvent>(*this);
+            return CreateUniqueRef<WindowResizedEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowResized)
+        EVENT_SYSTEM_CLASS_TYPE(WindowResized)
     private:
         WindowEventInfo m_WindowEventInfo;
     };
 
-    class WindowEnterEvent : public Event
+    class WindowEnterEvent : public SystemEvent
     {
     public:
         WindowEnterEvent() = default;
@@ -135,15 +135,15 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowEnterEvent>(*this);
+            return CreateUniqueRef<WindowEnterEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowEnter)
+        EVENT_SYSTEM_CLASS_TYPE(WindowEnter)
     };
 
-    class WindowLeaveEvent : public Event
+    class WindowLeaveEvent : public SystemEvent
     {
     public:
         WindowLeaveEvent() = default;
@@ -155,15 +155,15 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowLeaveEvent>(*this);
+            return CreateUniqueRef<WindowLeaveEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowLeave)
+        EVENT_SYSTEM_CLASS_TYPE(WindowLeave)
     };
 
-    class WindowFocusGainedEvent : public Event
+    class WindowFocusGainedEvent : public SystemEvent
     {
     public:
         WindowFocusGainedEvent() = default;
@@ -175,15 +175,15 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowFocusGainedEvent>(*this);
+            return CreateUniqueRef<WindowFocusGainedEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowFocusGained)
+        EVENT_SYSTEM_CLASS_TYPE(WindowFocusGained)
     };
 
-    class WindowFocusLostEvent : public Event
+    class WindowFocusLostEvent : public SystemEvent
     {
     public:
         WindowFocusLostEvent() = default;
@@ -195,12 +195,12 @@ namespace Silfur
             return ss.str();
         }*/
 
-        Scope<Event> Clone() override
+        UniqueRef<SystemEvent> Clone() override
         {
-            return CreateScope<WindowFocusLostEvent>(*this);
+            return CreateUniqueRef<WindowFocusLostEvent>(*this);
         }
 
-        EVENT_CLASS_TYPE(WindowFocusLost)
+        EVENT_SYSTEM_CLASS_TYPE(WindowFocusLost)
     };
 }
 

@@ -76,11 +76,17 @@ namespace Silfur
         uint32_t patch;
     };
 
+    enum class TypeEvent : uint8_t
+    {
+        System = 0,
+        Game
+    };
+
     // #TODO Work on references system
     template<typename T>
-    using Scope = std::unique_ptr<T>;
+    using UniqueRef = std::unique_ptr<T>;
     template<typename T, typename ... Args>
-    constexpr Scope<T> CreateScope(Args&& ... args)
+    constexpr UniqueRef<T> CreateUniqueRef(Args&& ... args)
     {
         return std::make_unique<T>(std::forward<Args>(args)...);
     }

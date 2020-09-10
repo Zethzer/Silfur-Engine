@@ -14,7 +14,7 @@ namespace Silfur
 {
     namespace Vk
     {
-        inline bool checkValidationLayerSupport()
+        inline bool CheckValidationLayerSupport()
         {
             uint32_t layerCount;
             vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
