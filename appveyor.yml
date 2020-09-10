@@ -28,6 +28,8 @@ install:
     echo | call Win-GenProjects.bat
 
     cd ..
+    
+    dir
 build:
   parallel: true
   verbosity: minimal

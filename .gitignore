@@ -6,6 +6,9 @@
 *.vcxproj.user
 **/obj/*
 
+# Visual Assist files
+.va/
+
 # CLion files
 .idea/
 
