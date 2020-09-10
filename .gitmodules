@@ -7,3 +7,4 @@
 [submodule "Silfur/vendor/imgui"]
 	path = Silfur/vendor/imgui
 	url = https://github.com/Zethzer/imgui.git
+	ignore=dirty
