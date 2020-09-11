@@ -11,11 +11,6 @@ namespace Silfur
         m_GameListeners.reserve(100);
     }
 
-    void EventHandler::SetImGUICallback(std::function<bool(SystemEvent&)> p_func)
-    {
-        m_ImGUICallback = p_func;
-    }
-
     void EventHandler::PushSystemEvent(UniqueRef<SystemEvent> p_event, bool immediate)
     {
         if (immediate)
@@ -24,10 +19,7 @@ namespace Silfur
             return;
         }
 
-        //if (!m_ImGUICallback(*p_event))
-        //{
-            m_SystemEvents.push_back(std::move(p_event));
-        //}
+        m_SystemEvents.push_back(std::move(p_event));
     }
 
     void EventHandler::PushGameEvent(UniqueRef<GameEvent> p_event, bool immediate)
@@ -74,17 +66,14 @@ namespace Silfur
 
     void EventHandler::ProcessSystemEvent(UniqueRef<SystemEvent> p_event)
     {
-        //if (!m_ImGUICallback(*p_event))
-        //{
-            EventSystemType evtType = p_event->GetEventType();
-            for (const auto& func : m_SystemListeners[evtType])
+        EventSystemType evtType = p_event->GetEventType();
+        for (const auto& func : m_SystemListeners[evtType])
+        {
+            if (func)
             {
-                if (func)
-                {
-                    func(*p_event);
-                }
+                func(*p_event);
             }
-        //}
+        }
     }
 
     void EventHandler::ProcessGameEvent(UniqueRef<GameEvent> p_event)

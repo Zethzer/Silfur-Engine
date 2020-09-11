@@ -10,6 +10,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_syswm.h>
+#include <imgui_impl_sdl.h>
 
 namespace Silfur
 {
@@ -83,6 +84,9 @@ namespace Silfur
     int CAPICALL Window::HandleEvent(void* p_userdata, SDL_Event* p_event)
     {
         auto window = static_cast<Window*>(p_userdata);
+        ImGuiIO io = ImGui::GetIO();
+
+        ImGui_ImplSDL2_ProcessEvent(p_event);
 
         switch(p_event->type)
         {
@@ -146,6 +150,11 @@ namespace Silfur
                 break;
 
             case SDL_KEYDOWN: {
+                if (io.WantCaptureKeyboard)
+                {
+                    return 0;
+                }
+
                 KeyInfo keyInfo;
                 keyInfo.vKey = SDLHelper::FromSDL(p_event->key.keysym.sym);
                 keyInfo.scancode = SDLHelper::FromSDL(p_event->key.keysym.scancode);
@@ -160,6 +169,11 @@ namespace Silfur
             }
                 break;
             case SDL_KEYUP: {
+                if (io.WantCaptureKeyboard)
+                {
+                    return 0;
+                }
+
                 KeyInfo keyInfo;
                 keyInfo.vKey = SDLHelper::FromSDL(p_event->key.keysym.sym);
                 keyInfo.scancode = SDLHelper::FromSDL(p_event->key.keysym.scancode);
@@ -175,6 +189,11 @@ namespace Silfur
                 break;
 
             case SDL_MOUSEBUTTONDOWN: {
+                if (io.WantCaptureMouse)
+                {
+                    return 0;
+                }
+
                 MouseButtonDownInfo info;
                 info.button = SDLHelper::FromSDL(p_event->button.button);
                 info.x = p_event->button.x;
@@ -185,6 +204,11 @@ namespace Silfur
             }
                 break;
             case SDL_MOUSEBUTTONUP: {
+                if (io.WantCaptureMouse)
+                {
+                    return 0;
+                }
+
                 MouseButtonUpInfo info;
                 info.button = SDLHelper::FromSDL(p_event->button.button);
                 info.x = p_event->button.x;
@@ -195,6 +219,11 @@ namespace Silfur
             }
                 break;
             case SDL_MOUSEMOTION: {
+                if (io.WantCaptureMouse)
+                {
+                    return 0;
+                }
+
                 MouseMotionInfo info;
                 info.x = p_event->motion.x;
                 info.y = p_event->motion.y;
@@ -206,6 +235,11 @@ namespace Silfur
             }
                 break;
             case SDL_MOUSEWHEEL: {
+                if (io.WantCaptureMouse)
+                {
+                    return 0;
+                }
+
                 MouseWheelInfo info;
                 info.x = p_event->wheel.x;
                 info.y = p_event->wheel.y;

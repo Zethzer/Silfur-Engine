@@ -310,7 +310,7 @@ namespace Silfur
 
     void Renderer::drawFrame()
     {
-        // New frame for ImGui
+        // ImGui begin new frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplSDL2_NewFrame(m_Window);
         ImGui::NewFrame();
@@ -318,11 +318,14 @@ namespace Silfur
         if (m_ShowImGuiDemoWindow)
             ImGui::ShowDemoWindow(&m_ShowImGuiDemoWindow);
 
-        ImGui::Begin("Another Window", &m_ShowImGuiAnotherWindow);
-        ImGui::Text("Hello from another window!");
-        if (ImGui::Button("Close Me"))
-            m_ShowImGuiAnotherWindow = false;
-        ImGui::End();
+        if (m_ShowImGuiAnotherWindow)
+        {
+            ImGui::Begin("Another Window", &m_ShowImGuiAnotherWindow);
+            ImGui::Text("Hello from another window!");
+            if (ImGui::Button("Close Me"))
+                m_ShowImGuiAnotherWindow = false;
+            ImGui::End();
+        }
 
         ImGui::Render();
 

@@ -27,8 +27,6 @@ namespace Silfur
         EventHandler(const EventHandler&) = delete;
         EventHandler(EventHandler&&) = delete;
 
-        void SetImGUICallback(std::function<bool(SystemEvent&)> p_func);
-
         void PushSystemEvent(UniqueRef<SystemEvent> p_event, bool immediate);
         void PushGameEvent(UniqueRef<GameEvent> p_event, bool immediate);
 
@@ -107,8 +105,6 @@ namespace Silfur
         EventsGameList m_GameEvents {};
         SystemListenersMap m_SystemListeners {};
         GameListenersMap m_GameListeners {};
-
-        std::function<bool(SystemEvent&)> m_ImGUICallback;
     };
 }
 
