@@ -41,7 +41,9 @@ namespace Silfur
         SetConsoleCP(CP_UTF8);
 #endif
         Log::Init();
+
         s_Instance = this;
+        m_EventHandler = CreateUniqueRef<EventHandler>();
     }
 
     Window& Application::CreateWindow(VideoMode p_mode, const char* p_title, bool p_isRenderWindow)
@@ -49,7 +51,7 @@ namespace Silfur
         m_Window = CreateUniqueRef<Window>(p_mode, p_title);
 
         /*
-         * TODO This is the main renderer which is create for the moment. Refactor this code
+         * #TODO This is the main renderer which is create for the moment. Refactor this code
          *  for just create useful things for a render window
          */
         if (p_isRenderWindow)

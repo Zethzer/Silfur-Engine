@@ -27,6 +27,8 @@ namespace Silfur
         EventHandler(const EventHandler&) = delete;
         EventHandler(EventHandler&&) = delete;
 
+        static EventHandler& Get() { return *s_Instance; }
+
         void PushSystemEvent(UniqueRef<SystemEvent> p_event, bool immediate);
         void PushGameEvent(UniqueRef<GameEvent> p_event, bool immediate);
 
@@ -101,6 +103,8 @@ namespace Silfur
         void ProcessGameEvent(UniqueRef<GameEvent> p_event);
 
     private:
+        static EventHandler* s_Instance;
+
         EventsSystemList m_SystemEvents {};
         EventsGameList m_GameEvents {};
         SystemListenersMap m_SystemListeners {};

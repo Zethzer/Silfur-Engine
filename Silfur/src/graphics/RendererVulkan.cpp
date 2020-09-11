@@ -25,7 +25,7 @@
 #include <set>
 #include <chrono>
 
-// #TODO-Zeth : This is temporary
+// #TODO : This is temporary
 const std::string MODEL_PATH = "models/chalet.obj";
 const std::string TEXTURE_PATH = "textures/chalet.jpg";
 
@@ -79,7 +79,7 @@ namespace Silfur
 
         InitializeImGui();
 
-        m_Window.GetEventHandler().AddSystemListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
+        EventHandler::Get().AddSystemListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
     }
 
     Renderer::~Renderer()
@@ -1987,7 +1987,7 @@ namespace Silfur
         return VK_SAMPLE_COUNT_1_BIT;
     }
 
-    // #TODO-Zeth : Not really his place - Find a proper place
+    // #TODO : Not really his place - Find a proper place
     std::vector<char> Renderer::readFile(const std::string& p_Filename)
     {
         std::ifstream file(p_Filename, std::ios::ate | std::ios::binary);

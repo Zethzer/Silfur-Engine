@@ -10,14 +10,14 @@ void PrintMouseWheelInfos(Silfur::SystemEvent& p_event)
 class Game
 {
 public:
-    Game(const Silfur::Window& p_window)
+    Game()
     {
         // Add a listener to an event in a class, MouseButtonDownEvent for example. You can use 2 ways :
         // Way 1 : By using the const reference of the window
-        p_window.GetEventHandler().AddSystemListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
+        Silfur::EventHandler::Get().AddSystemListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
 
         // Way 2 : If you don't want to pass the reference of the window. The application instance is unique and possess the window
-        Silfur::Application::Get().GetWindow().GetEventHandler().AddSystemListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMessageOnMouseButtonDown));
+        Silfur::EventHandler::Get().AddSystemListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMessageOnMouseButtonDown));
     };
 
     void PrintMouseButtonDownInfos(Silfur::SystemEvent& p_event)
@@ -37,25 +37,26 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 int main(int argc, char** argv)
 #endif
 {
-    Silfur::Application app("Hello Sandbox", {0, 1, 0});
-    Silfur::Window& window = app.CreateWindow({800, 600}, u8"Main Window");
+    Silfur::Version appVersion = { 0, 1, 0 };
+    Silfur::UniqueRef<Silfur::Application> app = Silfur::CreateUniqueRef<Silfur::Application>("Hello Sandbox", appVersion);
+    Silfur::Window& window = app->CreateWindow({800, 600}, u8"Main Window");
 
     // Add a listener to an event in global scope, MouseWheelEvent for example
-    window.GetEventHandler().AddSystemListener<Silfur::MouseWheelEvent>(SF_BIND_FN(PrintMouseWheelInfos));
+    Silfur::EventHandler::Get().AddSystemListener<Silfur::MouseWheelEvent>(SF_BIND_FN(PrintMouseWheelInfos));
 
     // Instantiate the class example
-    Game game(window);
+    Silfur::UniqueRef<Game> game = Silfur::CreateUniqueRef<Game>();
 
-    while (app.Run())
+    while (app->Run())
     {
         // Input polling for keyboard and mouse
         if (Silfur::Input::IsKeyPressed(Silfur::VKey::Escape))
         {
             // Just an example of pushing existing event type
-            window.GetEventHandler().PushSystemEvent(Silfur::CreateUniqueRef<Silfur::WindowCloseEvent>(Silfur::WindowCloseEvent()), true);
+            Silfur::EventHandler::Get().PushSystemEvent(Silfur::CreateUniqueRef<Silfur::WindowCloseEvent>(Silfur::WindowCloseEvent()), true);
 
             // This line does the same thing
-            //app.Shutdown();
+            //app->Shutdown();
         }
         else if (Silfur::Input::IsKeyPressed(Silfur::VKey::A))
         {

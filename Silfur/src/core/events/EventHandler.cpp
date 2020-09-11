@@ -3,8 +3,11 @@
 
 namespace Silfur
 {
+    EventHandler* EventHandler::s_Instance = nullptr;
+
     EventHandler::EventHandler()
     {
+        s_Instance = this;
         m_SystemEvents.reserve(500);
         m_GameEvents.reserve(500);
         m_SystemListeners.reserve(20);

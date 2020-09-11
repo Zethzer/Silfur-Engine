@@ -28,8 +28,6 @@ namespace Silfur
         void ProcessEvents();
         void Shutdown();
 
-        inline EventHandler& GetEventHandler() const { return *m_EventHandler; }
-
         inline operator SDL_Window*() const noexcept;
         inline SDL_Window* WindowHandle() const noexcept;
         void* WindowSystemHandle() const noexcept;
@@ -46,7 +44,6 @@ namespace Silfur
 
     private:
         SDL_Window* m_WinHandle {};
-        UniqueRef<EventHandler> m_EventHandler {};
     };
 }
 

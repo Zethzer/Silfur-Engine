@@ -27,7 +27,7 @@ namespace Silfur
         Application(const Application&) = delete;
         Application(Application&&) = delete;
 
-        Window& CreateWindow(VideoMode p_mode, const char *p_title, bool p_isRenderWindow = true);
+        Window& CreateWindow(VideoMode p_mode, const char* p_title, bool p_isRenderWindow = true);
         bool Run();
         void Shutdown();
 
@@ -43,10 +43,16 @@ namespace Silfur
     private:
         static Application* s_Instance;
 
-        UniqueRef<Window> m_Window = nullptr;
-        UniqueRef<Renderer> m_Renderer = nullptr;
+        // Modules
+        UniqueRef<EventHandler> m_EventHandler {};
+        UniqueRef<Renderer> m_Renderer {};
+
+        // Properties
         std::string m_AppName {};
         Version m_AppVersion {};
+
+        // Resources
+        UniqueRef<Window> m_Window {};
     };
 }
 

@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 
-// #TODO-Zeth : Handle physical device needs
+// #TODO : Handle physical device needs
 
 namespace Silfur
 {
