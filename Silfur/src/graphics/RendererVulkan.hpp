@@ -130,7 +130,7 @@ namespace Silfur
         void createImageViews();
         void createFrameBuffers();
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice p_device);
-        VkSurfaceFormatKHR selectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& p_availableFormats);
+        void selectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& p_availableFormats);
         VkPresentModeKHR selectSwapPresentMode(const std::vector<VkPresentModeKHR>& p_availablePresentModes);
         VkExtent2D selectSwapExtent(const VkSurfaceCapabilitiesKHR& p_capabilities);
         void cleanUpSwapChain();
@@ -222,6 +222,7 @@ namespace Silfur
         VkSwapchainKHR m_SwapChain {};
         std::vector<VkImage> m_SwapChainImages {};
         VkFormat m_SwapChainImageFormat {};
+        VkColorSpaceKHR m_SwapChainColorSpace {};
         VkExtent2D m_SwapChainExtent {};
         std::vector<VkImageView> m_SwapChainImageViews {};
         std::vector<VkFramebuffer> m_SwapChainFramebuffers {};

@@ -195,11 +195,11 @@ namespace Silfur
             VkAttachmentDescription attachement = {};
             attachement.format = m_SwapChainImageFormat;
             attachement.samples = VK_SAMPLE_COUNT_1_BIT;
-            attachement.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            attachement.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             attachement.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             attachement.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             attachement.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            attachement.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            attachement.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             attachement.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
             VkAttachmentReference colorAttachment = {};
@@ -386,6 +386,8 @@ namespace Silfur
         vkCmdEndRenderPass(m_ImGuiCommandBuffers[imageIndex]);
         VkResult err = vkEndCommandBuffer(m_ImGuiCommandBuffers[imageIndex]);
         Vk::VkCheckResult(err);
+
+        ImGui::EndFrame();
 
         // ImGui : Update and Render additional Platform Windows
         ImGuiIO io = ImGui::GetIO();
@@ -669,7 +671,7 @@ namespace Silfur
     {
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_PhysicalDevice);
 
-        VkSurfaceFormatKHR surfaceFormat = selectSwapSurfaceFormat(swapChainSupport.formats);
+        selectSwapSurfaceFormat(swapChainSupport.formats);
         VkPresentModeKHR presentMode = selectSwapPresentMode(swapChainSupport.presentMode);
         VkExtent2D extent = selectSwapExtent(swapChainSupport.capabilities);
 
@@ -683,8 +685,8 @@ namespace Silfur
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         createInfo.surface = m_Surface;
         createInfo.minImageCount = imageCount;
-        createInfo.imageFormat = surfaceFormat.format;
-        createInfo.imageColorSpace = surfaceFormat.colorSpace;
+        createInfo.imageFormat = m_SwapChainImageFormat;
+        createInfo.imageColorSpace = m_SwapChainColorSpace;
         createInfo.imageExtent = extent;
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -720,7 +722,6 @@ namespace Silfur
         m_SwapChainImages.resize(imageCount);
         vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, m_SwapChainImages.data());
 
-        m_SwapChainImageFormat = surfaceFormat.format;
         m_SwapChainExtent = extent;
     }
 
@@ -762,18 +763,39 @@ namespace Silfur
         }
     }
 
-    VkSurfaceFormatKHR Renderer::selectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& p_AvailableFormats)
+    void Renderer::selectSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& p_AvailableFormats)
     {
-        for (const auto& availableFormat : p_AvailableFormats)
+        // If the surface format list only includes one entry with VK_FORMAT_UNDEFINED,
+        // there is no preferred format, so we assume VK_FORMAT_B8G8R8A8_UNORM
+        if ((p_AvailableFormats.size() == 1) && (p_AvailableFormats[0].format == VK_FORMAT_UNDEFINED))
         {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB
-                && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            m_SwapChainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
+            m_SwapChainColorSpace = p_AvailableFormats[0].colorSpace;
+        }
+        else
+        {
+            // iterate over the list of available surface format and
+            // check for the presence of VK_FORMAT_B8G8R8A8_UNORM
+            bool found_B8G8R8A8_UNORM = false;
+            for (auto&& surfaceFormat : p_AvailableFormats)
             {
-                return availableFormat;
+                if (surfaceFormat.format == VK_FORMAT_B8G8R8A8_UNORM)
+                {
+                    m_SwapChainImageFormat = surfaceFormat.format;
+                    m_SwapChainColorSpace = surfaceFormat.colorSpace;
+                    found_B8G8R8A8_UNORM = true;
+                    break;
+                }
+            }
+
+            // in case VK_FORMAT_B8G8R8A8_UNORM is not available
+            // select the first available color format
+            if (!found_B8G8R8A8_UNORM)
+            {
+                m_SwapChainImageFormat = p_AvailableFormats[0].format;
+                m_SwapChainColorSpace = p_AvailableFormats[0].colorSpace;
             }
         }
-
-        return p_AvailableFormats[0];
     }
 
     VkPresentModeKHR Renderer::selectSwapPresentMode(const std::vector<VkPresentModeKHR>& p_AvailablePresentModes)
