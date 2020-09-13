@@ -46,7 +46,7 @@ namespace Silfur
                                    SDL_WINDOWPOS_UNDEFINED,
                                    p_mode.Width,
                                    p_mode.Height,
-                                   SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
+                                   SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI);
         if(!m_WinHandle)
         {
             SF_CORE_FATAL(Window_l, 11, "Failed to create the window: {}", SDL_GetError());
