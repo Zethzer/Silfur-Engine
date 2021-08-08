@@ -6,12 +6,6 @@
 *.vcxproj.user
 **/obj/*
 
-# Visual Assist files
-.va/
-
-# CLion files
-.idea/
-
 # Binaries
 **/bin/
 !/vendor/bin
@@ -21,7 +15,3 @@ bin-int/
 
 # Compiled SPIR-V shaders
 *.spv
-
-# Others
-examples/**/logs
-examples/**/imgui.ini
