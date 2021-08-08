@@ -9,7 +9,29 @@ This game engine will permit to create 3D/2D applications which need rendering o
 Upon completion, this will be a free, open-source game engine. The source code is under `Apache v2` license.
 
 The game engine is under active development. You can follow the progress of the development with the devlogs on [itch.io.](https://duality-workshop.itch.io/silfur-engine)
-    
+
+## Building Silfur
+
+### On Windows
+#### Prerequisites
+
+* Vulkan SDK v1.2.182.0
+* Visual Studio 2019
+
+#### Available configurations
+
+* `Debug`
+* `Release`
+* `Development`
+
+* Platform : `x64`
+
+#### Building
+
+* On Windows:
+  * `git clone --recursive https://github.com/Zethzer/Silfur-Engine.git`
+  * Launch `Setup.bat` for generate the `.sln` file.
+
 ## F.A.Q
 * Where can I find the necessary tools and SDK(s)?
   * On Windows:
