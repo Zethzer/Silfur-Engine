@@ -144,6 +144,7 @@ project "Sandbox"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
+	debugcommand("%{wks.location}bin\\" .. outputdir .. "\\Engine\\%{cfg.buildtarget.name}")
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
