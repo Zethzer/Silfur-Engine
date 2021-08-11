@@ -105,8 +105,7 @@ project "Silfur"
 		systemversion "latest"
 		defines 
 		{
-			"_WIN32",
-			"SF_PLATFORM_WINDOWS"
+			"SF_WINDOWS"
 		}
 		
 	filter "action:vs2019"

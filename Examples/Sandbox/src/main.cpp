@@ -3,7 +3,16 @@
 
 int main(void)
 {
-    PrintHelloWorld();
+    auto window = Silfur::Window::Create("Silfur Engine", 1280, 720);
 
-    getchar();
+    bool isRunning = true;
+    while (isRunning)
+    {
+        window->Update();
+
+        if (window->Closed())
+        {
+            isRunning = false;
+        }
+    }
 }
