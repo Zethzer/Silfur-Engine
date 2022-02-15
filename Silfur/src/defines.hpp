@@ -50,21 +50,6 @@ STATIC_ASSERT(sizeof(Silfur::f64) == 8, "Expected f64 to be 8 bytes.");
     #error "Unknown platform!"
 #endif
 
-/* -------- EXPORT -------- */
-#ifdef SF_EXPORT
-    #ifdef _MSC_VER
-        #define SF_API __declspec(dllexport)
-    #else
-        #define SF_API __attribute__((visibility("default")))
-    #endif
-#else
-    #ifdef _MSC_VER
-        #define SF_API __declspec(dllimport)
-    #else
-        #define SF_API
-    #endif
-#endif
-
 /* -------- INLINE -------- */
 #ifdef _MSC_VER
     #define FORCEINLINE __forceinline
@@ -76,3 +61,54 @@ STATIC_ASSERT(sizeof(Silfur::f64) == 8, "Expected f64 to be 8 bytes.");
     #define FORCEINLINE inline
     #define FORCENOINLINE
 #endif
+
+/* -------- C API CALL -------- */
+/* Uses the C calling convention */
+#ifndef CAPICALL
+    #if (defined(__WIN32__) || defined(__WINRT__)) && !defined(__GNUC__)
+        #define CAPICALL __cdecl
+    #elif defined(__OS2__) || defined(__EMX__)
+        #define CAPICALL _System
+        # if defined (__GNUC__) && !defined(_System)
+            #  define _System /* for old EMX/GCC compat.  */
+        # endif
+    #else
+        #define CAPICALL
+    #endif
+#endif
+
+/* -------- BIND FUNCTION -------- */
+#define SF_BIND_FN(fn) [](auto&&... args) -> decltype(auto) \
+{ return fn(std::forward<decltype(args)>(args)...); }
+
+#define SF_BIND_MEMBER_FN(fn) [this](auto&&... args) -> decltype(auto) \
+{ return this->fn(std::forward<decltype(args)>(args)...); }
+
+#include <memory>
+namespace Silfur
+{
+    // #TODO Define engine version in ini file
+    struct Version
+    {
+        u32 major;
+        u32 minor;
+        u32 patch;
+    };
+
+    // #TODO Work on references system
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
+    template<typename T, typename ... Args>
+    constexpr Scope<T> CreateScope(Args&& ... args)
+    {
+        return std::make_unique<T>(std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
+    template<typename T, typename ... Args>
+    constexpr Ref<T> CreateRef(Args&& ... args)
+    {
+        return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+}

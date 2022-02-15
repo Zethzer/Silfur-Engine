@@ -3,6 +3,9 @@ include "findVulkan.lua"
 checkVulkanDynamicLibWin32()
 
 IncludeDir = {}
+IncludeDir["SDL2"] = "%{wks.location}/Silfur/vendor/SDL2/include"
+IncludeDir["spdlog"] = "%{wks.location}/Silfur/vendor/spdlog/include"
+IncludeDir["portableSnippets"] = "%{wks.location}/Silfur/vendor/portable-snippets"
 
 workspace "Silfur Engine"
 	architecture "x86_64"
@@ -57,28 +60,21 @@ group ""
 project "Silfur"
 	location "Silfur"
 	language "C++"
-	cppdialect "C++17"
-	kind "SharedLib"
-	staticruntime "off"
+	cppdialect "C++20"
+	kind "StaticLib"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-	
-	postbuildcommands
-	{
-		{"{COPYDIR} \"%{cfg.buildtarget.relpath}\" \"%{wks.location}bin\\" .. outputdir .. "\\Engine\\\""}
-	}
 
 	pchheader "sfpch.hpp"
-	pchsource "%{wks.location}/Silfur/src/sfpch.cpp"
+	pchsource "%{prj.location}/src/sfpch.cpp"
 
 	files
 	{
 		"%{prj.location}/src/**.hpp",
 		"%{prj.location}/src/**.inl",
 		"%{prj.location}/src/**.cpp",
-		"%{prj.name}/vendor/stb/**.h",
-		"%{prj.name}/vendor/stb/**.cpp",
 		"%{prj.location}/**.vert",
 		"%{prj.location}/**.frag",
 		"%{prj.location}/**.tesc",
@@ -89,16 +85,31 @@ project "Silfur"
 
 	defines
 	{
-		"SF_EXPORT",
+		"SF_CORE",
 		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs
 	{
-		"%{prj.name}/src"
+		"%{prj.location}/src",
+		"%{IncludeDir.SDL2}",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.portableSnippets}"
 	}
 	
 	includeVulkanSDKWin32()
+
+	libdirs
+	{
+		"%{prj.location}/vendor/SDL2/lib"
+	}
+	
+	links
+	{
+		"SDL2",
+		"SDL2main"
+	}
+
 	linkVulkanStaticWin32()
 
 	filter "system:windows"
@@ -111,12 +122,12 @@ project "Silfur"
 	filter "action:vs2019"
 		disablewarnings
 		{
-			"6323", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6323?view=vs-2019
-			"6385", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6385?view=vs-2019
-			"6387", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6387?view=vs-2019
-			"26812", -- https://docs.microsoft.com/en-US/cpp/code-quality/c26812?view=vs-2019
-			"26495", -- https://docs.microsoft.com/en-US/cpp/code-quality/c26495?view=vs-2019
-			"26451" -- https://docs.microsoft.com/en-US/cpp/code-quality/c26451?view=vs-2019
+			"6323", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6323?view=msvc-170
+			"6385", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6385?view=msvc-170
+			"6387", -- https://docs.microsoft.com/en-US/cpp/code-quality/c6387?view=msvc-170
+			"26812", -- https://docs.microsoft.com/en-US/cpp/code-quality/c26812?view=msvc-170
+			"26495", -- https://docs.microsoft.com/en-US/cpp/code-quality/c26495?view=msvc-170
+			"26451" -- https://docs.microsoft.com/en-US/cpp/code-quality/c26451?view=msvc-170
 		}
 
 	filter "configurations:Debug"
@@ -141,8 +152,8 @@ project "Silfur"
 project "Sandbox"
 	location "examples/Sandbox"
 	language "C++"
-	cppdialect "C++17"
-	staticruntime "off"
+	cppdialect "C++20"
+	staticruntime "on"
 	debugcommand("%{wks.location}bin\\" .. outputdir .. "\\Engine\\%{cfg.buildtarget.name}")
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -150,7 +161,8 @@ project "Sandbox"
 	
 	postbuildcommands
 	{
-		{"{COPYDIR} \"%{cfg.buildtarget.relpath}\" \"%{wks.location}bin\\" .. outputdir .. "\\Engine\\\""}
+		{"{COPYDIR} \"%{cfg.buildtarget.relpath}\" \"%{wks.location}bin\\" .. outputdir .. "\\Engine\\\""},
+		{"{COPYDIR} \"%{wks.location}\\Silfur\\vendor\\SDL2\\lib\\SDL2.dll\" \"%{wks.location}bin\\" .. outputdir .. "\\Engine\\\""}
 	}
 
 	files
@@ -168,6 +180,9 @@ project "Sandbox"
 
 	includedirs
 	{
+		"%{IncludeDir.SDL2}",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.portableSnippets}",
 		"%{wks.location}/Silfur/src"
 	}
 	

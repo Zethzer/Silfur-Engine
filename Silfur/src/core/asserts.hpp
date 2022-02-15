@@ -3,19 +3,14 @@
 #endif
 
 #ifdef SF_ENABLE_ASSERTS
-    #include <cstdio>
-    #ifdef _MSC_VER
-        #include <intrin.h>
-        #define debugBreak() __debugbreak()
-    #else
-        #define debugBreak() __builtin_trap()
-    #endif
-    
+    #include <debug-trap.h>
+    #define debugBreak()
+
     #define SF_ASSERT(expr)                                                                     \
     {                                                                                           \
         if (!(expr)) {                                                                          \
             printf("Assertion Failed: {%s} in file %s on line %s", #expr, __FILE__, __LINE__);  \
-            debugBreak();                                                                       \
+            psnip_trap();                                                                       \
         }                                                                                       \
     }
 
@@ -23,7 +18,7 @@
     {                                                                                           \
         if (!(expr)) {                                                                          \
             printf("Assertion Failed: {%s} in file %s on line %s", #expr, __FILE__, __LINE__);  \
-            debugBreak();                                                                       \
+            psnip_trap();                                                                       \
         }                                                                                       \
     }
 
@@ -32,7 +27,7 @@
         {                                                                                          \
             if (!(expr)) {                                                                            \
                 printf("Assertion Failed: {%s} in file %s on line %s", #expr, __FILE__, __LINE__); \
-                debugBreak();                                                                      \
+                psnip_trap();                                                                      \
             }                                                                                      \
         }
     #else

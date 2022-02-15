@@ -19,10 +19,3 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-
-#ifdef SF_WINDOWS
-    #ifndef WIN32_LEAN_AND_MEAN
-        #define WIN32_LEAN_AND_MEAN
-    #endif
-    #include <Windows.h>
-#endif
