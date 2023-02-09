@@ -7,17 +7,19 @@
 #include "core/events/MouseEvent.hpp"
 #include "core/input/Helper.hpp"
 
-#include <SDL2/SDL.h>
+#define SDL_MAIN_HANDLED
+#include "SDL2/SDL.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_syswm.h>
 
 namespace Silfur
 {
-    Window::Window(VideoMode p_mode, const std::string& p_title) :
+    Window::Window(VideoMode mode, const std::string& title) :
         m_WinHandle(nullptr),
         IsClosed(false)
     {
-        Create(p_mode, p_title);
+        SDL_SetMainReady();
+        Create(mode, title);
         m_EventHandler = CreateScope<EventHandler>();
         m_EventHandler->AddListener<WindowCloseEvent>(SF_BIND_MEMBER_FN(OnWindowClose));
     }
@@ -35,17 +37,17 @@ namespace Silfur
         m_EventHandler->Dispatch();
     }
 
-    void Window::Create(VideoMode p_mode, const std::string& p_title)
+    void Window::Create(VideoMode mode, const std::string& title)
     {
         if (SDL_Init(SDL_INIT_VIDEO))
         {
             SF_CORE_FATAL(Window_l, 10, "Failed to init SDL : {}", SDL_GetError());
         }
 
-        m_WinHandle = SDL_CreateWindow(p_title.c_str(), SDL_WINDOWPOS_UNDEFINED,
+        m_WinHandle = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED,
-                                   p_mode.Width,
-                                   p_mode.Height,
+                                   mode.Width,
+                                   mode.Height,
                                    SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
         if(!m_WinHandle)
         {
@@ -80,14 +82,14 @@ namespace Silfur
         #endif
     }
 
-    int CAPICALL Window::HandleEvent(void* p_userdata, SDL_Event* p_event)
+    int CAPICALL Window::HandleEvent(void* userdata, SDL_Event* SDLEvent)
     {
-        auto window = static_cast<Window*>(p_userdata);
+        auto window = static_cast<Window*>(userdata);
 
-        switch(p_event->type)
+        switch(SDLEvent->type)
         {
             case SDL_WINDOWEVENT:
-                switch(p_event->window.event)
+                switch(SDLEvent->window.event)
                 {
                     case SDL_WINDOWEVENT_CLOSE: {
                         WindowCloseEvent event;
@@ -96,8 +98,8 @@ namespace Silfur
                         break;
                     case SDL_WINDOWEVENT_MOVED: {
                         WindowEventInfo windowEventInfo;
-                        windowEventInfo.x = p_event->window.data1;
-                        windowEventInfo.y = p_event->window.data2;
+                        windowEventInfo.x = SDLEvent->window.data1;
+                        windowEventInfo.y = SDLEvent->window.data2;
 
                         WindowMovedEvent event(windowEventInfo);
                         window->m_EventHandler->PushEvent(CreateScope<WindowMovedEvent>(event));
@@ -105,8 +107,8 @@ namespace Silfur
                         break;
                     case SDL_WINDOWEVENT_SIZE_CHANGED: {
                         WindowEventInfo windowEventInfo;
-                        windowEventInfo.width = p_event->window.data1;
-                        windowEventInfo.height = p_event->window.data2;
+                        windowEventInfo.width = SDLEvent->window.data1;
+                        windowEventInfo.height = SDLEvent->window.data2;
 
                         WindowSizeChangedEvent event(windowEventInfo);
                         window->m_EventHandler->PushEvent(CreateScope<WindowSizeChangedEvent>(event));
@@ -114,8 +116,8 @@ namespace Silfur
                         break;
                     case SDL_WINDOWEVENT_RESIZED: {
                         WindowEventInfo windowEventInfo;
-                        windowEventInfo.width = p_event->window.data1;
-                        windowEventInfo.height = p_event->window.data2;
+                        windowEventInfo.width = SDLEvent->window.data1;
+                        windowEventInfo.height = SDLEvent->window.data2;
 
                         WindowResizedEvent event(windowEventInfo);
                         window->m_EventHandler->PushEvent(CreateScope<WindowResizedEvent>(event));
@@ -147,13 +149,13 @@ namespace Silfur
 
             case SDL_KEYDOWN: {
                 KeyInfo keyInfo;
-                keyInfo.vKey = SDLHelper::FromSDL(p_event->key.keysym.sym);
-                keyInfo.scancode = SDLHelper::FromSDL(p_event->key.keysym.scancode);
-                keyInfo.repeated = p_event->key.repeat != 0;
-                keyInfo.alt = (p_event->key.keysym.mod & KMOD_ALT) != 0;
-                keyInfo.control = (p_event->key.keysym.mod & KMOD_CTRL) != 0;
-                keyInfo.shift = (p_event->key.keysym.mod & KMOD_SHIFT) != 0;
-                keyInfo.system = (p_event->key.keysym.mod & KMOD_GUI) != 0;
+                keyInfo.vKey = SDLHelper::FromSDL(SDLEvent->key.keysym.sym);
+                keyInfo.scancode = SDLHelper::FromSDL(SDLEvent->key.keysym.scancode);
+                keyInfo.repeated = SDLEvent->key.repeat != 0;
+                keyInfo.alt = (SDLEvent->key.keysym.mod & KMOD_ALT) != 0;
+                keyInfo.control = (SDLEvent->key.keysym.mod & KMOD_CTRL) != 0;
+                keyInfo.shift = (SDLEvent->key.keysym.mod & KMOD_SHIFT) != 0;
+                keyInfo.system = (SDLEvent->key.keysym.mod & KMOD_GUI) != 0;
 
                 KeyPressedEvent event(keyInfo);
                 window->m_EventHandler->PushEvent(CreateScope<KeyPressedEvent>(event));
@@ -161,13 +163,13 @@ namespace Silfur
                 break;
             case SDL_KEYUP: {
                 KeyInfo keyInfo;
-                keyInfo.vKey = SDLHelper::FromSDL(p_event->key.keysym.sym);
-                keyInfo.scancode = SDLHelper::FromSDL(p_event->key.keysym.scancode);
-                keyInfo.repeated = p_event->key.repeat != 0;
-                keyInfo.alt = (p_event->key.keysym.mod & KMOD_ALT) != 0;
-                keyInfo.control = (p_event->key.keysym.mod & KMOD_CTRL) != 0;
-                keyInfo.shift = (p_event->key.keysym.mod & KMOD_SHIFT) != 0;
-                keyInfo.system = (p_event->key.keysym.mod & KMOD_GUI) != 0;
+                keyInfo.vKey = SDLHelper::FromSDL(SDLEvent->key.keysym.sym);
+                keyInfo.scancode = SDLHelper::FromSDL(SDLEvent->key.keysym.scancode);
+                keyInfo.repeated = SDLEvent->key.repeat != 0;
+                keyInfo.alt = (SDLEvent->key.keysym.mod & KMOD_ALT) != 0;
+                keyInfo.control = (SDLEvent->key.keysym.mod & KMOD_CTRL) != 0;
+                keyInfo.shift = (SDLEvent->key.keysym.mod & KMOD_SHIFT) != 0;
+                keyInfo.system = (SDLEvent->key.keysym.mod & KMOD_GUI) != 0;
 
                 KeyReleasedEvent event(keyInfo);
                 window->m_EventHandler->PushEvent(CreateScope<KeyReleasedEvent>(event));
@@ -176,9 +178,9 @@ namespace Silfur
 
             case SDL_MOUSEBUTTONDOWN: {
                 MouseButtonDownInfo info;
-                info.button = SDLHelper::FromSDL(p_event->button.button);
-                info.x = p_event->button.x;
-                info.y = p_event->button.y;
+                info.button = SDLHelper::FromSDL(SDLEvent->button.button);
+                info.x = SDLEvent->button.x;
+                info.y = SDLEvent->button.y;
 
                 MouseButtonDownEvent event(info);
                 window->m_EventHandler->PushEvent(CreateScope<MouseButtonDownEvent>(event));
@@ -186,9 +188,9 @@ namespace Silfur
                 break;
             case SDL_MOUSEBUTTONUP: {
                 MouseButtonUpInfo info;
-                info.button = SDLHelper::FromSDL(p_event->button.button);
-                info.x = p_event->button.x;
-                info.y = p_event->button.y;
+                info.button = SDLHelper::FromSDL(SDLEvent->button.button);
+                info.x = SDLEvent->button.x;
+                info.y = SDLEvent->button.y;
 
                 MouseButtonUpEvent event(info);
                 window->m_EventHandler->PushEvent(CreateScope<MouseButtonUpEvent>(event));
@@ -196,10 +198,10 @@ namespace Silfur
                 break;
             case SDL_MOUSEMOTION: {
                 MouseMotionInfo info;
-                info.x = p_event->motion.x;
-                info.y = p_event->motion.y;
-                info.xRelative = p_event->motion.xrel;
-                info.yRelative = p_event->motion.yrel;
+                info.x = SDLEvent->motion.x;
+                info.y = SDLEvent->motion.y;
+                info.xRelative = SDLEvent->motion.xrel;
+                info.yRelative = SDLEvent->motion.yrel;
 
                 MouseMotionEvent event(info);
                 window->m_EventHandler->PushEvent(CreateScope<MouseMotionEvent>(event));
@@ -207,9 +209,9 @@ namespace Silfur
                 break;
             case SDL_MOUSEWHEEL: {
                 MouseWheelInfo info;
-                info.x = p_event->wheel.x;
-                info.y = p_event->wheel.y;
-                info.direction = p_event->wheel.direction;
+                info.x = SDLEvent->wheel.x;
+                info.y = SDLEvent->wheel.y;
+                info.direction = SDLEvent->wheel.direction;
 
                 MouseWheelEvent event(info);
                 window->m_EventHandler->PushEvent(CreateScope<MouseWheelEvent>(event));
@@ -222,7 +224,7 @@ namespace Silfur
         return 0;
     }
 
-    void Window::OnWindowClose(Event &p_event)
+    void Window::OnWindowClose(Event &event)
     {
         IsClosed = true;
     }

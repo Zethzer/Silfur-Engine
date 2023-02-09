@@ -87,14 +87,6 @@ STATIC_ASSERT(sizeof(Silfur::f64) == 8, "Expected f64 to be 8 bytes.");
 #include <memory>
 namespace Silfur
 {
-    // #TODO Define engine version in ini file
-    struct Version
-    {
-        u32 major;
-        u32 minor;
-        u32 patch;
-    };
-
     // #TODO Work on references system
     template<typename T>
     using Scope = std::unique_ptr<T>;

@@ -21,27 +21,27 @@ namespace Silfur
         EventHandler(const EventHandler&) = delete;
         EventHandler(EventHandler&&) = delete;
 
-        void PushEvent(Scope<Event> p_event);
+        void PushEvent(Scope<Event> event);
 
         template<typename EvtT, typename Func>
-        void AddListener(const Func& p_func)
+        void AddListener(const Func& func)
         {
             EventType evtType = EvtT::GetStaticType();
             if (m_Listeners[evtType].empty())
             {
                 m_Listeners[evtType].resize(50);
             }
-            m_Listeners[evtType].push_back(p_func);
+            m_Listeners[evtType].push_back(func);
         }
 
         template<typename EvtT, typename Func>
-        bool RemoveListener(const Func& p_func)
+        bool RemoveListener(const Func& func)
         {
             auto it = std::find_if(m_Listeners.begin(), m_Listeners.end(),
-                                   [&p_func](const auto & p) {
-                                        for (const auto& func : p.second)
+                                   [&func](const auto & p) {
+                                        for (const auto& listener : p.second)
                                         {
-                                            return func == p_func;
+                                            return listener == func;
                                         }
                                     });
 

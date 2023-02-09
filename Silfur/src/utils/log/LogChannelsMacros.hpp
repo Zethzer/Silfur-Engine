@@ -3,19 +3,13 @@
 #include "defines.hpp"
 #include "LogChannel.hpp"
 
-#define DECLARE_LOG_CHANNEL_EXTERN(p_channelName) \
-    extern struct LogChannel##p_channelName : public LogChannel \
+#define DECLARE_LOG_CHANNEL_EXTERN(channelName) \
+    extern struct LogChannel##channelName : public LogChannel \
     { \
-        LogChannel##p_channelName() : LogChannel(#p_channelName) {} \
-    } p_channelName;
+        LogChannel##channelName() : LogChannel(#channelName) {} \
+    } channelName;
 
-#define DEFINE_LOG_CHANNEL(p_channelName) LogChannel##p_channelName p_channelName;
-
-#define DEFINE_LOG_CHANNEL_STATIC(p_channelName) \
-    static struct LogChannel##p_channelName : public LogChannel \
-    { \
-        LogChannel##p_channelName() : LogChannel(#p_channelName) {} \
-    } p_channelName;
+#define DEFINE_LOG_CHANNEL(channelName) LogChannel##channelName channelName;
 
 DECLARE_LOG_CHANNEL_EXTERN(Temp)
 

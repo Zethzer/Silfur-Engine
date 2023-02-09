@@ -16,7 +16,7 @@ namespace Silfur
     {
     public:
         Window() = delete;
-        Window(VideoMode p_mode, const std::string& p_title);
+        Window(VideoMode mode, const std::string& title);
         ~Window();
 
         Window(const Window&) = delete;
@@ -34,10 +34,10 @@ namespace Silfur
         Window& operator=(const Window&) = delete;
         Window& operator=(Window&&) = delete;
     private:
-        void Create(VideoMode p_mode, const std::string& p_title);
-        int static CAPICALL HandleEvent(void* p_userdata, SDL_Event* p_event);
+        void Create(VideoMode mode, const std::string& title);
+        int static CAPICALL HandleEvent(void* userdata, SDL_Event* event);
 
-        void OnWindowClose(Event& p_event);
+        void OnWindowClose(Event& event);
     public:
         bool IsClosed = false;
 

@@ -1,9 +1,8 @@
 #include "sfpch.hpp"
 #include "LogChannel.hpp"
 
-LogChannelBase::LogChannelBase(const std::string& p_channelName) :
-    m_channelName(p_channelName)
+LogChannel::LogChannel(const std::string& channelName)
 {
 }
 
-LogChannelBase::~LogChannelBase() = default;
+LogChannel::~LogChannel() = default;

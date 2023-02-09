@@ -23,8 +23,8 @@ namespace Silfur
         inline KeyInfo GetInfos() const { return m_KeyInfo; }
 
     protected:
-        explicit KeyEvent(KeyInfo p_keyInfo)
-            : m_KeyInfo(p_keyInfo)
+        explicit KeyEvent(KeyInfo keyInfo)
+            : m_KeyInfo(keyInfo)
         {}
 
         virtual Scope<Event> Clone() override
@@ -38,8 +38,8 @@ namespace Silfur
     class KeyPressedEvent : public KeyEvent
     {
     public:
-        explicit KeyPressedEvent(KeyInfo p_keyInfo)
-            : KeyEvent(p_keyInfo)
+        explicit KeyPressedEvent(KeyInfo keyInfo)
+            : KeyEvent(keyInfo)
         {}
 
         inline int IsRepeated() { return m_KeyInfo.repeated; }
@@ -63,8 +63,8 @@ namespace Silfur
     class KeyReleasedEvent : public KeyEvent
     {
     public:
-        explicit KeyReleasedEvent(KeyInfo p_keyInfo)
-                : KeyEvent(p_keyInfo)
+        explicit KeyReleasedEvent(KeyInfo keyInfo)
+                : KeyEvent(keyInfo)
         {}
 
         std::string ToString() const override

@@ -63,7 +63,7 @@ namespace Silfur
         GraveAccent,   /* ` */
 
         /* Function keys */
-                Escape,
+        Escape,
         Enter,
         Tab,
         Backspace,
@@ -108,7 +108,7 @@ namespace Silfur
         F24,
 
         /* Keypad */
-                KP0,
+        KP0,
         KP1,
         KP2,
         KP3,
@@ -195,7 +195,7 @@ namespace Silfur
         GraveAccent,   /* ` */
 
         /* Function keys */
-                Escape,
+        Escape,
         Enter,
         Tab,
         Backspace,
@@ -240,7 +240,7 @@ namespace Silfur
         F24,
 
         /* Keypad */
-                KP0,
+        KP0,
         KP1,
         KP2,
         KP3,
@@ -270,15 +270,15 @@ namespace Silfur
         Max = Menu
     };
 
-    inline std::ostream& operator<<(std::ostream& p_os, VKey p_keyCode)
+    inline std::ostream& operator<<(std::ostream& os, VKey keyCode)
     {
-        p_os << static_cast<u32>(p_keyCode);
-        return p_os;
+        os << static_cast<u32>(keyCode);
+        return os;
     }
 
-    inline std::ostream& operator<<(std::ostream& p_os, ScanCode p_scanCode)
+    inline std::ostream& operator<<(std::ostream& os, ScanCode scanCode)
     {
-        p_os << static_cast<u32>(p_scanCode);
-        return p_os;
+        os << static_cast<u32>(scanCode);
+        return os;
     }
 }

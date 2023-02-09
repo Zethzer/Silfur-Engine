@@ -13,18 +13,18 @@ namespace Silfur
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application() :
+    Application::Application(int argc, char** argv) :
         m_AppName("Hello Silfur"),
         m_AppVersion({1, 0, 0})
     {
-        Create();
+        Create(argc, argv);
     }
 
-    Application::Application(std::string p_appName, const Version& p_appVersion) :
-        m_AppName(std::move(p_appName)),
-        m_AppVersion(p_appVersion)
+    Application::Application(int argc, char** argv, const std::string& appName, const Version& appVersion) :
+        m_AppName(appName),
+        m_AppVersion(appVersion)
     {
-        Create();
+        Create(argc, argv);
     }
 
     Application::~Application()
@@ -32,35 +32,32 @@ namespace Silfur
         m_Window.reset();
     }
 
-    void Application::Create()
+    void Application::Create(int argc, char** argv)
     {
 #if defined(SF_DEBUG) && defined(_WIN32)
         // Source : https://stackoverflow.com/questions/2492077/output-unicode-strings-in-windows-console-app
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);
 #endif
-        Log::Init();
+
         s_Instance = this;
+
+        // TODO : Resolution from client app
+        m_Window = CreateScope<Window>(VideoMode(800,600), m_AppName);
     }
 
-    Window& Application::CreateWindow(VideoMode p_mode, const std::string& p_title, bool p_isRenderWindow)
+    void Application::Run()
     {
-        m_Window = CreateScope<Window>(p_mode, p_title);
-
-        return *m_Window;
-    }
-
-    bool Application::Run()
-    {
-        /*
-         * TODO Conditional sleep if FPS are too high :
-         *    - Test with a limit of 1000 FPS
-         *  Or don't use mailbox presentation mode during
-         *  development and use FIFO instead
-         */
-        m_Window->ProcessEvents();
-
-        return !m_Window->IsClosed;
+        while (!m_Window->IsClosed)
+        {
+            /*
+             * TODO Conditional sleep if FPS are too high :
+             *    - Test with a limit of 1000 FPS
+             *  Or don't use mailbox presentation mode during
+             *  development and use FIFO instead
+             */
+            m_Window->ProcessEvents();
+        }
     }
 
     void Application::Shutdown()

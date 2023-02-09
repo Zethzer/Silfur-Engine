@@ -259,9 +259,9 @@ namespace Silfur
         SDLK_APPLICATION
     };
 
-    Silfur::VKey Silfur::SDLHelper::FromSDL(SDL_Keycode p_keycode)
+    Silfur::VKey Silfur::SDLHelper::FromSDL(SDL_Keycode keycode)
     {
-        switch(p_keycode)
+        switch(keycode)
         {
             case SDLK_a:            return VKey::A;
             case SDLK_b:            return VKey::B;
@@ -390,9 +390,9 @@ namespace Silfur
         }
     }
 
-    Silfur::ScanCode Silfur::SDLHelper::FromSDL(SDL_Scancode p_scancode)
+    Silfur::ScanCode Silfur::SDLHelper::FromSDL(SDL_Scancode scancode)
     {
-        switch(p_scancode)
+        switch(scancode)
         {
             case SDL_SCANCODE_A:            return ScanCode::A;
             case SDL_SCANCODE_B:            return ScanCode::B;
@@ -535,19 +535,19 @@ namespace Silfur
         }
     }
 
-    SDL_Scancode SDLHelper::ToSDL(ScanCode p_scancode)
+    SDL_Scancode SDLHelper::ToSDL(ScanCode scancode)
     {
-        if (p_scancode == ScanCode::Undefined)
+        if (scancode == ScanCode::Undefined)
             return SDL_SCANCODE_UNKNOWN;
 
-        return SfScanCodeToSDLScanCode[static_cast<std::size_t>(p_scancode)];
+        return SfScanCodeToSDLScanCode[static_cast<std::size_t>(scancode)];
     }
 
-    SDL_Keycode SDLHelper::ToSDL(VKey p_keycode)
+    SDL_Keycode SDLHelper::ToSDL(VKey keycode)
     {
-        if (p_keycode == VKey::Undefined)
+        if (keycode == VKey::Undefined)
             return SDLK_UNKNOWN;
 
-        return SfKeycodeToSDLKeycode[static_cast<std::size_t >(p_keycode)];
+        return SfKeycodeToSDLKeycode[static_cast<std::size_t >(keycode)];
     }
 }

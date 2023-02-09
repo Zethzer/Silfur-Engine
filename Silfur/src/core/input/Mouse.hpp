@@ -17,9 +17,9 @@ namespace Silfur
         Max = X2
     };
 
-    inline std::ostream& operator<<(std::ostream& p_os, MouseButton p_mouseCode)
+    inline std::ostream& operator<<(std::ostream& os, MouseButton mouseCode)
     {
-        p_os << static_cast<u32>(p_mouseCode);
-        return p_os;
+        os << static_cast<u32>(mouseCode);
+        return os;
     }
 }

@@ -10,49 +10,51 @@
 namespace Silfur
 {
 
-    bool Input::IsKeyPressed(VKey p_key)
+    bool Input::IsKeyPressed(VKey key)
     {
-        return IsKeyPressed(ToScanCode(p_key));
+        return IsKeyPressed(ToScanCode(key));
     }
 
-    bool Input::IsKeyPressed(ScanCode p_scancode)
+    bool Input::IsKeyPressed(ScanCode scancode)
     {
-        return SDL_GetKeyboardState(nullptr)[SDLHelper::ToSDL(p_scancode)];
+        return SDL_GetKeyboardState(nullptr)[SDLHelper::ToSDL(scancode)];
     }
 
-    std::string Input::GetKeyName(VKey p_key)
+    std::string Input::GetKeyName(VKey key)
     {
-        SDL_Keycode key = SDLHelper::ToSDL(p_key);
+        SDL_Keycode sdlKey = SDLHelper::ToSDL(key);
 
         std::string name;
-        if (key != SDLK_UNKNOWN)
-            name = SDL_GetKeyName(key);
+        if (sdlKey != SDLK_UNKNOWN)
+        {
+            name = SDL_GetKeyName(sdlKey);
+        }
 
         return name.empty()? "Unknow" : name;
     }
 
-    std::string Input::GetKeyName(ScanCode p_scancode)
+    std::string Input::GetKeyName(ScanCode scancode)
     {
-        SDL_Scancode scancode = SDLHelper::ToSDL(p_scancode);
+        SDL_Scancode sdlScancode = SDLHelper::ToSDL(scancode);
 
         std::string name;
-        if (scancode != SDL_SCANCODE_UNKNOWN)
-            name = SDL_GetScancodeName(scancode);
+        if (sdlScancode != SDL_SCANCODE_UNKNOWN)
+            name = SDL_GetScancodeName(sdlScancode);
 
         return name.empty()? "Unknow" : name;
     }
 
-    ScanCode Input::ToScanCode(VKey p_key)
+    ScanCode Input::ToScanCode(VKey key)
     {
-        return SDLHelper::FromSDL(SDL_GetScancodeFromKey(SDLHelper::ToSDL(p_key)));
+        return SDLHelper::FromSDL(SDL_GetScancodeFromKey(SDLHelper::ToSDL(key)));
     }
 
-    VKey Input::ToVirtualKey(ScanCode p_scancode)
+    VKey Input::ToVirtualKey(ScanCode scancode)
     {
-        return SDLHelper::FromSDL(SDL_GetKeyFromScancode(SDLHelper::ToSDL(p_scancode)));
+        return SDLHelper::FromSDL(SDL_GetKeyFromScancode(SDLHelper::ToSDL(scancode)));
     }
 
-    bool Input::IsMouseButtonPressed(MouseButton p_button)
+    bool Input::IsMouseButtonPressed(MouseButton button)
     {
         static int SfMouseButtonToSDLButton[static_cast<size_t>(MouseButton::Max) + 1] = {
             SDL_BUTTON_LMASK,
@@ -62,7 +64,7 @@ namespace Silfur
             SDL_BUTTON_X2MASK
         };
 
-        return (SDL_GetMouseState(nullptr, nullptr) & SfMouseButtonToSDLButton[static_cast<size_t>(p_button)]) != 0;
+        return (SDL_GetMouseState(nullptr, nullptr) & SfMouseButtonToSDLButton[static_cast<size_t>(button)]) != 0;
     }
 
     std::pair<int, int> Input::GetMousePosition()
@@ -92,8 +94,8 @@ namespace Silfur
         return std::pair<int, int>(x, y);
     }
 
-    bool Input::SetRelativeMouseMode(bool p_enabled)
+    bool Input::SetRelativeMouseMode(bool enabled)
     {
-        return SDL_SetRelativeMouseMode((p_enabled)? SDL_TRUE : SDL_FALSE) == 0;
+        return SDL_SetRelativeMouseMode((enabled)? SDL_TRUE : SDL_FALSE) == 0;
     }
 }

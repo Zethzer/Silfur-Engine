@@ -9,9 +9,9 @@ namespace Silfur
     {
     }
 
-    VideoMode::VideoMode(uint32_t p_width, uint32_t p_height) :
-        Width(p_width),
-        Height(p_height)
+    VideoMode::VideoMode(uint32_t width, uint32_t height) :
+        Width(width),
+        Height(height)
     {
     }
 }

@@ -8,7 +8,7 @@ namespace Silfur
     {
     public:
         VideoMode();
-        VideoMode(uint32_t p_width, uint32_t p_height);
+        VideoMode(uint32_t width, uint32_t height);
         ~VideoMode() = default;
 
     public:

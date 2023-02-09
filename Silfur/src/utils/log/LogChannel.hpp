@@ -4,18 +4,13 @@
 
 #include <string>
 
-struct LogChannelBase
+struct LogChannel
 {
-    explicit LogChannelBase(const std::string& p_name);
-    ~LogChannelBase();
+    LogChannel(const std::string& name);
+    ~LogChannel();
 
     std::string getChannelName() const { return m_channelName; }
 
 protected:
     std::string m_channelName;
-};
-
-struct LogChannel : public LogChannelBase
-{
-    explicit LogChannel(const std::string& p_name) : LogChannelBase(p_name) {}
 };

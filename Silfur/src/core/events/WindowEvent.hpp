@@ -42,8 +42,8 @@ namespace Silfur
     class WindowMovedEvent : public Event
     {
     public:
-        explicit WindowMovedEvent(WindowEventInfo p_windowEventInfo)
-            : m_WindowEventInfo(p_windowEventInfo)
+        explicit WindowMovedEvent(WindowEventInfo windowEventInfo)
+            : m_WindowEventInfo(windowEventInfo)
         {}
 
         inline WindowEventInfo GetInfos() const { return m_WindowEventInfo; }
@@ -69,8 +69,8 @@ namespace Silfur
     class WindowSizeChangedEvent : public Event
     {
     public:
-        explicit WindowSizeChangedEvent(WindowEventInfo p_windowEventInfo)
-            : m_WindowEventInfo(p_windowEventInfo)
+        explicit WindowSizeChangedEvent(WindowEventInfo windowEventInfo)
+            : m_WindowEventInfo(windowEventInfo)
         {}
 
         inline WindowEventInfo GetInfos() const { return m_WindowEventInfo; }
@@ -96,8 +96,8 @@ namespace Silfur
     class WindowResizedEvent : public Event
     {
     public:
-        explicit WindowResizedEvent(WindowEventInfo p_windowEventInfo)
-            : m_WindowEventInfo(p_windowEventInfo)
+        explicit WindowResizedEvent(WindowEventInfo windowEventInfo)
+            : m_WindowEventInfo(windowEventInfo)
         {}
 
         inline WindowEventInfo GetInfos() const { return m_WindowEventInfo; }

@@ -37,8 +37,8 @@ namespace Silfur
     class MouseButtonDownEvent : public Event
     {
     public:
-        explicit MouseButtonDownEvent(MouseButtonDownInfo p_mouseButtonDownInfo)
-            : m_MouseButtonDownInfo(p_mouseButtonDownInfo)
+        explicit MouseButtonDownEvent(MouseButtonDownInfo mouseButtonDownInfo)
+            : m_MouseButtonDownInfo(mouseButtonDownInfo)
         {}
 
         inline MouseButtonDownInfo GetInfos() const { return m_MouseButtonDownInfo; }
@@ -64,8 +64,8 @@ namespace Silfur
     class MouseButtonUpEvent : public Event
     {
     public:
-        explicit MouseButtonUpEvent(MouseButtonUpInfo p_mouseButtonUpInfo)
-            : m_MouseButtonUpInfo(p_mouseButtonUpInfo)
+        explicit MouseButtonUpEvent(MouseButtonUpInfo mouseButtonUpInfo)
+            : m_MouseButtonUpInfo(mouseButtonUpInfo)
         {}
 
         inline MouseButtonUpInfo GetInfos() const { return m_MouseButtonUpInfo; }
@@ -92,8 +92,8 @@ namespace Silfur
     class MouseMotionEvent : public Event
     {
     public:
-        explicit MouseMotionEvent(MouseMotionInfo p_mouseMotionInfo)
-            : m_MouseMotionInfo(p_mouseMotionInfo)
+        explicit MouseMotionEvent(MouseMotionInfo mouseMotionInfo)
+            : m_MouseMotionInfo(mouseMotionInfo)
         {}
 
         inline MouseMotionInfo GetInfos() const { return m_MouseMotionInfo; }
@@ -120,8 +120,8 @@ namespace Silfur
     class MouseWheelEvent : public Event
     {
     public:
-        explicit MouseWheelEvent(MouseWheelInfo p_mouseWheelInfo)
-            : m_MouseWheelInfo(p_mouseWheelInfo)
+        explicit MouseWheelEvent(MouseWheelInfo mouseWheelInfo)
+            : m_MouseWheelInfo(mouseWheelInfo)
         {}
 
         inline MouseWheelInfo GetInfos() const { return m_MouseWheelInfo; }

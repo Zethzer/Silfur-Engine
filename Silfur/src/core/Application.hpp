@@ -1,12 +1,17 @@
 #pragma once
 
 #include "defines.hpp"
-#include "utils/log/Log.hpp"
+#include "Version.hpp"
 #include "window/Window.hpp"
 
-// Because of <spdlog/logger.h> in Log.hpp
-#ifdef CreateWindow
-    #undef CreateWindow
+#if defined(_WIN32)
+    #include <Windows.h>
+#endif
+
+#if defined(_WIN32) && defined(_MSC_VER) && defined(_NDEBUG)
+    int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+#else
+    int main(int argc, char** argv);
 #endif
 
 namespace Silfur
@@ -16,31 +21,41 @@ namespace Silfur
     class Application
     {
     public:
-        Application();
-        Application(std::string p_appName, const Version& p_appVersion);
+        Application() = delete;
+        Application(int argc, char** argv);
+        Application(int argc, char** argv, const std::string& appName, const Version& appVersion);
         ~Application();
 
         Application(const Application&) = delete;
         Application(Application&&) = delete;
 
-        Window& CreateWindow(VideoMode p_mode, const std::string& p_title, bool p_isRenderWindow = true);
-        bool Run();
         void Shutdown();
 
         static Application& Get() { return *s_Instance; }
         inline Window& GetWindow() const { return *m_Window; }
+        inline EventHandler& GetEventHandler() const { return m_Window->GetEventHandler(); }
         void* GetSystemWindowHandle();
 
         Application& operator=(const Application&) = delete;
         Application& operator=(Application&&) = delete;
     private:
-        void Create();
+        void Create(int argc, char** argv);
+        void Run();
+
+    private:
+        Scope<Window> m_Window = nullptr;
+        std::string m_AppName{};
+        Version m_AppVersion{};
 
     private:
         static Application* s_Instance;
-
-        Scope<Window> m_Window = nullptr;
-        std::string m_AppName {};
-        Version m_AppVersion {};
+        #if defined(_WIN32) && defined(_MSC_VER) && defined(_NDEBUG)
+            friend int CALLBACK ::WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+        #else
+            friend int ::main(int argc, char** argv);
+        #endif
     };
+
+    // To be defined in CLIENT
+    Application* CreateApplication(int argc, char** argv);
 }
