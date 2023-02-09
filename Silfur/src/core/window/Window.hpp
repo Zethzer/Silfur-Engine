@@ -37,7 +37,7 @@ namespace Silfur
         void Create(VideoMode mode, const std::string& title);
         int static CAPICALL HandleEvent(void* userdata, SDL_Event* event);
 
-        void OnWindowClose(Event& event);
+        bool OnWindowClose(Event& event);
     public:
         bool IsClosed = false;
 

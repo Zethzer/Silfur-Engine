@@ -9,9 +9,9 @@ namespace Silfur
         m_Listeners.reserve(20);
     }
 
-    void EventHandler::PushEvent(Scope<Event> p_event)
+    void EventHandler::PushEvent(Scope<Event> event)
     {
-        m_Events.push_back(std::move(p_event));
+        m_Events.push_back(std::move(event));
     }
 
     void EventHandler::Dispatch()
@@ -21,9 +21,9 @@ namespace Silfur
             EventType evtType = event->GetEventType();
             for (const auto& func : m_Listeners[evtType])
             {
-                if (func)
+                if (func && !event->Handled)
                 {
-                    func(*event);
+                    event->Handled = func(*event);
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace Silfur
     class EventHandler
     {
         using EventsList = std::vector<Scope<Event>>;
-        using ListenersMap = std::unordered_map<EventType, std::list<std::function<void(Event&)>>>;
+        using ListenersMap = std::unordered_map<EventType, std::list<std::function<bool(Event&)>>>;
 
     public:
         EventHandler();

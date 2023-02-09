@@ -53,7 +53,7 @@ namespace Silfur
             /*
              * TODO Conditional sleep if FPS are too high :
              *    - Test with a limit of 1000 FPS
-             *  Or don't use mailbox presentation mode during
+             *  Or don't use mailbox presentation mode durin
              *  development and use FIFO instead
              */
             m_Window->ProcessEvents();

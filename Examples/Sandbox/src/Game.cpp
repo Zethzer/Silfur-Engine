@@ -2,9 +2,10 @@
 #include <Core/EntryPoint.hpp>
 
 // Listener for example of binding function in global scope
-void PrintMouseWheelInfos(Silfur::Event& p_event)
+bool PrintMouseWheelInfos(Silfur::Event& p_event)
 {
     SF_TRACE(Temp, "Mouse wheel event informations: {}", p_event.ToString());
+    return true;
 }
 
 // Class examples
@@ -15,15 +16,16 @@ public:
         : Application(argc, argv, appName, appVersion)
     {
         // Add a listener to an event from global function
-        GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_FN(PrintMouseWheelInfos));
+        GetEventHandler().AddListener<Silfur::MouseWheelEvent>(SF_BIND_FN(PrintMouseWheelInfos));
 
         // Add a listener to an event from a class member function
         GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
     };
 
-    void PrintMouseButtonDownInfos(Silfur::Event& p_event)
+    bool PrintMouseButtonDownInfos(Silfur::Event& p_event)
     {
         SF_TRACE(Temp, "Mouse button down event informations: {}", p_event.ToString());
+        return true;
     }
 };
 

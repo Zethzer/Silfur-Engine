@@ -224,8 +224,9 @@ namespace Silfur
         return 0;
     }
 
-    void Window::OnWindowClose(Event &event)
+    bool Window::OnWindowClose(Event &event)
     {
         IsClosed = true;
+        return true;
     }
 }

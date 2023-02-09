@@ -11,6 +11,10 @@ namespace Silfur
     class Event
     {
     public:
+        virtual ~Event() = default;
+
+        bool Handled = false;
+
         inline virtual EventType GetEventType() const { return EventType::None; };
         inline virtual const char* GetName() const { return "None"; };
         virtual std::string ToString() const { return GetName(); };

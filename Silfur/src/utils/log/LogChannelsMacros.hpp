@@ -1,6 +1,5 @@
 #pragma once
 
-#include "defines.hpp"
 #include "LogChannel.hpp"
 
 #define DECLARE_LOG_CHANNEL_EXTERN(channelName) \
