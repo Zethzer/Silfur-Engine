@@ -22,6 +22,37 @@ public:
         GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
     };
 
+    virtual void OnInitialize() override
+    {
+        SF_TRACE(Init, "Game Initialized!");
+    }
+
+    virtual void OnUpdate(float ts) override
+    {
+        // Input polling for keyboard and mouse
+        if (Silfur::Input::IsKeyPressed(Silfur::VKey::Escape))
+        {
+            // Just an example of pushing existing event type
+            GetEventHandler().PushEvent(Silfur::CreateScope<Silfur::WindowCloseEvent>(Silfur::WindowCloseEvent()));
+
+            // This line does the same thing
+            //Shutdown();
+        }
+        else if (Silfur::Input::IsKeyPressed(Silfur::VKey::A))
+        {
+            SF_TRACE(Temp, "Key: {}", Silfur::Input::GetKeyName(Silfur::VKey::A));
+        }
+
+        if (Silfur::Input::IsMouseButtonPressed(Silfur::MouseButton::Left))
+        {
+            SF_TRACE(Temp, "Left button pressed");
+        }
+        else if (Silfur::Input::IsMouseButtonPressed(Silfur::MouseButton::Right))
+        {
+            SF_TRACE(Temp, "Right button pressed");
+        }
+    }
+
     bool PrintMouseButtonDownInfos(Silfur::Event& p_event)
     {
         SF_TRACE(Temp, "Mouse button down event informations: {}", p_event.ToString());

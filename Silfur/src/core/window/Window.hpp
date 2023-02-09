@@ -24,6 +24,7 @@ namespace Silfur
 
         void ProcessEvents();
         void Shutdown();
+        u64 GetTicks();
 
         inline EventHandler& GetEventHandler() const { return *m_EventHandler; }
 

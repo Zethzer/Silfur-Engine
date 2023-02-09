@@ -64,6 +64,11 @@ namespace Silfur
         m_EventHandler->PushEvent(CreateScope<WindowCloseEvent>(event));
     }
 
+    u64 Window::GetTicks()
+    {
+        return SDL_GetTicks64();
+    }
+
     void* Window::WindowSystemHandle() const noexcept
     {
         SDL_SysWMinfo wMInfos;

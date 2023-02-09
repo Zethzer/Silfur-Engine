@@ -29,6 +29,9 @@ namespace Silfur
         Application(const Application&) = delete;
         Application(Application&&) = delete;
 
+        virtual void OnInitialize() {}
+        virtual void OnUpdate(float ts) {}
+
         void Shutdown();
 
         static Application& Get() { return *s_Instance; }
@@ -46,6 +49,7 @@ namespace Silfur
         Scope<Window> m_Window = nullptr;
         std::string m_AppName{};
         Version m_AppVersion{};
+        float m_LastFrameTime = 0.0f;
 
     private:
         static Application* s_Instance;
