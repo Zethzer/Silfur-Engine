@@ -22,6 +22,7 @@ namespace Silfur
         Create(mode, title);
         m_EventHandler = CreateScope<EventHandler>();
         m_EventHandler->AddListener<WindowCloseEvent>(SF_BIND_MEMBER_FN(OnWindowClose));
+        m_EventHandler->AddListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
     }
 
     Window::~Window()
@@ -53,6 +54,8 @@ namespace Silfur
         {
             SF_CORE_FATAL(Window_l, 11, "Failed to create the window: {}", SDL_GetError());
         }
+
+        m_VideoMode = CreateScope<VideoMode>(mode);
 
         // Set handle callback for SDL
         SDL_AddEventWatch(HandleEvent, this);
@@ -147,6 +150,25 @@ namespace Silfur
                         WindowFocusLostEvent event;
                         window->m_EventHandler->PushEvent(CreateScope<WindowFocusLostEvent>(event));
                     }
+                        break;
+                    case SDL_WINDOWEVENT_MINIMIZED: {
+                        WindowEventInfo windowEventInfo;
+                        windowEventInfo.width = SDLEvent->window.data1;
+                        windowEventInfo.height = SDLEvent->window.data2;
+
+                        WindowResizedEvent event(windowEventInfo);
+                        window->m_EventHandler->PushEvent(CreateScope<WindowResizedEvent>(event));
+                    }
+                        break;
+                    case SDL_WINDOWEVENT_RESTORED: {
+                        WindowEventInfo windowEventInfo;
+                        windowEventInfo.width = window->m_VideoMode->Width;
+                        windowEventInfo.height = window->m_VideoMode->Height;
+
+                        WindowResizedEvent event(windowEventInfo);
+                        window->m_EventHandler->PushEvent(CreateScope<WindowResizedEvent>(event));
+                    }
+                        break;
                     default:
                         break;
                 }
@@ -233,5 +255,26 @@ namespace Silfur
     {
         IsClosed = true;
         return true;
+    }
+
+    bool Window::OnWindowResized(Event& event)
+    {
+        try
+        {
+            WindowResizedEvent* resizedEvent = dynamic_cast<WindowResizedEvent*>(&event);
+            WindowEventInfo eventInfos = resizedEvent->GetInfos();
+
+            if (eventInfos.width != 0 && eventInfos.height != 0)
+            {
+                m_VideoMode->Width = eventInfos.width;
+                m_VideoMode->Height = eventInfos.height;
+            }
+
+            return false;
+        }
+        catch (std::bad_cast b) {
+            SF_CORE_ERROR(Window_l, 1, "Impossible to convert Event into WindowResizedEvent : {}", b.what());
+            return true;
+        }
     }
 }

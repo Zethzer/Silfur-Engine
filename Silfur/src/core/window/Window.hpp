@@ -39,12 +39,14 @@ namespace Silfur
         int static CAPICALL HandleEvent(void* userdata, SDL_Event* event);
 
         bool OnWindowClose(Event& event);
+        bool OnWindowResized(Event& event);
     public:
         bool IsClosed = false;
 
     private:
         SDL_Window* m_WinHandle {};
         Scope<EventHandler> m_EventHandler {};
+        Scope<VideoMode> m_VideoMode {};
     };
 }
 

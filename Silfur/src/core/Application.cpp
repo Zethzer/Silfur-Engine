@@ -58,6 +58,8 @@ namespace Silfur
 
         while (!m_Window->IsClosed)
         {
+            m_Window->ProcessEvents();
+
             if (!m_Minimized)
             {
                 float time = (float)m_Window->GetTicks();
@@ -70,8 +72,6 @@ namespace Silfur
                  *  Or don't use mailbox presentation mode during
                  *  development and use FIFO instead
                  */
-
-                m_Window->ProcessEvents();
 
                 OnUpdate(timestep);
             }

@@ -48,10 +48,10 @@ namespace Silfur
 
     private:
         Scope<Window> m_Window = nullptr;
-        std::string m_AppName{};
-        Version m_AppVersion{};
-        float m_LastFrameTime = 0.0f;
-        bool m_Minimized = false;
+        std::string m_AppName {};
+        Version m_AppVersion {};
+        float m_LastFrameTime {};
+        bool m_Minimized {};
 
     private:
         static Application* s_Instance;

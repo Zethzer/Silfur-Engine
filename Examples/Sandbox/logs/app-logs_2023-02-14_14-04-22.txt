@@ -1,8 +1,0 @@
-[02/14/23-14:04:22] [T] [SF_LOGGER] [Application.cpp::52::Create] [Init] Application Sandbox App created!
-[02/14/23-14:04:22] [T] [Game.cpp::36::OnInitialize] [Init] Game Initialized!
-[02/14/23-14:04:25] [T] [Game.cpp::73::PrintMouseButtonDownInfos] [Temp] Mouse button down event button id: 0
-[02/14/23-14:04:26] [T] [Game.cpp::73::PrintMouseButtonDownInfos] [Temp] Mouse button down event button id: 1
-[02/14/23-14:04:29] [T] [Game.cpp::73::PrintMouseButtonDownInfos] [Temp] Mouse button down event button id: 0
-[02/14/23-14:04:29] [T] [Game.cpp::73::PrintMouseButtonDownInfos] [Temp] Mouse button down event button id: 1
-[02/14/23-14:04:29] [T] [Game.cpp::73::PrintMouseButtonDownInfos] [Temp] Mouse button down event button id: 2
-[02/14/23-14:04:30] [T] [Game.cpp::73::PrintMouseButtonDownInfos] [Temp] Mouse button down event button id: 1
