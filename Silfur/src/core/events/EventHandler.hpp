@@ -27,10 +27,6 @@ namespace Silfur
         void AddListener(const Func& func)
         {
             EventType evtType = EvtT::GetStaticType();
-            if (m_Listeners[evtType].empty())
-            {
-                m_Listeners[evtType].resize(50);
-            }
             m_Listeners[evtType].push_back(func);
         }
 

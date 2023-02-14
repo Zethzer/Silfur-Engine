@@ -2,6 +2,7 @@
 #include "Application.hpp"
 
 #include "core/events/EventHandler.hpp"
+#include "core/events/WindowEvent.hpp"
 
 #include <chrono>
 
@@ -46,6 +47,7 @@ namespace Silfur
 
         // TODO : Resolution from client app
         m_Window = CreateScope<Window>(VideoMode(800,600), m_AppName);
+        m_Window->GetEventHandler().AddListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
 
         SF_CORE_TRACE(Init, "Application {} created!", m_AppName);
     }
@@ -56,19 +58,23 @@ namespace Silfur
 
         while (!m_Window->IsClosed)
         {
-            u64 time = m_Window->GetTicks();
-            float timestep = (time - m_LastFrameTime) / 1000.0f;
-            m_LastFrameTime = time;
+            if (!m_Minimized)
+            {
+                float time = (float)m_Window->GetTicks();
+                float timestep = (time - m_LastFrameTime) / 1000.0f;
+                m_LastFrameTime = time;
 
-            /*
-             * TODO Conditional sleep if FPS are too high :
-             *    - Test with a limit of 1000 FPS
-             *  Or don't use mailbox presentation mode during
-             *  development and use FIFO instead
-             */
-            m_Window->ProcessEvents();
+                /*
+                 * TODO Conditional sleep if FPS are too high :
+                 *    - Test with a limit of 1000 FPS
+                 *  Or don't use mailbox presentation mode during
+                 *  development and use FIFO instead
+                 */
 
-            OnUpdate(timestep);
+                m_Window->ProcessEvents();
+
+                OnUpdate(timestep);
+            }
         }
     }
 
@@ -80,5 +86,27 @@ namespace Silfur
     void* Application::GetSystemWindowHandle()
     {
         return m_Window->WindowSystemHandle();
+    }
+
+    bool Application::OnWindowResized(Event& event)
+    {
+        try
+        {
+            WindowResizedEvent* resizedEvent = dynamic_cast<WindowResizedEvent*>(&event);
+            WindowEventInfo eventInfos = resizedEvent->GetInfos();
+
+            if (eventInfos.width == 0 && eventInfos.height == 0)
+            {
+                m_Minimized = true;
+                return false;
+            }
+
+            m_Minimized = false;
+            return false;
+        }
+        catch (std::bad_cast b) {
+            SF_CORE_ERROR(Window_l, 0, "Impossible to convert Event into WindowResizedEvent : {}", b.what());
+            return true;
+        }
     }
 }

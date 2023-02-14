@@ -44,12 +44,14 @@ namespace Silfur
     private:
         void Create(int argc, char** argv);
         void Run();
+        bool OnWindowResized(Event& event);
 
     private:
         Scope<Window> m_Window = nullptr;
         std::string m_AppName{};
         Version m_AppVersion{};
         float m_LastFrameTime = 0.0f;
+        bool m_Minimized = false;
 
     private:
         static Application* s_Instance;

@@ -6,7 +6,7 @@ namespace Silfur
     EventHandler::EventHandler()
     {
         m_Events.reserve(1000);
-        m_Listeners.reserve(20);
+        m_Listeners.reserve(100);
     }
 
     void EventHandler::PushEvent(Scope<Event> event)
