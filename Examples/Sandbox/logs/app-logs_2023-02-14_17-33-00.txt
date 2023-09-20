@@ -1,2 +1,0 @@
-[02/14/23-17:33:00] [T] [SF_LOGGER] [Application.cpp::52::Create] [Init] Application Sandbox App created!
-[02/14/23-17:33:00] [T] [Game.cpp::36::OnInitialize] [Init] Game Initialized!

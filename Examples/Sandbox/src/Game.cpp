@@ -47,9 +47,10 @@ void Game::OnUpdate(float ts)
         // This line does the same thing
         //Shutdown();
     }
-    else if (Silfur::Input::IsKeyPressed(Silfur::VKey::A))
+    else if (Silfur::Input::IsKeyPressed(Silfur::ScanCode::A))
     {
-        SF_TRACE(Temp, "Key: {}", Silfur::Input::GetKeyName(Silfur::VKey::A));
+        SF_TRACE(Temp, "Key: {}", Silfur::Input::GetKeyName(Silfur::ScanCode::A));
+        SF_TRACE(Temp, "Key Scancode: {}", Silfur::Input::GetScanCodeName(Silfur::ScanCode::A));
     }
 
     if (Silfur::Input::IsMouseButtonPressed(Silfur::MouseButton::Left))

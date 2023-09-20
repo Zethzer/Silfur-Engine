@@ -17,6 +17,7 @@ namespace Silfur
         static bool IsKeyPressed(ScanCode scancode);
         static std::string GetKeyName(VKey key);
         static std::string GetKeyName(ScanCode scancode);
+        static std::string GetScanCodeName(ScanCode scancode);
         static ScanCode ToScanCode(VKey key);
         static VKey ToVirtualKey(ScanCode scancode);
 

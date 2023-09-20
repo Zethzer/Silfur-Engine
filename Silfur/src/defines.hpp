@@ -65,7 +65,7 @@ STATIC_ASSERT(sizeof(Silfur::f64) == 8, "Expected f64 to be 8 bytes.");
 /* -------- C API CALL -------- */
 /* Uses the C calling convention */
 #ifndef CAPICALL
-    #if (defined(__WIN32__) || defined(__WINRT__)) && !defined(__GNUC__)
+    #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__WINRT__)) && !defined(__GNUC__)
         #define CAPICALL __cdecl
     #elif defined(__OS2__) || defined(__EMX__)
         #define CAPICALL _System

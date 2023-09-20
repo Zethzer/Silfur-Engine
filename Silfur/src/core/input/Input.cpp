@@ -39,9 +39,25 @@ namespace Silfur
 
         std::string name;
         if (sdlScancode != SDL_SCANCODE_UNKNOWN)
-            name = SDL_GetScancodeName(sdlScancode);
+        {
+            SDL_Keycode sdlKey = SDL_GetKeyFromScancode(sdlScancode);
+            name = SDL_GetKeyName(sdlKey);
+        }
 
         return name.empty()? "Unknow" : name;
+    }
+
+    std::string Input::GetScanCodeName(ScanCode scancode)
+    {
+        SDL_Scancode sdlScancode = SDLHelper::ToSDL(scancode);
+
+        std::string name;
+        if (sdlScancode != SDL_SCANCODE_UNKNOWN)
+        {
+            name = SDL_GetScancodeName(sdlScancode);
+        }
+
+        return name.empty() ? "Unknow" : name;
     }
 
     ScanCode Input::ToScanCode(VKey key)
