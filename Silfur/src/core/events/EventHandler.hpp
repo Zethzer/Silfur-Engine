@@ -44,6 +44,7 @@ namespace Silfur
             if (it != m_Listeners.end())
             {
                 m_Listeners.erase(it);
+                return true;
             }
 
             return false;

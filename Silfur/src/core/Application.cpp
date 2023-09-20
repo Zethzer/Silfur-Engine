@@ -47,7 +47,6 @@ namespace Silfur
 
         // TODO : Resolution from client app
         m_Window = CreateScope<Window>(VideoMode(800,600), m_AppName);
-        m_Window->GetEventHandler().AddListener<WindowResizedEvent>(SF_BIND_MEMBER_FN(OnWindowResized));
 
         SF_CORE_TRACE(Init, "Application {} created!", m_AppName);
     }
@@ -60,7 +59,7 @@ namespace Silfur
         {
             m_Window->ProcessEvents();
 
-            if (!m_Minimized)
+            if (!m_Window->IsMinimized)
             {
                 float time = (float)m_Window->GetTicks();
                 float timestep = (time - m_LastFrameTime) / 1000.0f;
@@ -86,27 +85,5 @@ namespace Silfur
     void* Application::GetSystemWindowHandle()
     {
         return m_Window->WindowSystemHandle();
-    }
-
-    bool Application::OnWindowResized(Event& event)
-    {
-        try
-        {
-            WindowResizedEvent* resizedEvent = dynamic_cast<WindowResizedEvent*>(&event);
-            WindowEventInfo eventInfos = resizedEvent->GetInfos();
-
-            if (eventInfos.width == 0 && eventInfos.height == 0)
-            {
-                m_Minimized = true;
-                return false;
-            }
-
-            m_Minimized = false;
-            return false;
-        }
-        catch (std::bad_cast b) {
-            SF_CORE_ERROR(Window_l, 0, "Impossible to convert Event into WindowResizedEvent : {}", b.what());
-            return true;
-        }
     }
 }

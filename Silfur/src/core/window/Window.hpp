@@ -42,6 +42,7 @@ namespace Silfur
         bool OnWindowResized(Event& event);
     public:
         bool IsClosed = false;
+        bool IsMinimized = false;
 
     private:
         SDL_Window* m_WinHandle {};

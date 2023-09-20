@@ -21,6 +21,22 @@ bool PrintMouseWheelInfos(Silfur::Event& event)
     }
 }
 
+bool OnWindowResized(Silfur::Event& event)
+{
+    Silfur::WindowResizedEvent* resizedEvent = dynamic_cast<Silfur::WindowResizedEvent*>(&event);
+    Silfur::WindowEventInfo eventInfos = resizedEvent->GetInfos();
+
+    if (eventInfos.width == 0 && eventInfos.height == 0)
+    {
+        SF_TRACE(Temp, "Event minimize");
+        return true;
+    }
+
+    SF_TRACE(Temp, "Event minimize end ! Width : {}, Height {}", eventInfos.width, eventInfos.height);
+
+    return true;
+}
+
 Game::Game(int argc, char** argv, const std::string& appName, const Silfur::Version appVersion)
     : Application(argc, argv, appName, appVersion)
 {
@@ -29,6 +45,9 @@ Game::Game(int argc, char** argv, const std::string& appName, const Silfur::Vers
 
     // Add a listener to an event from a class member function
     GetEventHandler().AddListener<Silfur::MouseButtonDownEvent>(SF_BIND_MEMBER_FN(PrintMouseButtonDownInfos));
+
+    // Add a listener to WindowResizedEvent
+    GetEventHandler().AddListener<Silfur::WindowResizedEvent>(SF_BIND_FN(OnWindowResized));
 };
 
 void Game::OnInitialize()

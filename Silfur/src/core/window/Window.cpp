@@ -16,7 +16,8 @@ namespace Silfur
 {
     Window::Window(VideoMode mode, const std::string& title) :
         m_WinHandle(nullptr),
-        IsClosed(false)
+        IsClosed(false),
+        IsMinimized(false)
     {
         SDL_SetMainReady();
         Create(mode, title);
@@ -254,7 +255,7 @@ namespace Silfur
     bool Window::OnWindowClose(Event& event)
     {
         IsClosed = true;
-        return true;
+        return false;
     }
 
     bool Window::OnWindowResized(Event& event)
@@ -264,11 +265,15 @@ namespace Silfur
             WindowResizedEvent* resizedEvent = dynamic_cast<WindowResizedEvent*>(&event);
             WindowEventInfo eventInfos = resizedEvent->GetInfos();
 
-            if (eventInfos.width != 0 && eventInfos.height != 0)
+            if (eventInfos.width == 0 && eventInfos.height == 0)
             {
-                m_VideoMode->Width = eventInfos.width;
-                m_VideoMode->Height = eventInfos.height;
+                IsMinimized = true;
+                return false;
             }
+
+            m_VideoMode->Width = eventInfos.width;
+            m_VideoMode->Height = eventInfos.height;
+            IsMinimized = false;
 
             return false;
         }
