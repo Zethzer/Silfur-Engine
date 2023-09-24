@@ -1,0 +1,6 @@
+[09/21/23-00:07:49] [T] [SF_LOGGER] [Application.cpp::51::Create] [Init] Application Sandbox App created!
+[09/21/23-00:07:49] [T] [Game.cpp::55::OnInitialize] [Init] Game Initialized!
+[09/21/23-00:07:52] [T] [Game.cpp::31::OnWindowResized] [Temp] Event minimize
+[09/21/23-00:07:58] [T] [Game.cpp::35::OnWindowResized] [Temp] Event minimize end ! Width : 800, Height 600
+[09/21/23-00:08:21] [T] [Game.cpp::31::OnWindowResized] [Temp] Event minimize
+[09/21/23-00:08:35] [T] [Game.cpp::35::OnWindowResized] [Temp] Event minimize end ! Width : 800, Height 600
