@@ -8,7 +8,7 @@
 #include "core/input/Helper.hpp"
 
 #define SDL_MAIN_HANDLED
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_syswm.h>
 
@@ -278,7 +278,7 @@ namespace Silfur
             return false;
         }
         catch (std::bad_cast b) {
-            SF_CORE_ERROR(Window_l, 1, "Impossible to convert Event into WindowResizedEvent : {}", b.what());
+            SF_CORE_ERROR(Window_l, 0, "Impossible to convert Event into WindowResizedEvent : {}", b.what());
             return true;
         }
     }
