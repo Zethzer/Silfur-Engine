@@ -6,7 +6,7 @@
 
 This game engine will permit to create 3D/2D applications which need rendering or 2D/3D games on Windows 64-bits.
 
-Upon completion, this will be a free, open-source game engine. The source code is under `Zlib` license.
+Upon completion, this will be a free, open-source game engine. The source code is under `MIT` license.
 
 The game engine is under active development.
 
