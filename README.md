@@ -1,6 +1,6 @@
 # Silfur Engine
 
-[![License](https://img.shields.io/badge/license-GPL--3.0-blue)](https://opensource.org/licenses/GPL-3.0) ![Platform](https://img.shields.io/badge/platform-Win64-lightgrey)
+[![License](https://img.shields.io/badge/License-MIT-blue)](https://opensource.org/license/mit) ![Platform](https://img.shields.io/badge/platform-Win64-lightgrey)
 
 ## Description
 
