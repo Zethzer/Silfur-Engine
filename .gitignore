@@ -15,3 +15,6 @@ bin-int/
 
 # Compiled SPIR-V shaders
 *.spv
+
+# Examples
+**/Sandbox/logs
