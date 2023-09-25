@@ -23,7 +23,7 @@ namespace Silfur
     public:
         Application() = delete;
         Application(int argc, char** argv);
-        Application(int argc, char** argv, const std::string& appName, const Version& appVersion);
+        Application(int argc, char** argv, const std::string& appName, int width, int height, const Version& appVersion);
         ~Application();
 
         Application(const Application&) = delete;
@@ -42,7 +42,7 @@ namespace Silfur
         Application& operator=(const Application&) = delete;
         Application& operator=(Application&&) = delete;
     private:
-        void Create(int argc, char** argv);
+        void Create(int argc, char** argv, int width, int height);
         void Run();
 
     private:

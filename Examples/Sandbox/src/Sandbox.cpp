@@ -5,5 +5,5 @@
 
 Silfur::Application* Silfur::CreateApplication(int argc, char** argv)
 {
-    return new Game(argc, argv, "Sandbox App", { 0, 1, 0 });
+    return new Game(argc, argv, "Sandbox App", 1024, 576, { 0, 1, 0 });
 }
