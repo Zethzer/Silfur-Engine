@@ -12,6 +12,7 @@ namespace Silfur
 
     RendererVk::~RendererVk()
     {
+        m_Instance.reset();
     }
 
     void RendererVk::Init(RendererProperties properties)
@@ -21,7 +22,7 @@ namespace Silfur
 
         SF_CORE_TRACE(Vulkan, "{} extensions supported!", extensionCount);
 
-        auto instance = new InstanceVk(properties);
+        m_Instance = CreateScope<InstanceVk>(properties);
     }
 
     void RendererVk::Update()
