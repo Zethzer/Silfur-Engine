@@ -103,4 +103,11 @@ namespace Silfur
     {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
+
+    struct Version
+    {
+        u32 Major = 1;
+        u32 Minor = 0;
+        u32 Patch = 0;
+    };
 }

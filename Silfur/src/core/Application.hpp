@@ -2,6 +2,7 @@
 
 #include "defines.hpp"
 #include "window/Window.hpp"
+#include "graphics/vulkan/RendererVk.hpp"
 
 #if defined(_WIN32)
     #include <Windows.h>
@@ -16,13 +17,6 @@
 namespace Silfur
 {
     class Event;
-
-    struct ApplicationVersion
-    {
-        u32 major = 1;
-        u32 minor = 0;
-        u32 patch = 0;
-    };
 
     struct ApplicationCommandLineArgs
     {
@@ -40,7 +34,7 @@ namespace Silfur
         std::string Name = "Hello Silfur";
         int Width = 1024;
         int Height = 768;
-        ApplicationVersion Version;
+        Version Version;
         ApplicationCommandLineArgs CommandLineArgs;
     };
 
@@ -73,6 +67,7 @@ namespace Silfur
     private:
         ApplicationProperties m_Properties;
         Scope<Window> m_Window = nullptr;
+        Scope<RendererVk> m_Renderer = nullptr;
         float m_LastFrameTime {};
 
     private:

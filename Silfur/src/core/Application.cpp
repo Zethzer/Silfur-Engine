@@ -24,6 +24,7 @@ namespace Silfur
 
     Application::~Application()
     {
+        m_Renderer.reset();
         m_Window.reset();
     }
 
@@ -40,6 +41,13 @@ namespace Silfur
         m_Window = CreateScope<Window>(VideoMode(properties.Width,properties.Height), properties.Name);
 
         SF_CORE_TRACE(Init, "Application {} created!", properties.Name);
+
+        RendererProperties rendererProps;
+        rendererProps.Window = m_Window->WindowHandle();
+        rendererProps.ApplicationName = properties.Name;
+        rendererProps.ApplicationVersion = properties.Version;
+
+        m_Renderer = CreateScope<RendererVk>(rendererProps);
     }
 
     void Application::Run()
