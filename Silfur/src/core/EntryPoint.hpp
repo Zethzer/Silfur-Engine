@@ -7,7 +7,7 @@
     #include <shellapi.h>
 #endif
 
-extern Silfur::Application* Silfur::CreateApplication(int argc, char** argv);
+extern Silfur::Application* Silfur::CreateApplication(ApplicationCommandLineArgs commandLineArgs);
 
 #if defined(_WIN32) && defined(_MSC_VER) && defined(_NDEBUG)
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     LocalFree(szArgList);
 #endif
 
-    auto app = Silfur::CreateApplication(argc, argv);
+    auto app = Silfur::CreateApplication({ argc, argv });
     app->Run();
     delete app;
 }

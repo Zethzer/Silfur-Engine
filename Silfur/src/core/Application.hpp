@@ -1,7 +1,6 @@
 #pragma once
 
 #include "defines.hpp"
-#include "Version.hpp"
 #include "window/Window.hpp"
 
 #if defined(_WIN32)
@@ -18,12 +17,38 @@ namespace Silfur
 {
     class Event;
 
+    struct ApplicationVersion
+    {
+        u32 major = 1;
+        u32 minor = 0;
+        u32 patch = 0;
+    };
+
+    struct ApplicationCommandLineArgs
+    {
+        int Count = 0;
+        char** Args = nullptr;
+
+        const char* operator[](int index) const
+        {
+            return Args[index];
+        }
+    };
+
+    struct ApplicationProperties
+    {
+        std::string Name = "Hello Silfur";
+        int Width = 1024;
+        int Height = 768;
+        ApplicationVersion Version;
+        ApplicationCommandLineArgs CommandLineArgs;
+    };
+
     class Application
     {
     public:
         Application() = delete;
-        Application(int argc, char** argv);
-        Application(int argc, char** argv, const std::string& appName, int width, int height, const Version& appVersion);
+        Application(ApplicationProperties properties);
         ~Application();
 
         Application(const Application&) = delete;
@@ -42,13 +67,12 @@ namespace Silfur
         Application& operator=(const Application&) = delete;
         Application& operator=(Application&&) = delete;
     private:
-        void Create(int argc, char** argv, int width, int height);
+        void Create(ApplicationProperties properties);
         void Run();
 
     private:
+        ApplicationProperties m_Properties;
         Scope<Window> m_Window = nullptr;
-        std::string m_AppName {};
-        Version m_AppVersion {};
         float m_LastFrameTime {};
 
     private:
@@ -61,5 +85,5 @@ namespace Silfur
     };
 
     // To be defined in CLIENT
-    Application* CreateApplication(int argc, char** argv);
+    Application* CreateApplication(ApplicationCommandLineArgs commandLineArgs);
 }

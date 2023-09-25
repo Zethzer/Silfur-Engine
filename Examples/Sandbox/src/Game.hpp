@@ -5,7 +5,7 @@
 class Game : public Silfur::Application
 {
 public:
-    Game(int argc, char** argv, const std::string& appName, int width, int height, const Silfur::Version& appVersion);
+    Game(Silfur::ApplicationProperties properties);
 
     virtual void OnInitialize() override;
     virtual void OnUpdate(float ts) override;
