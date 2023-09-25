@@ -16,18 +16,10 @@ namespace Silfur
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(int argc, char** argv) :
-        m_AppName("Hello Silfur"),
-        m_AppVersion({1, 0, 0})
+    Application::Application(ApplicationProperties properties) :
+        m_Properties(properties)
     {
-        Create(argc, argv, 800, 600);
-    }
-
-    Application::Application(int argc, char** argv, const std::string& appName, int width, int height, const Version& appVersion) :
-        m_AppName(appName),
-        m_AppVersion(appVersion)
-    {
-        Create(argc, argv, width, height);
+        Create(properties);
     }
 
     Application::~Application()
@@ -35,7 +27,7 @@ namespace Silfur
         m_Window.reset();
     }
 
-    void Application::Create(int argc, char** argv, int width, int height)
+    void Application::Create(ApplicationProperties properties)
     {
 #if defined(SF_DEBUG) && defined(_WIN32)
         // Source : https://stackoverflow.com/questions/2492077/output-unicode-strings-in-windows-console-app
@@ -45,9 +37,9 @@ namespace Silfur
 
         s_Instance = this;
 
-        m_Window = CreateScope<Window>(VideoMode(width,height), m_AppName);
+        m_Window = CreateScope<Window>(VideoMode(properties.Width,properties.Height), properties.Name);
 
-        SF_CORE_TRACE(Init, "Application {} created!", m_AppName);
+        SF_CORE_TRACE(Init, "Application {} created!", properties.Name);
     }
 
     void Application::Run()

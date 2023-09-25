@@ -37,8 +37,8 @@ bool OnWindowResized(Silfur::Event& event)
     return true;
 }
 
-Game::Game(int argc, char** argv, const std::string& appName, int width, int height, const Silfur::Version& appVersion)
-    : Application(argc, argv, appName, width, height, appVersion)
+Game::Game(Silfur::ApplicationProperties properties)
+    : Application(properties)
 {
     // Add a listener to an event from global function
     GetEventHandler().AddListener<Silfur::MouseWheelEvent>(SF_BIND_FN(PrintMouseWheelInfos));

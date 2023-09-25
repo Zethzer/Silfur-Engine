@@ -3,7 +3,14 @@
 
 #include "Game.hpp"
 
-Silfur::Application* Silfur::CreateApplication(int argc, char** argv)
+Silfur::Application* Silfur::CreateApplication(Silfur::ApplicationCommandLineArgs commandLineArgs)
 {
-    return new Game(argc, argv, "Sandbox App", 1024, 576, { 0, 1, 0 });
+    Silfur::ApplicationProperties properties;
+    properties.Name = "Sandbox App";
+    properties.Width = 1024;
+    properties.Height = 576;
+    properties.Version = { 0, 1, 0 };
+    properties.CommandLineArgs = commandLineArgs;
+
+    return new Game(properties);
 }
