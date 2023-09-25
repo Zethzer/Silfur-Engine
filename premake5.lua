@@ -6,6 +6,7 @@ IncludeDir = {}
 IncludeDir["SDL2"] = "%{wks.location}/Silfur/vendor/SDL2/include"
 IncludeDir["spdlog"] = "%{wks.location}/Silfur/vendor/spdlog/include"
 IncludeDir["portableSnippets"] = "%{wks.location}/Silfur/vendor/portable-snippets"
+IncludeDir["glm"] = "%{wks.location}/Silfur/vendor/glm"
 
 workspace "Silfur Engine"
 	architecture "x86_64"
@@ -94,7 +95,8 @@ project "Silfur"
 		"%{prj.location}/src",
 		"%{IncludeDir.SDL2}",
 		"%{IncludeDir.spdlog}",
-		"%{IncludeDir.portableSnippets}"
+		"%{IncludeDir.portableSnippets}",
+		"%{IncludeDir.glm}"
 	}
 	
 	includeVulkanSDKWin32()
@@ -183,6 +185,7 @@ project "Sandbox"
 		"%{IncludeDir.SDL2}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.portableSnippets}",
+		"%{IncludeDir.glm}",
 		"%{wks.location}/Silfur/src"
 	}
 	
