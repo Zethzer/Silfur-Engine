@@ -2,7 +2,7 @@
 
 #include "defines.hpp"
 #include "window/Window.hpp"
-#include "graphics/vulkan/RendererVk.hpp"
+#include "graphics/vulkan/VulkanRenderer.hpp"
 
 #if defined(_WIN32)
     #include <Windows.h>
@@ -20,7 +20,7 @@ namespace Silfur
 
     struct ApplicationCommandLineArgs
     {
-        int Count = 0;
+        i32 Count = 0;
         char** Args = nullptr;
 
         const char* operator[](int index) const
@@ -32,8 +32,8 @@ namespace Silfur
     struct ApplicationProperties
     {
         std::string Name = "Hello Silfur";
-        int Width = 1024;
-        int Height = 768;
+        i32 Width = 1024;
+        i32 Height = 768;
         Version Version;
         ApplicationCommandLineArgs CommandLineArgs;
     };
@@ -67,7 +67,7 @@ namespace Silfur
     private:
         ApplicationProperties m_Properties;
         Scope<Window> m_Window = nullptr;
-        Scope<RendererVk> m_Renderer = nullptr;
+        Scope<VulkanRenderer> m_Renderer = nullptr;
         float m_LastFrameTime {};
 
     private:

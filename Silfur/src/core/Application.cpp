@@ -47,7 +47,7 @@ namespace Silfur
         rendererProps.ApplicationName = properties.Name;
         rendererProps.ApplicationVersion = properties.Version;
 
-        m_Renderer = CreateScope<RendererVk>(rendererProps);
+        m_Renderer = CreateScope<VulkanRenderer>(rendererProps);
     }
 
     void Application::Run()
