@@ -27,7 +27,7 @@ namespace Silfur
 
         inline EventHandler& GetEventHandler() const { return *m_EventHandler; }
 
-        inline SDL_Window* WindowHandle() const noexcept;
+        inline SDL_Window* WindowHandle() const noexcept { return m_WinHandle; };
         void* WindowSystemHandle() const noexcept;
 
         Window& operator=(const Window&) = delete;
@@ -48,5 +48,3 @@ namespace Silfur
         Scope<VideoMode> m_VideoMode {};
     };
 }
-
-#include "Window.inl"
