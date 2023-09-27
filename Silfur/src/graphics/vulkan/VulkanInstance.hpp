@@ -12,33 +12,51 @@ namespace Silfur
     public:
         struct CreateInstanceInfos
         {
-            VkApplicationInfo& AppInfos;
-            RendererProperties RendererProperties;
-            std::vector<const char*>& Extensions;
+            const VkApplicationInfo& AppInfos;
+            const RendererProperties& RendererProperties;
+            const std::vector<const char*>& Extensions;
         };
 
     public:
         VulkanInstance() = delete;
-        VulkanInstance(RendererProperties properties);
+        VulkanInstance(const RendererProperties& properties);
         ~VulkanInstance();
 
         VulkanInstance(const VulkanInstance&) = delete;
         VulkanInstance(VulkanInstance&&) = delete;
 
     private:
-        void Create(RendererProperties properties);
+        void Create(const RendererProperties& properties);
+        void SetupDebugMessenger(const RendererProperties& properties);
 
         bool CheckValidationLayersSupport();
-        std::vector<const char*> GetRequiredExtensions(RendererProperties properties);
+        std::vector<const char*> GetRequiredExtensions(const RendererProperties& properties);
         std::vector<VkExtensionProperties> GetAvailableExtensions();
 
-        VkInstanceCreateInfo PopulateCreateInfos(CreateInstanceInfos createInstanceInfos);
-        VkApplicationInfo PopulateAppInfos(RendererProperties properties);
+        void PopulateCreateInfos(const CreateInstanceInfos& createInstanceInfos,
+            VkInstanceCreateInfo& createInfos,
+            VkDebugUtilsMessengerCreateInfoEXT& debugCreateInfos);
+        void PopulateAppInfos(const RendererProperties& properties, VkApplicationInfo& appInfos);
+        void PopulateDebugMessengerCreateInfos(VkDebugUtilsMessengerCreateInfoEXT& createInfos);
+
+        VkResult CreateDebugUtilsMessengerEXT(
+            const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+            const VkAllocationCallbacks* pAllocator);
+        void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator);
+
+        static VKAPI_ATTR VkBool32 VKAPI_CALL VulkanDebugCallback(
+            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+            VkDebugUtilsMessageTypeFlagsEXT messageType,
+            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+            void* pUserData
+        );
 
     private:
-        VkInstance m_InstanceVk = nullptr;
+        VkInstance m_Instance = nullptr;
         const std::vector<const char*> m_ValidationLayers {
             "VK_LAYER_KHRONOS_validation"
         };
+
+        VkDebugUtilsMessengerEXT m_DebugMessenger = nullptr;
     };
 }
