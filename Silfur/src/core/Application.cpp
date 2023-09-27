@@ -43,7 +43,7 @@ namespace Silfur
         SF_CORE_TRACE(Init, "Application {} created!", properties.Name);
 
         RendererProperties rendererProps;
-        rendererProps.Window = m_Window->WindowHandle();
+        rendererProps.Window = m_Window.get();
         rendererProps.ApplicationName = properties.Name;
         rendererProps.ApplicationVersion = properties.Version;
 

@@ -6,9 +6,4 @@ namespace Silfur
     {
         return m_WinHandle;
     }
-
-    inline Window::operator SDL_Window*() const noexcept
-    {
-        return m_WinHandle;
-    }
 }

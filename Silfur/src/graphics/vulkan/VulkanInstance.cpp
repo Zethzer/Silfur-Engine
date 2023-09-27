@@ -99,14 +99,14 @@ namespace Silfur
     std::vector<const char*> VulkanInstance::GetRequiredExtensions(const RendererProperties& properties)
     {
         u32 count;
-        if (!SDL_Vulkan_GetInstanceExtensions(properties.Window, &count, nullptr))
+        if (!SDL_Vulkan_GetInstanceExtensions(properties.Window->WindowHandle(), &count, nullptr))
         {
             SF_CORE_FATAL(Vulkan, 21, "Can't get the count of Vulkan required extensions for SDL2!");
         }
 
         std::vector<const char*> extensions(count);
 
-        if (!SDL_Vulkan_GetInstanceExtensions(properties.Window, &count, extensions.data()))
+        if (!SDL_Vulkan_GetInstanceExtensions(properties.Window->WindowHandle(), &count, extensions.data()))
         {
             SF_CORE_FATAL(Vulkan, 22, "Can't get Vulkan required extensions for SDL2!");
         }

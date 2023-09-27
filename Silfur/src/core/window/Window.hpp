@@ -10,7 +10,6 @@ union SDL_Event;
 namespace Silfur
 {
     class Event;
-    class Window;
 
     class Window
     {
@@ -28,7 +27,6 @@ namespace Silfur
 
         inline EventHandler& GetEventHandler() const { return *m_EventHandler; }
 
-        inline operator SDL_Window*() const noexcept;
         inline SDL_Window* WindowHandle() const noexcept;
         void* WindowSystemHandle() const noexcept;
 

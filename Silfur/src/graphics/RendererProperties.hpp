@@ -2,15 +2,15 @@
 
 #include "defines.hpp"
 
-#include <string>
+#include "core/window/Window.hpp"
 
-struct SDL_Window;
+#include <string>
 
 namespace Silfur
 {
     struct RendererProperties
     {
-        SDL_Window* Window = nullptr;
+        Window* Window;
 
         std::string ApplicationName = "";
         Version ApplicationVersion = { 1,0,0 };
