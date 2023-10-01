@@ -19,18 +19,18 @@ namespace Silfur
 
     public:
         VulkanInstance() = delete;
-        VulkanInstance(const RendererProperties& properties);
+        VulkanInstance(const Window& window, const RendererProperties& properties);
         ~VulkanInstance();
 
         VulkanInstance(const VulkanInstance&) = delete;
         VulkanInstance(VulkanInstance&&) = delete;
 
     private:
-        void Create(const RendererProperties& properties);
+        void Create(const Window& window, const RendererProperties& properties);
         void SetupDebugMessenger(const RendererProperties& properties);
 
         bool CheckValidationLayersSupport();
-        std::vector<const char*> GetRequiredExtensions(const RendererProperties& properties);
+        std::vector<const char*> GetRequiredExtensions(const Window& window, const RendererProperties& properties);
         std::vector<VkExtensionProperties> GetAvailableExtensions();
 
         void PopulateCreateInfos(const CreateInstanceInfos& createInstanceInfos,

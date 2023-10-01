@@ -43,11 +43,10 @@ namespace Silfur
         SF_CORE_TRACE(Init, "Application {} created!", properties.Name);
 
         RendererProperties rendererProps;
-        rendererProps.Window = m_Window.get();
         rendererProps.ApplicationName = properties.Name;
         rendererProps.ApplicationVersion = properties.Version;
 
-        m_Renderer = CreateScope<VulkanRenderer>(rendererProps);
+        m_Renderer = CreateScope<VulkanRenderer>(*m_Window, rendererProps);
     }
 
     void Application::Run()

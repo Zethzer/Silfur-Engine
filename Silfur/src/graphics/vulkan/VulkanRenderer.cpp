@@ -3,7 +3,8 @@
 
 namespace Silfur
 {
-    VulkanRenderer::VulkanRenderer(RendererProperties properties)
+    VulkanRenderer::VulkanRenderer(const Window& window, RendererProperties properties)
+        : m_Window(window)
     {
         Init(properties);
     }
@@ -15,7 +16,7 @@ namespace Silfur
 
     void VulkanRenderer::Init(RendererProperties properties)
     {
-        m_Instance = CreateScope<VulkanInstance>(properties);
+        m_Instance = CreateScope<VulkanInstance>(m_Window, properties);
     }
 
     void VulkanRenderer::Update()

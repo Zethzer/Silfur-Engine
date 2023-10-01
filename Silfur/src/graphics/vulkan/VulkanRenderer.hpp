@@ -11,7 +11,7 @@ namespace Silfur
     {
     public:
         VulkanRenderer() = delete;
-        VulkanRenderer(RendererProperties properties);
+        VulkanRenderer(const Window& window, RendererProperties properties);
         ~VulkanRenderer();
 
         VulkanRenderer(const VulkanRenderer&) = delete;
@@ -23,5 +23,7 @@ namespace Silfur
 
     private:
         Scope<VulkanInstance> m_Instance = nullptr;
+        const Window& m_Window;
+
     };
 }

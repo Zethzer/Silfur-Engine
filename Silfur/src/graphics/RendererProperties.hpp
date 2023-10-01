@@ -10,8 +10,6 @@ namespace Silfur
 {
     struct RendererProperties
     {
-        Window* Window;
-
         std::string ApplicationName = "";
         Version ApplicationVersion = { 1,0,0 };
 

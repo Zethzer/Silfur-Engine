@@ -5,9 +5,9 @@
 
 namespace Silfur
 {
-    VulkanInstance::VulkanInstance(const RendererProperties& properties)
+    VulkanInstance::VulkanInstance(const Window& window, const RendererProperties& properties)
     {
-        Create(properties);
+        Create(window, properties);
     }
 
     VulkanInstance::~VulkanInstance()
@@ -16,7 +16,7 @@ namespace Silfur
         vkDestroyInstance(m_Instance, nullptr);
     }
 
-    void VulkanInstance::Create(const RendererProperties& properties)
+    void VulkanInstance::Create(const Window& window, const RendererProperties& properties)
     {
         SF_CORE_TRACE(Vulkan, "Init Vulkan Instance");
 
@@ -25,7 +25,7 @@ namespace Silfur
             SF_CORE_FATAL(Vulkan, 20, "Vulkan validation layers requested but not available!");
         }
 
-        auto extensions = GetRequiredExtensions(properties);
+        auto extensions = GetRequiredExtensions(window, properties);
         VkApplicationInfo appInfos;
         PopulateAppInfos(properties, appInfos);
 
@@ -96,17 +96,17 @@ namespace Silfur
         return true;
     }
 
-    std::vector<const char*> VulkanInstance::GetRequiredExtensions(const RendererProperties& properties)
+    std::vector<const char*> VulkanInstance::GetRequiredExtensions(const Window& window, const RendererProperties& properties)
     {
         u32 count;
-        if (!SDL_Vulkan_GetInstanceExtensions(properties.Window->WindowHandle(), &count, nullptr))
+        if (!SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr))
         {
             SF_CORE_FATAL(Vulkan, 21, "Can't get the count of Vulkan required extensions for SDL2!");
         }
 
         std::vector<const char*> extensions(count);
 
-        if (!SDL_Vulkan_GetInstanceExtensions(properties.Window->WindowHandle(), &count, extensions.data()))
+        if (!SDL_Vulkan_GetInstanceExtensions(window, &count, extensions.data()))
         {
             SF_CORE_FATAL(Vulkan, 22, "Can't get Vulkan required extensions for SDL2!");
         }

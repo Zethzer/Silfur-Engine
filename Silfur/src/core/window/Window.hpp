@@ -18,20 +18,16 @@ namespace Silfur
         Window(VideoMode mode, const std::string& title);
         ~Window();
 
-        Window(const Window&) = delete;
-        Window(Window&&) = delete;
-
         void ProcessEvents();
         void Shutdown();
         u64 GetTicks();
 
         inline EventHandler& GetEventHandler() const { return *m_EventHandler; }
 
+        inline operator SDL_Window*() const noexcept { return m_WinHandle; };
         inline SDL_Window* WindowHandle() const noexcept { return m_WinHandle; };
         void* WindowSystemHandle() const noexcept;
 
-        Window& operator=(const Window&) = delete;
-        Window& operator=(Window&&) = delete;
     private:
         void Create(VideoMode mode, const std::string& title);
         int static CAPICALL HandleEvent(void* userdata, SDL_Event* event);
