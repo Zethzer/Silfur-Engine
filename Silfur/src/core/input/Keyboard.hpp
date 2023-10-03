@@ -272,13 +272,13 @@ namespace Silfur
 
     inline std::ostream& operator<<(std::ostream& os, VKey keyCode)
     {
-        os << static_cast<u32>(keyCode);
+        os << static_cast<uint32>(keyCode);
         return os;
     }
 
     inline std::ostream& operator<<(std::ostream& os, ScanCode scanCode)
     {
-        os << static_cast<u32>(scanCode);
+        os << static_cast<uint32>(scanCode);
         return os;
     }
 }

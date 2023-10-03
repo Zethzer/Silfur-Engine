@@ -68,7 +68,7 @@ namespace Silfur
 
     bool VulkanInstance::CheckValidationLayersSupport()
     {
-        u32 count;
+        uint32 count;
         vkEnumerateInstanceLayerProperties(&count, nullptr);
 
         std::vector<VkLayerProperties> availableLayers(count);
@@ -98,7 +98,7 @@ namespace Silfur
 
     std::vector<const char*> VulkanInstance::GetRequiredExtensions(const Window& window, const RendererProperties& properties)
     {
-        u32 count;
+        uint32 count;
         if (!SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr))
         {
             SF_CORE_FATAL(Vulkan, 21, "Can't get the count of Vulkan required extensions for SDL2!");
@@ -144,7 +144,7 @@ namespace Silfur
 
     std::vector<VkExtensionProperties> VulkanInstance::GetAvailableExtensions()
     {
-        u32 availableExtensionsCount;
+        uint32 availableExtensionsCount;
         vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionsCount, nullptr);
 
         SF_CORE_TRACE(Vulkan, "{} extensions supported!", availableExtensionsCount);
@@ -168,12 +168,12 @@ namespace Silfur
         createInfos = {};
         createInfos.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfos.pApplicationInfo = &createInstanceInfos.AppInfos;
-        createInfos.enabledExtensionCount = static_cast<u32>(createInstanceInfos.Extensions.size());
+        createInfos.enabledExtensionCount = static_cast<uint32>(createInstanceInfos.Extensions.size());
         createInfos.ppEnabledExtensionNames = createInstanceInfos.Extensions.data();
 
         if (createInstanceInfos.RendererProperties.EnableValidationLayers)
         {
-            createInfos.enabledLayerCount = static_cast<u32>(m_ValidationLayers.size());
+            createInfos.enabledLayerCount = static_cast<uint32>(m_ValidationLayers.size());
             createInfos.ppEnabledLayerNames = m_ValidationLayers.data();
 
             PopulateDebugMessengerCreateInfos(debugCreateInfos);

@@ -18,9 +18,14 @@ namespace Silfur
         Window(VideoMode mode, const std::string& title);
         ~Window();
 
+        Window(const Window&) = delete;
+        Window(const Window&&) = delete;
+        Window& operator=(const Window&) = delete;
+        Window& operator=(Window&&) = delete;
+
         void ProcessEvents();
         void Shutdown();
-        u64 GetTicks();
+        uint64 GetTicks();
 
         inline EventHandler& GetEventHandler() const { return *m_EventHandler; }
 

@@ -19,7 +19,7 @@ namespace Silfur
 
     inline std::ostream& operator<<(std::ostream& os, MouseButton mouseCode)
     {
-        os << static_cast<u32>(mouseCode);
+        os << static_cast<uint32>(mouseCode);
         return os;
     }
 }

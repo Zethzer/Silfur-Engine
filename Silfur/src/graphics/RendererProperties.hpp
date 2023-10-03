@@ -17,9 +17,9 @@ namespace Silfur
         Version EngineVersion = { 1,0,0 };
 
 #ifdef SF_DEBUG
-        const b8 EnableValidationLayers = true;
+        const bool EnableValidationLayers = true;
 #else
-        const b8 EnableValidationLayers = false;
+        const bool EnableValidationLayers = false;
 #endif
     };
 }

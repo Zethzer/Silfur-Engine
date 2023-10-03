@@ -24,6 +24,10 @@ namespace Silfur
 
         VulkanInstance(const VulkanInstance&) = delete;
         VulkanInstance(VulkanInstance&&) = delete;
+        VulkanInstance& operator=(const VulkanInstance&) = delete;
+        VulkanInstance& operator=(VulkanInstance&&) = delete;
+
+        inline operator VkInstance() const noexcept { return m_Instance; };
 
     private:
         void Create(const Window& window, const RendererProperties& properties);
@@ -53,6 +57,7 @@ namespace Silfur
 
     private:
         VkInstance m_Instance = nullptr;
+        
         const std::vector<const char*> m_ValidationLayers {
             "VK_LAYER_KHRONOS_validation"
         };

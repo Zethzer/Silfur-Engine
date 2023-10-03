@@ -20,7 +20,7 @@ namespace Silfur
 
     struct ApplicationCommandLineArgs
     {
-        i32 Count = 0;
+        int32 Count = 0;
         char** Args = nullptr;
 
         const char* operator[](int index) const
@@ -32,8 +32,8 @@ namespace Silfur
     struct ApplicationProperties
     {
         std::string Name = "Hello Silfur";
-        i32 Width = 1024;
-        i32 Height = 768;
+        int32 Width = 1024;
+        int32 Height = 768;
         Version Version;
         ApplicationCommandLineArgs CommandLineArgs;
     };
@@ -47,6 +47,8 @@ namespace Silfur
 
         Application(const Application&) = delete;
         Application(Application&&) = delete;
+        Application& operator=(const Application&) = delete;
+        Application& operator=(Application&&) = delete;
 
         virtual void OnInitialize() {}
         virtual void OnUpdate(float ts) {}
@@ -58,8 +60,6 @@ namespace Silfur
         inline EventHandler& GetEventHandler() const { return m_Window->GetEventHandler(); }
         void* GetSystemWindowHandle();
 
-        Application& operator=(const Application&) = delete;
-        Application& operator=(Application&&) = delete;
     private:
         void Create(ApplicationProperties properties);
         void Run();

@@ -4,20 +4,18 @@
 #include <cstdint>
 namespace Silfur
 {
-    using u8 = uint8_t;
-    using u16 = uint16_t;
-    using u32 = uint32_t;
-    using u64 = uint64_t;
+    using uint8 = uint8_t;
+    using uint16 = uint16_t;
+    using uint32 = uint32_t;
+    using uint64 = uint64_t;
 
-    using i8 = int8_t;
-    using i16 = int16_t;
-    using i32 = int32_t;
-    using i64 = int64_t;
+    using int8 = int8_t;
+    using int16 = int16_t;
+    using int32 = int32_t;
+    using int64 = int64_t;
 
-    using f32 = float;
-    using f64 = double;
-
-    using b8 = bool;
+    using float32 = float;
+    using float64 = double;
 }
 
 #if defined(__clang__) || defined(__gcc__)
@@ -27,18 +25,18 @@ namespace Silfur
 #endif
 
 /* Ensure all types are of the correct size */
-STATIC_ASSERT(sizeof(Silfur::u8) == 1, "Expected u8 to be 1 byte.");
-STATIC_ASSERT(sizeof(Silfur::u16) == 2, "Expected u16 to be 2 bytes.");
-STATIC_ASSERT(sizeof(Silfur::u32) == 4, "Expected u32 to be 4 bytes.");
-STATIC_ASSERT(sizeof(Silfur::u64) == 8, "Expected u64 to be 8 bytes.");
+STATIC_ASSERT(sizeof(Silfur::uint8) == 1, "Expected uint8 to be 1 byte.");
+STATIC_ASSERT(sizeof(Silfur::uint16) == 2, "Expected uint16 to be 2 bytes.");
+STATIC_ASSERT(sizeof(Silfur::uint32) == 4, "Expected uint32 to be 4 bytes.");
+STATIC_ASSERT(sizeof(Silfur::uint64) == 8, "Expected uint64 to be 8 bytes.");
 
-STATIC_ASSERT(sizeof(Silfur::i8) == 1, "Expected i8 to be 1 byte.");
-STATIC_ASSERT(sizeof(Silfur::i16) == 2, "Expected i16 to be 2 bytes.");
-STATIC_ASSERT(sizeof(Silfur::i32) == 4, "Expected i32 to be 4 bytes.");
-STATIC_ASSERT(sizeof(Silfur::i64) == 8, "Expected i64 to be 8 bytes.");
+STATIC_ASSERT(sizeof(Silfur::int8) == 1, "Expected int8 to be 1 byte.");
+STATIC_ASSERT(sizeof(Silfur::int16) == 2, "Expected int16 to be 2 bytes.");
+STATIC_ASSERT(sizeof(Silfur::int32) == 4, "Expected int32 to be 4 bytes.");
+STATIC_ASSERT(sizeof(Silfur::int64) == 8, "Expected int64 to be 8 bytes.");
 
-STATIC_ASSERT(sizeof(Silfur::f32) == 4, "Expected f32 to be 4 bytes.");
-STATIC_ASSERT(sizeof(Silfur::f64) == 8, "Expected f64 to be 8 bytes.");
+STATIC_ASSERT(sizeof(Silfur::float32) == 4, "Expected float32 to be 4 bytes.");
+STATIC_ASSERT(sizeof(Silfur::float64) == 8, "Expected float64 to be 8 bytes.");
 
 /* -------- PLATFORM DETECTION -------- */
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
@@ -106,8 +104,8 @@ namespace Silfur
 
     struct Version
     {
-        u32 Major = 1;
-        u32 Minor = 0;
-        u32 Patch = 0;
+        uint32 Major = 1;
+        uint32 Minor = 0;
+        uint32 Patch = 0;
     };
 }

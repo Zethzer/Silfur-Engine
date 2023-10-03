@@ -8,30 +8,30 @@ namespace Silfur
     typedef struct MouseButtonUpInfo
     {
         MouseButton button;
-        u32 x;  // Relative to window
-        u32 y;  // Relative to window
+        uint32 x;  // Relative to window
+        uint32 y;  // Relative to window
     } MouseButtonUpInfo;
 
     typedef struct MouseButtonDownInfo
     {
         MouseButton button;
-        u32 x;  // Relative to window
-        u32 y;  // Relative to window
+        uint32 x;  // Relative to window
+        uint32 y;  // Relative to window
     } MouseButtonDownInfo;
 
     typedef struct MouseMotionInfo
     {
-        u32 x;  // Relative to window
-        u32 y;  // Relative to window
-        u32 xRelative;  // Relative motion in the X direction
-        u32 yRelative;  // Relative motion in the Y direction
+        uint32 x;  // Relative to window
+        uint32 y;  // Relative to window
+        uint32 xRelative;  // Relative motion in the X direction
+        uint32 yRelative;  // Relative motion in the Y direction
     } MouseMotionInfo;
 
     typedef struct MouseWheelInfo
     {
-        u32 x;  // The amount scrolled horizontally, positive to right and negative to the left
-        u32 y;  // The amount scrolled vertically, positive to away from the user and negative towards the user
-        u32 direction; // Not consistent across all platform. Multiply by -1 do the trick
+        uint32 x;  // The amount scrolled horizontally, positive to right and negative to the left
+        uint32 y;  // The amount scrolled vertically, positive to away from the user and negative towards the user
+        uint32 direction; // Not consistent across all platform. Multiply by -1 do the trick
     } MouseWheelInfo;
 
     class MouseButtonDownEvent : public Event

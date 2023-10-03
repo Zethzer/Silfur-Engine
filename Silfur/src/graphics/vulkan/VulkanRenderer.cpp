@@ -17,6 +17,7 @@ namespace Silfur
     void VulkanRenderer::Init(RendererProperties properties)
     {
         m_Instance = CreateScope<VulkanInstance>(m_Window, properties);
+        m_PhysicalDevice = CreateScope<VulkanPhysicalDevice>(*m_Instance);
     }
 
     void VulkanRenderer::Update()
