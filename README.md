@@ -29,7 +29,7 @@ The game engine is under active development.
 #### Building
 
 * On Windows:
-  * `git clone --recursive https://github.com/Duality-Workshop/Silfur-Engine.git`
+  * `git clone --recursive https://github.com/Zethzer/Silfur-Engine.git`
   * Launch `Setup.bat` for generate the `.sln` file.
 
 ## F.A.Q
