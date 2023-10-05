@@ -24,7 +24,9 @@ namespace Silfur
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
         // NOTE : Function not very generic
-        // It's just pick the first discrete gpu found on the computer
+        /* It's just pick the first discrete gpu 
+         * which supports graphics queue found on the computer
+         */
         for (const auto& device : devices)
         {
             if (IsDeviceSuitable(device))
@@ -46,8 +48,10 @@ namespace Silfur
     {
         VkPhysicalDeviceProperties deviceProps;
         vkGetPhysicalDeviceProperties(device, &deviceProps);
+        auto indices = FindQueueFamilies(device);
 
-        if (deviceProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+        if (deviceProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+            && indices.IsComplete())
         {
             return true;
         }
@@ -90,5 +94,34 @@ namespace Silfur
             VK_API_VERSION_PATCH(deviceProps.apiVersion),
             driverVersionStr.str()
         );
+    }
+
+    QueueFamilyIndices VulkanPhysicalDevice::FindQueueFamilies(VkPhysicalDevice device)
+    {
+        QueueFamilyIndices indices;
+
+        uint32 queueFamilyCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+        std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+        uint8 i = 0;
+        for (const auto& queueFamily : queueFamilies)
+        {
+            if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            {
+                indices.graphicsFamily = i;
+            }
+
+            if (indices.IsComplete())
+            {
+                break;
+            }
+
+            ++i;
+        }
+
+        return indices;
     }
 }

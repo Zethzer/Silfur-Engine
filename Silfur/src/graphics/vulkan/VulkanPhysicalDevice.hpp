@@ -8,6 +8,16 @@ namespace Silfur
 {
     class VulkanInstance;
 
+    struct QueueFamilyIndices
+    {
+        std::optional<uint32> graphicsFamily;
+
+        bool IsComplete()
+        {
+            return graphicsFamily.has_value();
+        }
+    };
+
     class VulkanPhysicalDevice
     {
     public:
@@ -24,6 +34,7 @@ namespace Silfur
         void PickPhysicalDevice(const VulkanInstance& instance);
         bool IsDeviceSuitable(VkPhysicalDevice device);
         void LogDeviceInformations();
+        QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
     private:
         VkPhysicalDevice m_PhysicalDevice = nullptr;
