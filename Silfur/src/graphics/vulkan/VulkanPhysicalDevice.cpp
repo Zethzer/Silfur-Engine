@@ -48,10 +48,10 @@ namespace Silfur
     {
         VkPhysicalDeviceProperties deviceProps;
         vkGetPhysicalDeviceProperties(device, &deviceProps);
-        auto indices = FindQueueFamilies(device);
+        m_QueueFamilyIndices = FindQueueFamilies(device);
 
         if (deviceProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
-            && indices.IsComplete())
+            && m_QueueFamilyIndices.IsComplete())
         {
             return true;
         }

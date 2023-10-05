@@ -11,13 +11,12 @@ namespace Silfur
 
     VulkanRenderer::~VulkanRenderer()
     {
-        m_Instance.reset();
+        m_LogicalDevice.reset();
     }
 
     void VulkanRenderer::Init(RendererProperties properties)
     {
-        m_Instance = CreateScope<VulkanInstance>(m_Window, properties);
-        m_PhysicalDevice = CreateScope<VulkanPhysicalDevice>(*m_Instance);
+        m_LogicalDevice = CreateScope<VulkanLogicalDevice>(m_Window, properties);
     }
 
     void VulkanRenderer::Update()

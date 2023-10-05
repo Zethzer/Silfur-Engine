@@ -2,8 +2,6 @@
 
 #include "defines.hpp"
 
-#include "core/window/Window.hpp"
-
 #include <string>
 
 namespace Silfur

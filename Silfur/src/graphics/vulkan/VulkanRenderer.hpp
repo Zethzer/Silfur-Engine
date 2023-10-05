@@ -1,10 +1,10 @@
 #pragma once
 
 #include "defines.hpp"
+
 #include "../RendererProperties.hpp"
 
-#include "VulkanInstance.hpp"
-#include "VulkanPhysicalDevice.hpp"
+#include "VulkanLogicalDevice.hpp"
 
 namespace Silfur
 {
@@ -26,8 +26,7 @@ namespace Silfur
         void Init(RendererProperties properties);
 
     private:
-        Scope<VulkanInstance> m_Instance = nullptr;
-        Scope<VulkanPhysicalDevice> m_PhysicalDevice = nullptr;
+        Scope<VulkanLogicalDevice> m_LogicalDevice = nullptr;
         
         const Window& m_Window;
 

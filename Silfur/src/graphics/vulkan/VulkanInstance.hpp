@@ -1,6 +1,8 @@
 #pragma once
 
 #include "defines.hpp"
+
+#include "core/window/Window.hpp"
 #include "../RendererProperties.hpp"
 
 #include <vulkan/vulkan.h>

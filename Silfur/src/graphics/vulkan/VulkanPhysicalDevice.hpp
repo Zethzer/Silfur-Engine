@@ -30,6 +30,10 @@ namespace Silfur
         VulkanPhysicalDevice& operator=(const VulkanPhysicalDevice&) = delete;
         VulkanPhysicalDevice& operator=(VulkanPhysicalDevice&&) = delete;
 
+        inline QueueFamilyIndices GetQueueFamilyIndices() const { return m_QueueFamilyIndices; };
+
+        inline operator VkPhysicalDevice() const noexcept { return m_PhysicalDevice; };
+
     private:
         void PickPhysicalDevice(const VulkanInstance& instance);
         bool IsDeviceSuitable(VkPhysicalDevice device);
@@ -38,5 +42,6 @@ namespace Silfur
 
     private:
         VkPhysicalDevice m_PhysicalDevice = nullptr;
+        QueueFamilyIndices m_QueueFamilyIndices;
     };
 }
